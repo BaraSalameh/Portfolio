@@ -10,6 +10,7 @@ namespace DataAccess.DbContexts
         {
         }
 
+        public DbSet<Role> Role { get; set; }
         public DbSet<User> User { get; set; }
         public DbSet<Profile> Profile { get; set; }
         public DbSet<Education> Education { get; set; }
@@ -29,6 +30,9 @@ namespace DataAccess.DbContexts
 
         private ModelBuilder OnModelCreateKeys(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Role>().HasKey(x => x.ID);
+            modelBuilder.Entity<Role>().Property(x => x.ID).ValueGeneratedOnAdd();
+
             modelBuilder.Entity<User>().HasKey(x => x.ID);
             modelBuilder.Entity<User>().Property(x => x.ID).ValueGeneratedOnAdd();
             modelBuilder.Entity<User>().Property(x => x.IsActive).HasDefaultValue(false);
@@ -57,6 +61,11 @@ namespace DataAccess.DbContexts
 
         private ModelBuilder OnModelCreateRelations(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>()
+                .HasOne(x => x.Role)
+                .WithMany(x => x.LstUsers)
+                .HasForeignKey(x => x.RoleID);
+
             modelBuilder.Entity<Profile>()
                 .HasOne(x => x.User)
                 .WithMany(x => x.LstProfiles)

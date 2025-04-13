@@ -3,6 +3,6 @@
     public enum RoleName
     {
         Admin = 1,
-        Painter = 2
+        Owner = 2
     }
 }

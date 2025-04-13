@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using System;
 using System.Text;
 
 namespace DataAccess
@@ -56,7 +55,7 @@ namespace DataAccess
 
             services.AddAuthorizationBuilder()
                 .AddPolicy("RequireAdminRole", policy => policy.RequireRole(RoleName.Admin.ToString()))
-                .AddPolicy("RequirePainterRole", policy => policy.RequireRole(RoleName.Painter.ToString()));
+                .AddPolicy("RequireOwnerRole", policy => policy.RequireRole(RoleName.Owner.ToString()));
 
             return services;
         }

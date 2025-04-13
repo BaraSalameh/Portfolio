@@ -11,6 +11,8 @@ namespace Domain.Entities
         public string? Lastname { get; set; }
         public string? Phone { get; set; }
         public bool? IsActive { get; set; }
+        public int? RoleID { get; set; }
+        public Role Role { get; set; }
         public List<Profile> LstProfiles { get; set; }
     }
 }
