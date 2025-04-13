@@ -8,12 +8,12 @@ using MediatR;
 
 namespace Application.Profile.Handlers
 {
-    public class AddEditEducationHandler : IRequestHandler<AddEditEducationCommand, AbstractViewModel>
+    public class AddEditEducationCommandHandler : IRequestHandler<AddEditEducationCommand, AbstractViewModel>
     {
         private readonly IAppDbContext _context;
         private readonly IMapper _mapper;
 
-        public AddEditEducationHandler(IAppDbContext context)
+        public AddEditEducationCommandHandler(IAppDbContext context)
         {
             _context = context;
             _mapper = new EducationMappingProfiles().AddEditEducationCommandHandler();

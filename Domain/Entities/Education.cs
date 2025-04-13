@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Entities
+﻿namespace Domain.Entities
 {
     public class Education
     {
@@ -16,7 +10,7 @@ namespace Domain.Entities
         public DateOnly? StartDate { get; set; }
         public DateOnly? EndDate { get; set; }
         public string? Describtion { get; set; }
-        public int ProfileID { get; set; }
+        public int? ProfileID { get; set; }
         public Profile Profile { get; set; }
     }
 }

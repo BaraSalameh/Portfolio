@@ -1,6 +1,5 @@
 ﻿using Application.Account.Commands.RegisterCommands;
 using Application.Account.Queries.LoginQueries;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Portfolio.Controllers
