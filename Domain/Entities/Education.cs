@@ -2,15 +2,14 @@
 {
     public class Education : AbstractEntity
     {
-        public int? ID { get; set; }
-        public int EducationLevelID { get; set; }
-        public LKP_EducationLevel EducationLevel { get; set; }
-        public string? Topic { get; set; }
-        public string? Place { get; set; }
-        public DateOnly? StartDate { get; set; }
-        public DateOnly? EndDate { get; set; }
-        public string? Describtion { get; set; }
-        public int? ProfileID { get; set; }
-        public Profile Profile { get; set; }
+        public int ID { get; set; }
+        public string Institution { get; set; }
+        public string Degree { get; set; }
+        public string FieldOfStudy { get; set; }
+        public DateOnly StartDate { get; set; }
+        public DateOnly EndDate { get; set; }
+        public string Description { get; set; }
+        public int UserID { get; set; }
+        public User User { get; set; }
     }
 }

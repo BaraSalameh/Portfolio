@@ -2,6 +2,7 @@
 using Domain;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace DataAccess.DbContexts
 {
@@ -11,14 +12,18 @@ namespace DataAccess.DbContexts
         {
         }
 
-        public DbSet<Role> Role { get; set; }
         public DbSet<User> User { get; set; }
-        public DbSet<Profile> Profile { get; set; }
+        public DbSet<Project> Project { get; set; }
+        public DbSet<Skill> Skill { get; set; }
         public DbSet<Education> Education { get; set; }
+        public DbSet<Experience> Experience { get; set; }
+        public DbSet<BlogPost> BlogPost { get; set; }
+        public DbSet<SocialLink> SocialLink { get; set; }
+        public DbSet<ContactMessage> ContactMessage { get; set; }
+        public DbSet<Technology> Technology { get; set; }
+        public DbSet<ProjectTechnology> ProjectTechnology { get; set; }
         public DbSet<Language> Language { get; set; }
-        public DbSet<Link> Link { get; set; }
-        public DbSet<LKP_EducationLevel> LKP_EducationLevel { get; set; }
-        public DbSet<LKP_LanguageLevel> LKP_LanguageLevel { get; set; }
+        public DbSet<Role> Role { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -31,6 +36,16 @@ namespace DataAccess.DbContexts
 
         private ModelBuilder OnModelCreateKeys(ModelBuilder modelBuilder)
         {
+
+            foreach (var entity in modelBuilder.Model.GetEntityTypes())
+            {
+                var idProperty = entity.FindProperty("ID");
+                if (idProperty != null)
+                {
+                    entity.SetPrimaryKey(idProperty);
+                    idProperty.ValueGenerated = ValueGenerated.OnAdd;
+                }
+            }
 
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
@@ -52,32 +67,9 @@ namespace DataAccess.DbContexts
                 }
             }
 
-
-            modelBuilder.Entity<Role>().HasKey(x => x.ID);
-            modelBuilder.Entity<Role>().Property(x => x.ID).ValueGeneratedOnAdd();
-
-            modelBuilder.Entity<User>().HasKey(x => x.ID);
-            modelBuilder.Entity<User>().Property(x => x.ID).ValueGeneratedOnAdd();
+            modelBuilder.Entity<ProjectTechnology>().HasKey(pt => new { pt.ProjectID, pt.TechnologyID });
             modelBuilder.Entity<User>().Property(x => x.IsActive).HasDefaultValue(false);
             modelBuilder.Entity<User>().HasIndex(x => x.Email).IsUnique();
-
-            modelBuilder.Entity<Profile>().HasKey(x => x.ID);
-            modelBuilder.Entity<Profile>().Property(x => x.ID).ValueGeneratedOnAdd();
-
-            modelBuilder.Entity<Link>().HasKey(x => x.ID);
-            modelBuilder.Entity<Link>().Property(x => x.ID).ValueGeneratedOnAdd();
-
-            modelBuilder.Entity<Education>().HasKey(x => x.ID);
-            modelBuilder.Entity<Education>().Property(x => x.ID).ValueGeneratedOnAdd();
-
-            modelBuilder.Entity<Language>().HasKey(x => x.ID);
-            modelBuilder.Entity<Language>().Property(x => x.ID).ValueGeneratedOnAdd();
-
-            modelBuilder.Entity<LKP_EducationLevel>().HasKey(x => x.ID);
-            modelBuilder.Entity<LKP_EducationLevel>().Property(x => x.ID).ValueGeneratedOnAdd();
-
-            modelBuilder.Entity<LKP_LanguageLevel>().HasKey(x => x.ID);
-            modelBuilder.Entity<LKP_LanguageLevel>().Property(x => x.ID).ValueGeneratedOnAdd();
 
             return modelBuilder;
         }
@@ -85,37 +77,59 @@ namespace DataAccess.DbContexts
         private ModelBuilder OnModelCreateRelations(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
-                .HasOne(x => x.Role)
-                .WithMany(x => x.LstUsers)
-                .HasForeignKey(x => x.RoleID);
+               .HasOne(p => p.Role)
+               .WithMany(u => u.LstUsers)
+               .HasForeignKey(p => p.RoleID);
 
-            modelBuilder.Entity<Profile>()
+            modelBuilder.Entity<Project>()
+                .HasOne(p => p.User)
+                .WithMany(u => u.LstProjects)
+                .HasForeignKey(p => p.UserID);
+
+            modelBuilder.Entity<Skill>()
+                .HasOne(s => s.User)
+                .WithMany(u => u.LstSkills)
+                .HasForeignKey(s => s.UserID);
+
+            modelBuilder.Entity<Education>()
+                .HasOne(e => e.User)
+                .WithMany(u => u.LstEducations)
+                .HasForeignKey(e => e.UserID);
+
+            modelBuilder.Entity<Experience>()
+                .HasOne(e => e.User)
+                .WithMany(u => u.LstExperiences)
+                .HasForeignKey(e => e.UserID);
+
+            modelBuilder.Entity<BlogPost>()
+                .HasOne(b => b.User)
+                .WithMany(u => u.LstBlogPosts)
+                .HasForeignKey(b => b.UserID);
+
+            modelBuilder.Entity<SocialLink>()
+                .HasOne(s => s.User)
+                .WithMany(u => u.LstSocialLinks)
+                .HasForeignKey(s => s.UserID);
+
+            modelBuilder.Entity<ContactMessage>()
+                .HasOne(c => c.User)
+                .WithMany(u => u.LstContactMessages)
+                .HasForeignKey(c => c.UserID);
+           
+            modelBuilder.Entity<ProjectTechnology>()
+                .HasOne(pt => pt.Project)
+                .WithMany(p => p.LstProjectTechnologies)
+                .HasForeignKey(pt => pt.ProjectID);
+            modelBuilder.Entity<ProjectTechnology>()
+                .HasOne(pt => pt.Technology)
+                .WithMany(t => t.LstProjectTechnologies)
+                .HasForeignKey(pt => pt.TechnologyID);
+        
+            modelBuilder.Entity<Language>()
                 .HasOne(x => x.User)
-                .WithMany(x => x.LstProfiles)
+                .WithMany(x => x.LstLanguages)
                 .HasForeignKey(x => x.UserID);
-
-            modelBuilder.Entity<Link>()
-                .HasOne(x => x.Profile)
-                .WithMany(x => x.LstLinks)
-                .HasForeignKey(x => x.ProfileID);
-
-            modelBuilder.Entity<Education>()
-                .HasOne(x => x.Profile)
-                .WithMany(x => x.LstEducations)
-                .HasForeignKey(x => x.ProfileID);
-            modelBuilder.Entity<Education>()
-                .HasOne(x => x.EducationLevel)
-                .WithMany(x => x.LstEducations)
-                .HasForeignKey(x => x.EducationLevelID);
-
-            modelBuilder.Entity<Language>()
-                .HasOne(x => x.Profile)
-                .WithMany(x => x.LstLanguages)
-                .HasForeignKey(x => x.ProfileID);
-            modelBuilder.Entity<Language>()
-                .HasOne(x => x.LanguageLevel)
-                .WithMany(x => x.LstLanguages)
-                .HasForeignKey(x => x.LanguageLevelID);
+            
 
             return modelBuilder;
         }

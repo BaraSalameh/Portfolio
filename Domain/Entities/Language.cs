@@ -4,9 +4,8 @@
     {
         public int? ID { get; set; }
         public string? name { get; set; }
-        public int LanguageLevelID { get; set; }
-        public LKP_LanguageLevel LanguageLevel { get; set; }
-        public int ProfileID { get; set; }
-        public Profile Profile { get; set; }
+        public int? Proficiency { get; set; }
+        public int UserID { get; set; }
+        public User User { get; set; }
     }
 }

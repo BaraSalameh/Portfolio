@@ -1,6 +1,4 @@
-﻿using Application.Admin.Commands.EducationLevelCommands;
-using Application.Admin.Commands.LanguageLevelCommands;
-using Application.Admin.Commands.RoleCommands;
+﻿using Application.Admin.Commands.RoleCommands;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace Portfolio.Controllers
@@ -13,19 +11,5 @@ namespace Portfolio.Controllers
 
         [HttpDelete]
         public async Task<IActionResult> DeleteRole(DeleteRoleCommand request) => Ok(await Mediator.Send(request));
-
-        [HttpPost]
-        public async Task<IActionResult> AddEditLanguageLevel(AddEditLanguageLevelCommand request) => Ok(await Mediator.Send(request));
-
-        [HttpDelete]
-        public async Task<IActionResult> DeleteLanguageLevel(DeleteLanguageLevelCommand request) => Ok(await Mediator.Send(request));
-
-        [HttpPost]
-        public async Task<IActionResult> AddEditEducationLevel(AddEditEducationLevelCommand request) => Ok(await Mediator.Send(request));
-
-        [HttpDelete]
-        public async Task<IActionResult> DeleteEducationLevel(DeleteEducationLevelCommand request) => Ok(await Mediator.Send(request));
-
-
     }
 }
