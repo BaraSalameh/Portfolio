@@ -1,4 +1,4 @@
-﻿using Application.Account.Commands.RegisterCommands;
+﻿using Application.Account.Commands;
 using AutoMapper;
 using Domain.Entities;
 

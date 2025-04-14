@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Entities
+﻿namespace Domain.Entities
 {
-    public class LKP_EducationLevel
+    public class LKP_EducationLevel : AbstractEntity
     {
         public int? ID { get; set; }
         public string? Level { get; set; }

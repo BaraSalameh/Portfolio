@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entities
 {
-    public class Education
+    public class Education : AbstractEntity
     {
         public int? ID { get; set; }
         public int EducationLevelID { get; set; }

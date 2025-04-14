@@ -29,7 +29,7 @@
 
   <ItemGroup>
     <Folder Include="Admin\Queries\" />
-    <Folder Include="Profile\Queries\" />
+    <Folder Include="CV\Queries\" />
   </ItemGroup>
 
 </Project>

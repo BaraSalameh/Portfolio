@@ -1,5 +1,5 @@
-﻿using Application.Account.Commands.RegisterCommands;
-using Application.Account.Queries.LoginQueries;
+﻿using Application.Account.Commands;
+using Application.Account.Queries;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Portfolio.Controllers
@@ -11,5 +11,8 @@ namespace Portfolio.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Register(RegisterCommand request) => Ok(await Mediator.Send(request));
+
+        [HttpPost]
+        public async Task<IActionResult> ActiviateDeactivateUser(ActivateDeactivateUserCommand request) => Ok(await Mediator.Send(request));
     }
 }

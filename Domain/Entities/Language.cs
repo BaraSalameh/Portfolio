@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entities
 {
-    public class Language
+    public class Language : AbstractEntity
     {
         public int? ID { get; set; }
         public string? name { get; set; }

@@ -1,4 +1,5 @@
 ﻿using DataAccess.Interfaces;
+using Domain;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,6 +31,28 @@ namespace DataAccess.DbContexts
 
         private ModelBuilder OnModelCreateKeys(ModelBuilder modelBuilder)
         {
+
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                var clrType = entityType.ClrType;
+
+                if (typeof(AbstractEntity).IsAssignableFrom(clrType))
+                {
+                    modelBuilder.Entity(clrType).Property(nameof(AbstractEntity.CreatedAt))
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    modelBuilder.Entity(clrType).Property(nameof(AbstractEntity.UpdatedAt))
+                        .HasDefaultValue(null);
+
+                    modelBuilder.Entity(clrType).Property(nameof(AbstractEntity.DeletedAt))
+                        .HasDefaultValue(null);
+
+                    modelBuilder.Entity(clrType).Property(nameof(AbstractEntity.IsDeleted))
+                        .HasDefaultValue(false);
+                }
+            }
+
+
             modelBuilder.Entity<Role>().HasKey(x => x.ID);
             modelBuilder.Entity<Role>().Property(x => x.ID).ValueGeneratedOnAdd();
 

@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entities
 {
-    public class Profile
+    public class Profile : AbstractEntity
     {
         public int? ID { get; set; }
         public string? ImagePath { get; set; }
