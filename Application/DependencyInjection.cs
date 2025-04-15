@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Application.Common.Services.Interface;
+using Application.Common.Services.Service;
+using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
 namespace Application
@@ -9,7 +11,8 @@ namespace Application
         {
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
             services.AddAutoMapper(typeof(DependencyInjection).Assembly);
-
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddScoped<IUserResolverService, UserResolverService>();
             return services;
         }
     }

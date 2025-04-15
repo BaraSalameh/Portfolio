@@ -1,5 +1,5 @@
 ﻿using Application.Common.Entities;
-using Application.Common.Services;
+using Application.Common.Services.Interface;
 using Application.Owner.Commands.LanguageCommands;
 using DataAccess.Interfaces;
 using MediatR;
@@ -9,10 +9,10 @@ namespace Application.Owner.Handlers.LanguageHandlers
 {
     public class DeleteLanguageCommandHandler: IRequestHandler<DeleteLanguageCommand, AbstractViewModel>
     {
-        private readonly CurrentUserService _currentUser;
+        private readonly ICurrentUserService _currentUser;
         private readonly IAppDbContext _context;
 
-        public DeleteLanguageCommandHandler(IAppDbContext context, CurrentUserService currentUser)
+        public DeleteLanguageCommandHandler(IAppDbContext context, ICurrentUserService currentUser)
         {
             _currentUser = currentUser;
             _context = context;

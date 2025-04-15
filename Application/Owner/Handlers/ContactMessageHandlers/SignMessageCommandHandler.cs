@@ -1,5 +1,5 @@
 ﻿using Application.Common.Entities;
-using Application.Common.Services;
+using Application.Common.Services.Interface;
 using Application.Owner.Commands.ContactMessageCommands;
 using DataAccess.Interfaces;
 using MediatR;
@@ -9,9 +9,9 @@ namespace Application.Owner.Handlers.ContactMessage
 {
     public class SignMessageCommandHandler : IRequestHandler<SignMessageCommand, AbstractViewModel>
     {
-        private readonly CurrentUserService _currentUserService;
+        private readonly ICurrentUserService _currentUserService;
         private readonly IAppDbContext _context;
-        public SignMessageCommandHandler(IAppDbContext context, CurrentUserService currentUserService)
+        public SignMessageCommandHandler(IAppDbContext context, ICurrentUserService currentUserService)
         {
             _currentUserService = currentUserService;
             _context = context;

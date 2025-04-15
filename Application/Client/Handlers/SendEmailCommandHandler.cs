@@ -1,11 +1,10 @@
 ﻿using Application.Client.Commands;
-using Application.Client.MappingProfiles;
 using Application.Common.Entities;
+using Application.Common.Services.Interface;
 using AutoMapper;
 using DataAccess.Interfaces;
 using Domain.Entities;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Client.Handlers
 {
@@ -13,17 +12,20 @@ namespace Application.Client.Handlers
     {
         private readonly IAppDbContext _context;
         private readonly IMapper _mapper;
-        public SendEmailCommandHandler(IAppDbContext context, IMapper mapper)
+        private readonly IUserResolverService _userResolver;
+
+        public SendEmailCommandHandler(IAppDbContext context, IMapper mapper, IUserResolverService userResolver)
         {
             _context = context;
             _mapper = mapper;
+            _userResolver = userResolver;
 
         }
         public async Task<AbstractViewModel> Handle(SendEmailCommand request, CancellationToken cancellationToken)
         {
             var Vm = new AbstractViewModel();
 
-            var user = await GetUserByEmailAsync(request.EmailTo);
+            var user = await _userResolver.GetUserByEmailAsync(request.EmailTo);
 
             if (user == null || user.ID == null)
             {
@@ -49,13 +51,6 @@ namespace Application.Client.Handlers
             }
 
             return Vm;
-        }
-
-        private async Task<User?> GetUserByEmailAsync(string email)
-        {
-            return await _context.User
-                .Where(u => u.Email == email)
-                .FirstOrDefaultAsync();
         }
     }
 }

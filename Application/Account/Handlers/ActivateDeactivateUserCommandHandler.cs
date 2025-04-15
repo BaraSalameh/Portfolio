@@ -1,33 +1,32 @@
 ﻿using Application.Account.Commands;
 using Application.Common.Entities;
+using Application.Common.Services.Interface;
 using DataAccess.Interfaces;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Account.Handlers
 {
     public class ActivateDeactivateUserCommandHandler : IRequestHandler<ActivateDeactivateUserCommand, AbstractViewModel>
     {
         private readonly IAppDbContext _context;
+        private readonly IUserResolverService _userResolverService;
 
-        public ActivateDeactivateUserCommandHandler(IAppDbContext context)
+        public ActivateDeactivateUserCommandHandler(IAppDbContext context, IUserResolverService userResolverService)
         {
             _context = context;
+            _userResolverService = userResolverService;
         }
 
         public async Task<AbstractViewModel> Handle(ActivateDeactivateUserCommand request, CancellationToken cancellationToken)
         {
             var Vm = new AbstractViewModel();
 
-            var userToActivate =
-                await _context.User
-                    .Where(x => x.ID == request.ID)
-                    .FirstOrDefaultAsync();
+            var userToActivate = await _userResolverService.GetUserByEmailAsync(request.Email);
 
-            if (userToActivate == null)
+            if(userToActivate == null || userToActivate.ID == null)
             {
                 Vm.status = false;
-                Vm.lstError.Add("User not found");
+                Vm.lstError.Add("User Not found");
                 return Vm;
             }
 
@@ -35,7 +34,7 @@ namespace Application.Account.Handlers
             {
                 userToActivate.IsActive = !userToActivate.IsActive;
                 userToActivate.UpdatedAt = DateTime.UtcNow;
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(cancellationToken);
                 Vm.status = true;
             }
             catch

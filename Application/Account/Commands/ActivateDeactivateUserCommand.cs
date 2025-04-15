@@ -5,6 +5,6 @@ namespace Application.Account.Commands
 {
     public class ActivateDeactivateUserCommand : IRequest<AbstractViewModel>
     {
-        public int ID { get; set; }
+        public string Email { get; set; }
     }
 }

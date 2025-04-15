@@ -21,7 +21,7 @@ namespace DataAccess
                     b => b.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)
                 )
             );
-            services.AddScoped<IAppDbContext>(provider => provider.GetService<AppDbContext>()!);
+            services.AddScoped<IAppDbContext, AppDbContext>();
 
             services.AddAuthentication(x =>
             {

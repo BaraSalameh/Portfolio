@@ -1,5 +1,5 @@
 ﻿using Application.Common.Entities;
-using Application.Common.Services;
+using Application.Common.Services.Interface;
 using Application.Owner.Commands.ContactMessageCommands;
 using DataAccess.Interfaces;
 using MediatR;
@@ -9,10 +9,10 @@ namespace Application.Owner.Handlers.ContactMessageHandlers
 {
     public class DeleteMessageCommandHandler : IRequestHandler<DeleteMessageCommand, AbstractViewModel>
     {
-        private readonly CurrentUserService _currentUserService;
+        private readonly ICurrentUserService _currentUserService;
         private readonly IAppDbContext _context;
 
-        public DeleteMessageCommandHandler(IAppDbContext context, CurrentUserService currentUserService)
+        public DeleteMessageCommandHandler(IAppDbContext context, ICurrentUserService currentUserService)
         {
             _currentUserService = currentUserService;
             _context = context;

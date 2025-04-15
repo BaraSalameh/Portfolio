@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Application.Common.Services.Interface;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
-namespace Application.Common.Services
+namespace Application.Common.Services.Service
 {
-    public class CurrentUserService
+    public class CurrentUserService : ICurrentUserService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -16,5 +18,8 @@ namespace Application.Common.Services
 
         public bool IsAuthenticated =>
             _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
+
+        public string? Role => 
+            _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Role)?.Value;
     }
 }

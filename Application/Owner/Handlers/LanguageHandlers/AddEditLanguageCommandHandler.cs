@@ -1,7 +1,6 @@
 ﻿using Application.Common.Entities;
-using Application.Common.Services;
+using Application.Common.Services.Interface;
 using Application.Owner.Commands.LanguageCommands;
-using Application.Owner.MappingProfiles;
 using AutoMapper;
 using DataAccess.Interfaces;
 using Domain.Entities;
@@ -12,11 +11,11 @@ namespace Application.Owner.Handlers.LanguageHandlers
 {
     public class AddEditLanguageCommandHandler : IRequestHandler<AddEditLanguageCommand, AbstractViewModel>
     {
-        private readonly CurrentUserService _currentUser;
+        private readonly ICurrentUserService _currentUser;
         private readonly IAppDbContext _context;
         private readonly IMapper _mapper;
 
-        public AddEditLanguageCommandHandler(IAppDbContext context, CurrentUserService currentUser, IMapper mapper)
+        public AddEditLanguageCommandHandler(IAppDbContext context, ICurrentUserService currentUser, IMapper mapper)
         {
             _context = context;
             _currentUser = currentUser;

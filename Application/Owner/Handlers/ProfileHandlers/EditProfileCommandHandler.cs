@@ -1,5 +1,6 @@
 ﻿using Application.Common.Entities;
-using Application.Common.Services;
+using Application.Common.Services.Interface;
+using Application.Common.Services.Service;
 using Application.Owner.Commands.Profile;
 using AutoMapper;
 using DataAccess.Interfaces;
@@ -10,11 +11,11 @@ namespace Application.Owner.Handlers.Profile
 {
     public class EditProfileCommandHandler : IRequestHandler<EditProfileCommand, AbstractViewModel>
     {
-        private readonly CurrentUserService _currentUserService;
+        private readonly ICurrentUserService _currentUserService;
         private readonly IAppDbContext _context;
         private readonly IMapper _mapper;
 
-        public EditProfileCommandHandler(IAppDbContext context, CurrentUserService currentUserService, IMapper mapper)
+        public EditProfileCommandHandler(IAppDbContext context, ICurrentUserService currentUserService, IMapper mapper)
         {
             _currentUserService = currentUserService;
             _context = context;
