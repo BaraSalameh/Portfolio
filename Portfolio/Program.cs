@@ -1,6 +1,5 @@
 using Application;
 using Application.Common.Services;
-using Application.Common.Services.UserServices;
 using DataAccess;
 using NSwag;
 using NSwag.Generation.Processors.Security;
@@ -9,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<CurrentUserService>();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddOpenApiDocument(configure =>

@@ -3,6 +3,7 @@ using Domain;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DataAccess.DbContexts
 {
@@ -64,6 +65,29 @@ namespace DataAccess.DbContexts
 
                     modelBuilder.Entity(clrType).Property(nameof(AbstractEntity.IsDeleted))
                         .HasDefaultValue(false);
+                }
+            }
+
+            // Converter for DateOnly ↔ DateTime
+            var dateOnlyConverter = new ValueConverter<DateOnly, DateTime>(
+                d => d.ToDateTime(TimeOnly.MinValue),      // to provider
+                d => DateOnly.FromDateTime(d)              // from provider
+            );
+
+            // Apply to all DateOnly properties and set column type to 'date'
+            foreach (var entity in modelBuilder.Model.GetEntityTypes())
+            {
+                var entityBuilder = modelBuilder.Entity(entity.ClrType);
+
+                foreach (var property in entity.GetProperties())
+                {
+                    if (property.ClrType == typeof(DateOnly))
+                    {
+                        entityBuilder
+                            .Property(property.Name)
+                            .HasConversion(dateOnlyConverter)
+                            .HasColumnType("date");
+                    }
                 }
             }
 

@@ -4,15 +4,11 @@ using Domain.Entities;
 
 namespace Application.Account.MappingProfiles
 {
-    public class RegisterMappingProfiles
+    public class RegisterMappingProfiles : Profile
     {
-        public IMapper RegisterCommandHandler()
+        public RegisterMappingProfiles()
         {
-            var config = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<RegisterCommand, User>();
-            });
-            return config.CreateMapper();
+            CreateMap<RegisterCommand, User>();
         }
     }
 }

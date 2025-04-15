@@ -1,5 +1,4 @@
 ﻿using Application.Admin.Commands.RoleCommands;
-using Application.Admin.MappingProfiles;
 using Application.Common.Entities;
 using AutoMapper;
 using DataAccess.Interfaces;
@@ -13,10 +12,10 @@ namespace Application.Admin.Handlers.RoleHandlers
     {
         private readonly IAppDbContext _context;
         private readonly IMapper _mapper;
-        public AddEditRoleCommandHandler(IAppDbContext context)
+        public AddEditRoleCommandHandler(IAppDbContext context, IMapper mapper)
         {
             _context = context;
-            _mapper = new RoleMappingProfiles().AddEditRoleCommandHandler();
+            _mapper = mapper;
             
         }
         public async Task<AbstractViewModel> Handle(AddEditRoleCommand request, CancellationToken cancellationToken)
@@ -26,7 +25,7 @@ namespace Application.Admin.Handlers.RoleHandlers
 
             if (request.ID == null)
             {
-                _context.Role.Add(ResultToDB);
+                await _context.Role.AddAsync(ResultToDB);
             }
             else
             {

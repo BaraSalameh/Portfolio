@@ -4,15 +4,11 @@ using Domain.Entities;
 
 namespace Application.Admin.MappingProfiles
 {
-    public class RoleMappingProfiles
+    public class RoleMappingProfiles : Profile
     {
-        public IMapper AddEditRoleCommandHandler()
+        public RoleMappingProfiles()
         {
-            var config = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<AddEditRoleCommand, Role>();
-            });
-            return config.CreateMapper();
+            CreateMap<AddEditRoleCommand, Role>();
         }
     }
 }
