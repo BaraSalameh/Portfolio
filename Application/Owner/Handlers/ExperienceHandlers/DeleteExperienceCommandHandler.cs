@@ -1,24 +1,24 @@
 ﻿using Application.Common.Entities;
 using Application.Common.Services.Interface;
-using Application.Owner.Commands.LanguageCommands;
+using Application.Owner.Commands.ExperienceCommands;
 using DataAccess.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Owner.Handlers.LanguageHandlers
+namespace Application.Owner.Handlers.ExperienceHandlers
 {
-    public class DeleteLanguageCommandHandler: IRequestHandler<DeleteLanguageCommand, AbstractViewModel>
+    public class DeleteExperienceCommandHandler: IRequestHandler<DeleteExperienceCommand, AbstractViewModel>
     {
         private readonly ICurrentUserService _currentUser;
         private readonly IAppDbContext _context;
 
-        public DeleteLanguageCommandHandler(IAppDbContext context, ICurrentUserService currentUser)
+        public DeleteExperienceCommandHandler(IAppDbContext context, ICurrentUserService currentUser)
         {
             _currentUser = currentUser;
             _context = context;
         }
 
-        public async Task<AbstractViewModel> Handle(DeleteLanguageCommand request, CancellationToken cancellationToken)
+        public async Task<AbstractViewModel> Handle(DeleteExperienceCommand request, CancellationToken cancellationToken)
         {
             var Vm = new AbstractViewModel();
 
@@ -29,29 +29,29 @@ namespace Application.Owner.Handlers.LanguageHandlers
                 return Vm;
             }
 
-            var LanguageToDelete =
-                await _context.Language
+            var ExperienceToDelete =
+                await _context.Experience
                     .Where(x => x.UserID == _currentUser.UserID.Value && x.ID == request.ID && x.IsDeleted == false)
                     .FirstOrDefaultAsync(cancellationToken);
 
-            if (LanguageToDelete == null)
+            if (ExperienceToDelete == null)
             {
                 Vm.status = false;
-                Vm.lstError.Add("Language not found");
+                Vm.lstError.Add("Experience not found");
                 return Vm;
             }
 
             try
             {
-                LanguageToDelete.IsDeleted = true;
-                LanguageToDelete.DeletedAt = DateTime.UtcNow;
+                ExperienceToDelete.IsDeleted = true;
+                ExperienceToDelete.DeletedAt = DateTime.UtcNow;
                 await _context.SaveChangesAsync(cancellationToken);
                 Vm.status = true;
             }
             catch
             {
                 Vm.status = false;
-                Vm.lstError.Add("Error while deleting the Language");
+                Vm.lstError.Add("Error while deleting the Experience");
             }
 
             return Vm;

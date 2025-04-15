@@ -1,24 +1,24 @@
 ﻿using Application.Common.Entities;
 using Application.Common.Services.Interface;
-using Application.Owner.Commands.LanguageCommands;
+using Application.Owner.Commands.BlogPostCommands;
 using DataAccess.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Owner.Handlers.LanguageHandlers
+namespace Application.Owner.Handlers.BlogPostHandlers
 {
-    public class DeleteLanguageCommandHandler: IRequestHandler<DeleteLanguageCommand, AbstractViewModel>
+    public class DeleteBlogPostCommandHandler: IRequestHandler<DeleteBlogPostCommand, AbstractViewModel>
     {
         private readonly ICurrentUserService _currentUser;
         private readonly IAppDbContext _context;
 
-        public DeleteLanguageCommandHandler(IAppDbContext context, ICurrentUserService currentUser)
+        public DeleteBlogPostCommandHandler(IAppDbContext context, ICurrentUserService currentUser)
         {
             _currentUser = currentUser;
             _context = context;
         }
 
-        public async Task<AbstractViewModel> Handle(DeleteLanguageCommand request, CancellationToken cancellationToken)
+        public async Task<AbstractViewModel> Handle(DeleteBlogPostCommand request, CancellationToken cancellationToken)
         {
             var Vm = new AbstractViewModel();
 
@@ -29,29 +29,29 @@ namespace Application.Owner.Handlers.LanguageHandlers
                 return Vm;
             }
 
-            var LanguageToDelete =
-                await _context.Language
+            var BlogPostToDelete =
+                await _context.BlogPost
                     .Where(x => x.UserID == _currentUser.UserID.Value && x.ID == request.ID && x.IsDeleted == false)
                     .FirstOrDefaultAsync(cancellationToken);
 
-            if (LanguageToDelete == null)
+            if (BlogPostToDelete == null)
             {
                 Vm.status = false;
-                Vm.lstError.Add("Language not found");
+                Vm.lstError.Add("BlogPost not found");
                 return Vm;
             }
 
             try
             {
-                LanguageToDelete.IsDeleted = true;
-                LanguageToDelete.DeletedAt = DateTime.UtcNow;
+                BlogPostToDelete.IsDeleted = true;
+                BlogPostToDelete.DeletedAt = DateTime.UtcNow;
                 await _context.SaveChangesAsync(cancellationToken);
                 Vm.status = true;
             }
             catch
             {
                 Vm.status = false;
-                Vm.lstError.Add("Error while deleting the Language");
+                Vm.lstError.Add("Error while deleting the BlogPost");
             }
 
             return Vm;
