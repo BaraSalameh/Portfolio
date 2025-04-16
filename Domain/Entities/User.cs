@@ -26,6 +26,6 @@
         public List<BlogPost> LstBlogPosts { get; set; }
         public List<SocialLink> LstSocialLinks { get; set; }
         public List<ContactMessage> LstContactMessages { get; set; }
-        public List<Language> LstLanguages { get; set; }
+        public List<UserLanguage> LstUserLanguages { get; set; }
     }
 }

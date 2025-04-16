@@ -4,6 +4,7 @@ using DataAccess.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250416153945_Adding Language Proficiency Lookup")]
+    partial class AddingLanguageProficiencyLookup
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -72,7 +75,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("BlogPost", (string)null);
+                    b.ToTable("BlogPost");
                 });
 
             modelBuilder.Entity("Domain.Entities.ContactMessage", b =>
@@ -125,7 +128,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("ContactMessage", (string)null);
+                    b.ToTable("ContactMessage");
                 });
 
             modelBuilder.Entity("Domain.Entities.Education", b =>
@@ -181,7 +184,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Education", (string)null);
+                    b.ToTable("Education");
                 });
 
             modelBuilder.Entity("Domain.Entities.Experience", b =>
@@ -236,7 +239,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Experience", (string)null);
+                    b.ToTable("Experience");
                 });
 
             modelBuilder.Entity("Domain.Entities.LKP_Language", b =>
@@ -268,7 +271,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("LKP_Language", (string)null);
+                    b.ToTable("LKP_Language");
                 });
 
             modelBuilder.Entity("Domain.Entities.LKP_LanguageProficiency", b =>
@@ -301,7 +304,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("LKP_LanguageProficiency", (string)null);
+                    b.ToTable("LKP_LanguageProficiency");
                 });
 
             modelBuilder.Entity("Domain.Entities.LKP_Technology", b =>
@@ -338,7 +341,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("LKP_Technology", (string)null);
+                    b.ToTable("LKP_Technology");
                 });
 
             modelBuilder.Entity("Domain.Entities.Project", b =>
@@ -395,7 +398,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Project", (string)null);
+                    b.ToTable("Project");
                 });
 
             modelBuilder.Entity("Domain.Entities.ProjectTechnology", b =>
@@ -426,7 +429,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("LKP_TechnologyID");
 
-                    b.ToTable("ProjectTechnology", (string)null);
+                    b.ToTable("ProjectTechnology");
                 });
 
             modelBuilder.Entity("Domain.Entities.Role", b =>
@@ -458,7 +461,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("Role", (string)null);
+                    b.ToTable("Role");
                 });
 
             modelBuilder.Entity("Domain.Entities.Skill", b =>
@@ -507,7 +510,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Skill", (string)null);
+                    b.ToTable("Skill");
                 });
 
             modelBuilder.Entity("Domain.Entities.SocialLink", b =>
@@ -553,7 +556,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("SocialLink", (string)null);
+                    b.ToTable("SocialLink");
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
@@ -616,7 +619,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("RoleID");
 
-                    b.ToTable("User", (string)null);
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("Domain.Entities.UserLanguage", b =>
@@ -627,24 +630,8 @@ namespace DataAccess.Migrations
                     b.Property<int>("LKP_LanguageID")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool?>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
                     b.Property<int>("LKP_LanguageProficiencyID")
                         .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("UserID", "LKP_LanguageID");
 
@@ -652,7 +639,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("LKP_LanguageProficiencyID");
 
-                    b.ToTable("UserLanguage", (string)null);
+                    b.ToTable("UserLanguage");
                 });
 
             modelBuilder.Entity("Domain.Entities.BlogPost", b =>

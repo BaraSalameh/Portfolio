@@ -4,7 +4,7 @@
     {
         public int ProjectID { get; set; }
         public Project Project { get; set; }
-        public int TechnologyID { get; set; }
-        public Technology Technology { get; set; }
+        public int LKP_TechnologyID { get; set; }
+        public LKP_Technology LKP_Technology { get; set; }
     }
 }

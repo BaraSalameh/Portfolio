@@ -2,10 +2,10 @@
 using Application.Owner.Commands.ContactMessageCommands;
 using Application.Owner.Commands.EducationCommands;
 using Application.Owner.Commands.ExperienceCommands;
-using Application.Owner.Commands.LanguageCommands;
 using Application.Owner.Commands.Profile;
 using Application.Owner.Commands.SkillCommands;
 using Application.Owner.Commands.SocialLinkCommands;
+using Application.Owner.Commands.UserLanguageCommands;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,12 +22,6 @@ namespace Portfolio.Controllers
 
         [HttpDelete]
         public async Task<IActionResult> DeleteMessage(DeleteMessageCommand request) => Ok(await Mediator.Send(request));
-
-        [HttpPost]
-        public async Task<IActionResult> AddEditLanguage(AddEditLanguageCommand request) => Ok(await Mediator.Send(request));
-
-        [HttpDelete]
-        public async Task<IActionResult> DeleteLanguage(DeleteLanguageCommand request) => Ok(await Mediator.Send(request));
 
         [HttpPost]
         public async Task<IActionResult> AddEditSocialLink(AddEditSocialLinkCommand request) => Ok(await Mediator.Send(request));
@@ -58,5 +52,8 @@ namespace Portfolio.Controllers
 
         [HttpDelete]
         public async Task<IActionResult> DeleteBlogPost(DeleteBlogPostCommand request) => Ok(await Mediator.Send(request));
+
+        [HttpPost]
+        public async Task<IActionResult> AddEditUserLanguage(AddEditUserLanguageCommand request) => Ok(await Mediator.Send(request));
     }
 }

@@ -34,7 +34,7 @@ namespace Application.Account.Handlers
                 await _context.SaveChangesAsync(cancellationToken);
                 Vm.status = true;
             }
-            catch
+            catch (Exception ex)
             {
                 Vm.status = false;
                 Vm.lstError.Add("Error while registering or the email is already exists");

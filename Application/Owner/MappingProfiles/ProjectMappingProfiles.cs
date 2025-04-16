@@ -9,7 +9,7 @@ namespace Application.Owner.MappingProfiles
         public ProjectMappingProfiles()
         {
             CreateMap<AddEditProjectCommand, Project>();
-            CreateMap<AEPC_Technology, Technology>();
+            //CreateMap<AEPC_Technology, Technology>();
         }
     }
 }
