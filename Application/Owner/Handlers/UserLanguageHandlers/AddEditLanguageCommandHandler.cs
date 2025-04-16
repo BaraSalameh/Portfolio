@@ -39,8 +39,18 @@ namespace Application.Owner.Handlers.UserLanguageHandlers
             {
                 var ResultToDB = _mapper.Map<UserLanguage>(request);
                 ResultToDB.UserID = _currentUser.UserID.Value;
-                await _context.UserLanguage.AddAsync(ResultToDB, cancellationToken);
-                await _context.SaveChangesAsync(cancellationToken);
+                try
+                {
+                    await _context.UserLanguage.AddAsync(ResultToDB, cancellationToken);
+                    await _context.SaveChangesAsync(cancellationToken);
+                }
+                catch
+                {
+                    Vm.status = false;
+                    Vm.lstError.Add("UserLanguage already exists");
+                    return Vm;
+                }
+                
             }
             else
             {
@@ -57,17 +67,27 @@ namespace Application.Owner.Handlers.UserLanguageHandlers
                         )
                         .FirstOrDefaultAsync(cancellationToken);
 
-                    if (oldUserLanguage != null)
+                    if(oldUserLanguage == null)
+                    {
+                        Vm.status = false;
+                        Vm.lstError.Add("UserLanguage not found");
+                        return Vm;
+                    }
+                    else
                     {
                         _context.UserLanguage.Remove(oldUserLanguage);
-                        await _context.SaveChangesAsync(cancellationToken);
                     }
+
+                    var oldUserLanguageCreatedAt = oldUserLanguage.CreatedAt;
+                    await _context.SaveChangesAsync(cancellationToken);
 
                     var newUserLang = new UserLanguage
                     {
                         UserID = _currentUser.UserID.Value,
                         LKP_LanguageID = request.LKP_LanguageID,
-                        LKP_LanguageProficiencyID = request.LKP_LanguageProficiencyID
+                        LKP_LanguageProficiencyID = request.LKP_LanguageProficiencyID,
+                        CreatedAt = oldUserLanguageCreatedAt,
+                        UpdatedAt = DateTime.UtcNow
                     };
 
                     await _context.UserLanguage.AddAsync(newUserLang, cancellationToken);

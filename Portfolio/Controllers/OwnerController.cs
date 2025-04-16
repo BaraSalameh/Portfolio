@@ -55,5 +55,8 @@ namespace Portfolio.Controllers
 
         [HttpPost]
         public async Task<IActionResult> AddEditUserLanguage(AddEditUserLanguageCommand request) => Ok(await Mediator.Send(request));
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteUserLanguage(DeleteUserLanguageCommand request) => Ok(await Mediator.Send(request));
     }
 }
