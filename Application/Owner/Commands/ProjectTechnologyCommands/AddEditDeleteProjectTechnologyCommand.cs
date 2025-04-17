@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.Owner.Commands.ProjectTechnologyCommands
 {
-    public class AddEditProjectTechnologyCommand : IRequest<AbstractViewModel>
+    public class AddEditDeleteProjectTechnologyCommand : IRequest<AbstractViewModel>
     {
         public int? ID { get; set; }
         public string Title { get; set; }

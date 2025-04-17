@@ -55,12 +55,9 @@ namespace Portfolio.Controllers
         public async Task<IActionResult> DeleteBlogPost(DeleteBlogPostCommand request) => Ok(await Mediator.Send(request));
 
         [HttpPost]
-        public async Task<IActionResult> AddEditUserLanguage(AddEditUserLanguageCommand request) => Ok(await Mediator.Send(request));
-
-        [HttpDelete]
-        public async Task<IActionResult> DeleteUserLanguage(DeleteUserLanguageCommand request) => Ok(await Mediator.Send(request));
+        public async Task<IActionResult> EditDeleteUserLanguage(EditDeleteUserLanguageCommand request) => Ok(await Mediator.Send(request));
 
         [HttpPost]
-        public async Task<IActionResult> AddEditProjectTechnology(AddEditProjectTechnologyCommand request) => Ok(await Mediator.Send(request));
+        public async Task<IActionResult> AddEditDeleteProjectTechnology(AddEditDeleteProjectTechnologyCommand request) => Ok(await Mediator.Send(request));
     }
 }

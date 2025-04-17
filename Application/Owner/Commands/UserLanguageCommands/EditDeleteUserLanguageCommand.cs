@@ -3,9 +3,13 @@ using MediatR;
 
 namespace Application.Owner.Commands.UserLanguageCommands
 {
-    public class AddEditUserLanguageCommand : IRequest<AbstractViewModel>
+    public class EditDeleteUserLanguageCommand : IRequest<AbstractViewModel>
     {
-        public int? OldLKP_LanguageID { get; set; }
+        public List<EDULC_LKP_Language>? LstLanguages { get; set; }
+    }
+
+    public class EDULC_LKP_Language
+    {
         public int LKP_LanguageID { get; set; }
         public int LKP_LanguageProficiencyID { get; set; }
     }

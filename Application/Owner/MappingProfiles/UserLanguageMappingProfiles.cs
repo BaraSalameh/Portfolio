@@ -8,7 +8,15 @@ namespace Application.Owner.MappingProfiles
     {
         public UserLanguageMappingProfiles()
         {
-            CreateMap<AddEditUserLanguageCommand, UserLanguage>();
+            CreateMap<EditDeleteUserLanguageCommand, User>()
+                .ForMember(dest => dest.LstUserLanguages, opt => opt.MapFrom(src =>
+                    (src.LstLanguages ?? new List<EDULC_LKP_Language>()).Select(id => new UserLanguage
+                    {
+                        LKP_LanguageID = id.LKP_LanguageID,
+                        LKP_LanguageProficiencyID = id.LKP_LanguageProficiencyID
+                    }).ToList()
+                ));
+
         }
     }
 }

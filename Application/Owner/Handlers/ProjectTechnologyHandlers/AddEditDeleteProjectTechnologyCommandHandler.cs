@@ -9,20 +9,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Owner.Handlers.ProjectTechnologyHandlers
 {
-    public class AddEditProjectTechnologyCommandHandler : IRequestHandler<AddEditProjectTechnologyCommand, AbstractViewModel>
+    public class AddEditDeleteProjectTechnologyCommandHandler : IRequestHandler<AddEditDeleteProjectTechnologyCommand, AbstractViewModel>
     {
         private readonly ICurrentUserService _currentUser;
         private readonly IAppDbContext _context;
         private readonly IMapper _mapper;
 
-        public AddEditProjectTechnologyCommandHandler(IAppDbContext context, ICurrentUserService currentUser, IMapper mapper)
+        public AddEditDeleteProjectTechnologyCommandHandler(IAppDbContext context, ICurrentUserService currentUser, IMapper mapper)
         {
             _context = context;
             _currentUser = currentUser;
             _mapper = mapper;
         }
 
-        public async Task<AbstractViewModel> Handle(AddEditProjectTechnologyCommand request, CancellationToken cancellationToken)
+        public async Task<AbstractViewModel> Handle(AddEditDeleteProjectTechnologyCommand request, CancellationToken cancellationToken)
         {
             var Vm = new AbstractViewModel();
 
