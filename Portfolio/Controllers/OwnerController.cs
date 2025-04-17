@@ -3,6 +3,7 @@ using Application.Owner.Commands.ContactMessageCommands;
 using Application.Owner.Commands.EducationCommands;
 using Application.Owner.Commands.ExperienceCommands;
 using Application.Owner.Commands.Profile;
+using Application.Owner.Commands.ProjectTechnologyCommands;
 using Application.Owner.Commands.SkillCommands;
 using Application.Owner.Commands.SocialLinkCommands;
 using Application.Owner.Commands.UserLanguageCommands;
@@ -58,5 +59,8 @@ namespace Portfolio.Controllers
 
         [HttpDelete]
         public async Task<IActionResult> DeleteUserLanguage(DeleteUserLanguageCommand request) => Ok(await Mediator.Send(request));
+
+        [HttpPost]
+        public async Task<IActionResult> AddEditProjectTechnology(AddEditProjectTechnologyCommand request) => Ok(await Mediator.Send(request));
     }
 }

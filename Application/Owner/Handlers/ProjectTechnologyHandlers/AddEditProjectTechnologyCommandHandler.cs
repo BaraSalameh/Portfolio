@@ -1,28 +1,28 @@
 ﻿using Application.Common.Entities;
 using Application.Common.Services.Interface;
-using Application.Owner.Commands.ProjectCommands;
+using Application.Owner.Commands.ProjectTechnologyCommands;
 using AutoMapper;
 using DataAccess.Interfaces;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Owner.Handlers.ProjectHandlers
+namespace Application.Owner.Handlers.ProjectTechnologyHandlers
 {
-    public class AddEditProjectCommandHandler : IRequestHandler<AddEditProjectCommand, AbstractViewModel>
+    public class AddEditProjectTechnologyCommandHandler : IRequestHandler<AddEditProjectTechnologyCommand, AbstractViewModel>
     {
         private readonly ICurrentUserService _currentUser;
         private readonly IAppDbContext _context;
         private readonly IMapper _mapper;
 
-        public AddEditProjectCommandHandler(IAppDbContext context, ICurrentUserService currentUser, IMapper mapper)
+        public AddEditProjectTechnologyCommandHandler(IAppDbContext context, ICurrentUserService currentUser, IMapper mapper)
         {
             _context = context;
             _currentUser = currentUser;
             _mapper = mapper;
         }
 
-        public async Task<AbstractViewModel> Handle(AddEditProjectCommand request, CancellationToken cancellationToken)
+        public async Task<AbstractViewModel> Handle(AddEditProjectTechnologyCommand request, CancellationToken cancellationToken)
         {
             var Vm = new AbstractViewModel();
 
@@ -30,6 +30,18 @@ namespace Application.Owner.Handlers.ProjectHandlers
             {
                 Vm.status = false;
                 Vm.lstError.Add("Unauthorized user.");
+                return Vm;
+            }
+
+            var validIds = await _context.LKP_Technology
+                .Where(t => (request.LstProjectTechnologies ?? new List<int>()).Contains(t.ID))
+                .Select(t => t.ID)
+                .ToListAsync(cancellationToken);
+
+            if (validIds.Count != (request.LstProjectTechnologies ?? []).Count)
+            {
+                Vm.status = false;
+                Vm.lstError.Add("Some technologies do not exist.");
                 return Vm;
             }
 
@@ -43,19 +55,21 @@ namespace Application.Owner.Handlers.ProjectHandlers
             }
             else
             {
-                var oldProject = await _context.Project
+                var oldProjectTechnology = await _context.Project
                     .Where(x => x.UserID == _currentUser.UserID.Value && x.ID == request.ID && (x.IsDeleted == false || x.IsDeleted == null))
+                    .Include(x => x.LstProjectTechnologies)
                     .FirstOrDefaultAsync();
 
-                if (oldProject == null)
+                if (oldProjectTechnology == null)
                 {
                     Vm.status = false;
-                    Vm.lstError.Add("Project not found.");
+                    Vm.lstError.Add("ProjectTechnology not found.");
                     return Vm;
                 }
 
-                _mapper.Map(request, oldProject);
-                oldProject.UpdatedAt = DateTime.UtcNow;
+
+                _mapper.Map(request, oldProjectTechnology);
+                oldProjectTechnology.UpdatedAt = DateTime.UtcNow;
             }
 
             try
@@ -66,7 +80,7 @@ namespace Application.Owner.Handlers.ProjectHandlers
             catch
             {
                 Vm.status = false;
-                Vm.lstError.Add("Error while saving the Project.");
+                Vm.lstError.Add("Error while saving the ProjectTechnology.");
             }
 
             return Vm;
