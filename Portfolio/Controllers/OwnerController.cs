@@ -59,5 +59,8 @@ namespace Portfolio.Controllers
 
         [HttpPost]
         public async Task<IActionResult> AddEditDeleteProjectTechnology(AddEditDeleteProjectTechnologyCommand request) => Ok(await Mediator.Send(request));
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteProject(DeleteProjectCommand request) => Ok(await Mediator.Send(request));
     }
 }

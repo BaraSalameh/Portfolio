@@ -50,7 +50,6 @@ namespace Application.Owner.Handlers.ProjectTechnologyHandlers
                 var ResultToDB = _mapper.Map<Project>(request);
                 ResultToDB.UserID = _currentUser.UserID.Value;
 
-                
                 await _context.Project.AddAsync(ResultToDB, cancellationToken);
             }
             else
@@ -63,7 +62,7 @@ namespace Application.Owner.Handlers.ProjectTechnologyHandlers
                 if (oldProjectTechnology == null)
                 {
                     Vm.status = false;
-                    Vm.lstError.Add("ProjectTechnology not found.");
+                    Vm.lstError.Add("Project or Technology not found.");
                     return Vm;
                 }
 

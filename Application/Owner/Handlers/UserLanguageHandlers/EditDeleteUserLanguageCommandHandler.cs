@@ -32,44 +32,41 @@ namespace Application.Owner.Handlers.UserLanguageHandlers
                 return Vm;
             }
 
-            if(request.LstLanguages != null)
+            if (request.LstLanguages == null)
             {
 
-                var oldUser = await _context.User
-                    .Where(u => u.ID == _currentUser.UserID.Value && u.IsActive == true)
-                    .Include(y => y.LstUserLanguages)
-                    .FirstOrDefaultAsync(cancellationToken);
-
-                if (oldUser == null)
-                {
-                    Vm.status = false;
-                    Vm.lstError.Add("User not found.");
-                    return Vm;
-                }
-
-                var RequestedLanguages = request.LstLanguages.Select(x => x.LKP_LanguageID).ToList();
-                var RequestedLanguageProficiencies = request.LstLanguages.Select(x => x.LKP_LanguageProficiencyID).ToList();
-
-                var LKP_LanguageIDs = await _context.LKP_Language
-                    .Where(l => RequestedLanguages.Contains(l.ID))
-                    .Select(l => l.ID)
-                    .ToListAsync(cancellationToken);
-
-                if (RequestedLanguages.Count != LKP_LanguageIDs.Count)
-                {
-                    Vm.status = false;
-                    Vm.lstError.Add("Wrong Language Entry.");
-                    return Vm;
-                }
-
-                _mapper.Map(request, oldUser);
-            }
-            else
-            {
                 Vm.status = false;
                 Vm.lstError.Add("There Should be some languages to add.");
                 return Vm;
             }
+
+            var oldUser = await _context.User
+                .Where(u => u.ID == _currentUser.UserID.Value && u.IsActive == true)
+                .Include(y => y.LstUserLanguages)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (oldUser == null)
+            {
+                Vm.status = false;
+                Vm.lstError.Add("User not found.");
+                return Vm;
+            }
+
+            var RequestedLanguages = request.LstLanguages.Select(x => x.LKP_LanguageID).ToList();
+
+            var LKP_LanguageIDs = await _context.LKP_Language
+                .Where(l => RequestedLanguages.Contains(l.ID))
+                .Select(l => l.ID)
+                .ToListAsync(cancellationToken);
+
+            if (RequestedLanguages.Count != LKP_LanguageIDs.Count)
+            {
+                Vm.status = false;
+                Vm.lstError.Add("Wrong Language Entry.");
+                return Vm;
+            }
+
+            _mapper.Map(request, oldUser);
 
             try
             {

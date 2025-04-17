@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entities
 {
-    public class UserLanguage : AbstractEntity
+    public class UserLanguage
     {
         public int UserID { get; set; }
         public User User { get; set; }

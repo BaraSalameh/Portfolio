@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250417031445_Sligtly changing nullability for some IDs")]
-    partial class SligtlychangingnullabilityforsomeIDs
+    [Migration("20250417131753_Removing Abstract Entity inheritence from UserLanguage table")]
+    partial class RemovingAbstractEntityinheritencefromUserLanguagetable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -614,24 +614,8 @@ namespace DataAccess.Migrations
                     b.Property<int>("LKP_LanguageID")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool?>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
                     b.Property<int>("LKP_LanguageProficiencyID")
                         .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("UserID", "LKP_LanguageID");
 
