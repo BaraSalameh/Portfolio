@@ -5,6 +5,6 @@ namespace Application.Owner.Commands.ProjectTechnologyCommands
 {
     public class DeleteProjectCommand : IRequest<AbstractViewModel>
     {
-        public int ID { get; set; }
+        public Guid ID { get; set; }
     }
 }

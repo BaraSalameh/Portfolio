@@ -2,7 +2,7 @@
 {
     public class User
     {
-        public int? ID { get; set; }
+        public Guid? ID { get; set; }
         public string? Firstname { get; set; }
         public string? Lastname { get; set; }
         public string? Title { get; set; }
@@ -13,7 +13,7 @@
         public string? ProfilePicture { get; set; }
         public DateOnly? BirthDate { get; set; }
         public int? Gender { get; set; }
-        public int? RoleID { get; set; }
+        public Guid? RoleID { get; set; }
         public Role Role { get; set; }
         public bool? IsActive { get; set; }
         public DateTime? CreatedAt { get; set; }

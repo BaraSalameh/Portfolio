@@ -10,7 +10,7 @@ namespace Application.Owner.Commands.UserLanguageCommands
 
     public class EDULC_LKP_Language
     {
-        public int LKP_LanguageID { get; set; }
-        public int LKP_LanguageProficiencyID { get; set; }
+        public Guid LKP_LanguageID { get; set; }
+        public Guid LKP_LanguageProficiencyID { get; set; }
     }
 }

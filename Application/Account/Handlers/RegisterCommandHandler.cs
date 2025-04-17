@@ -25,7 +25,7 @@ namespace Application.Account.Handlers
             var Vm = new AbstractViewModel();
             request.Password = request.Password!.Encrypt(true);
             var ResultToDB = _mapper.Map<User>(request);
-            ResultToDB.RoleID = (int)RoleName.Owner;
+            ResultToDB.RoleID =  RoleIdentifiers.Owner;
             ResultToDB.CreatedAt = DateTime.UtcNow;
 
             try

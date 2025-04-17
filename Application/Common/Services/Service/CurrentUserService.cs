@@ -13,8 +13,8 @@ namespace Application.Common.Services.Service
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public int? UserID =>
-            int.TryParse(_httpContextAccessor.HttpContext?.User?.FindFirst("ID")?.Value, out var id) ? id : null;
+        public Guid? UserID =>
+            Guid.TryParse(_httpContextAccessor.HttpContext?.User?.FindFirst("ID")?.Value, out var id) ? id : null;
 
         public bool IsAuthenticated =>
             _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;

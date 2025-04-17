@@ -1,8 +1,8 @@
-﻿using DataAccess.Interfaces;
+﻿using DataAccess.Configurations;
+using DataAccess.Interfaces;
 using Domain;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DataAccess.DbContexts
@@ -40,13 +40,16 @@ namespace DataAccess.DbContexts
         private ModelBuilder OnModelCreateKeys(ModelBuilder modelBuilder)
         {
 
-            foreach (var entity in modelBuilder.Model.GetEntityTypes())
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
-                var idProperty = entity.FindProperty("ID");
-                if (idProperty != null)
+                var idProperty = entityType.FindProperty("ID");
+
+                if (idProperty != null && idProperty.ClrType == typeof(Guid))
                 {
-                    entity.SetPrimaryKey(idProperty);
-                    idProperty.ValueGenerated = ValueGenerated.OnAdd;
+                    modelBuilder.Entity(entityType.ClrType)
+                        .Property("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("NEWID()");
                 }
             }
 
@@ -97,6 +100,9 @@ namespace DataAccess.DbContexts
             modelBuilder.Entity<UserLanguage>().HasKey(pt => new { pt.UserID, pt.LKP_LanguageID });
             modelBuilder.Entity<User>().Property(x => x.IsActive).HasDefaultValue(false);
             modelBuilder.Entity<User>().HasIndex(x => x.Email).IsUnique();
+
+            modelBuilder.ApplyConfiguration(new RoleSeedConfiguration());
+
 
             return modelBuilder;
         }

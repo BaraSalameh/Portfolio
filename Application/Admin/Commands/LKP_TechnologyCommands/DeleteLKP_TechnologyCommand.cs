@@ -5,6 +5,6 @@ namespace Application.Admin.Commands.LKP_TechnologyCommands
 {
     public class DeleteLKP_TechnologyCommand : IRequest<AbstractViewModel>
     {
-        public int ID { get; set; }
+        public Guid ID { get; set; }
     }
 }

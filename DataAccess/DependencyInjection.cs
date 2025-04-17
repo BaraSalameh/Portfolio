@@ -54,8 +54,8 @@ namespace DataAccess
             });
 
             services.AddAuthorizationBuilder()
-                .AddPolicy("RequireAdminRole", policy => policy.RequireRole(RoleName.Admin.ToString()))
-                .AddPolicy("RequireOwnerRole", policy => policy.RequireRole(RoleName.Owner.ToString()));
+                .AddPolicy("RequireAdminRole", policy => policy.RequireRole(nameof(RoleIdentifiers.Admin)))
+                .AddPolicy("RequireOwnerRole", policy => policy.RequireRole(nameof(RoleIdentifiers.Owner)));
 
             return services;
         }

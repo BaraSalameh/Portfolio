@@ -5,6 +5,6 @@ namespace Application.Owner.Commands.ContactMessageCommands
 {
     public class SignMessageCommand : IRequest<AbstractViewModel>
     {
-        public int ID { get; set; }
+        public Guid ID { get; set; }
     }
 }

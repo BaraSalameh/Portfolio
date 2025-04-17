@@ -10,7 +10,7 @@ namespace Application.Owner.MappingProfiles
         {
             CreateMap<AddEditDeleteProjectTechnologyCommand, Project>()
                 .ForMember(dest => dest.LstProjectTechnologies, opt => opt.MapFrom(src =>
-                    (src.LstProjectTechnologies ?? new List<int>()).Select(id => new ProjectTechnology
+                    (src.LstProjectTechnologies ?? new List<Guid>()).Select(id => new ProjectTechnology
                     {
                         LKP_TechnologyID = id
                     }).ToList()

@@ -5,6 +5,6 @@ namespace Application.Owner.Commands.SkillCommands
 {
     public class DeleteSkillCommand : IRequest<AbstractViewModel>
     {
-        public int ID { get; set; }
+        public Guid ID { get; set; }
     }
 }

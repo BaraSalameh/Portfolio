@@ -5,6 +5,6 @@ namespace Application.Owner.Commands.SocialLinkCommands
 {
     public class DeleteSocialLinkCommand : IRequest<AbstractViewModel>
     {
-        public int ID { get; set; }
+        public Guid ID { get; set; }
     }
 }

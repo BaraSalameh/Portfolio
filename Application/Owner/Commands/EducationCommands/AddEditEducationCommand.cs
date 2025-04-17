@@ -5,7 +5,7 @@ namespace Application.Owner.Commands.EducationCommands
 {
     public class AddEditEducationCommand : IRequest<AbstractViewModel>
     {
-        public int? ID { get; set; }
+        public Guid? ID { get; set; }
         public string Institution { get; set; }
         public string Degree { get; set; }
         public string FieldOfStudy { get; set; }

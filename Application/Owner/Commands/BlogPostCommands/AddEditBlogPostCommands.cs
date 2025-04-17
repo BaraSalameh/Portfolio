@@ -5,7 +5,7 @@ namespace Application.Owner.Commands.BlogPostCommands
 {
     public class AddEditBlogPostCommand : IRequest<AbstractViewModel>
     {
-        public int? ID { get; set; }
+        public Guid? ID { get; set; }
         public string Title { get; set; }
         public string Slug { get; set; }
         public string Content { get; set; }

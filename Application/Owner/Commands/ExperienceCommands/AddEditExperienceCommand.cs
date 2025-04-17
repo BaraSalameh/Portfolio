@@ -5,7 +5,7 @@ namespace Application.Owner.Commands.ExperienceCommands
 {
     public class AddEditExperienceCommand : IRequest<AbstractViewModel>
     {
-        public int? ID { get; set; }
+        public Guid? ID { get; set; }
         public string JobTitle { get; set; }
         public string CompanyName { get; set; }
         public DateOnly StartDate { get; set; }

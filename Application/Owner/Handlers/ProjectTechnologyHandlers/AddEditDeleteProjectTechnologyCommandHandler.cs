@@ -34,7 +34,7 @@ namespace Application.Owner.Handlers.ProjectTechnologyHandlers
             }
 
             var validIds = await _context.LKP_Technology
-                .Where(t => (request.LstProjectTechnologies ?? new List<int>()).Contains(t.ID))
+                .Where(t => (request.LstProjectTechnologies ?? new List<Guid>()).Contains(t.ID))
                 .Select(t => t.ID)
                 .ToListAsync(cancellationToken);
 
