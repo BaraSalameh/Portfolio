@@ -25,7 +25,6 @@
 
   <ItemGroup>
     <Folder Include="Admin\Queries\" />
-    <Folder Include="Owner\Queries\" />
   </ItemGroup>
 
   <ItemGroup>

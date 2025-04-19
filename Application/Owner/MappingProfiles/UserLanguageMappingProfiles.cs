@@ -1,4 +1,5 @@
 ﻿using Application.Owner.Commands.UserLanguageCommands;
+using Application.Owner.Queries.LKP_LanguageQuieries;
 using AutoMapper;
 using Domain.Entities;
 
@@ -16,6 +17,8 @@ namespace Application.Owner.MappingProfiles
                         LKP_LanguageProficiencyID = id.LKP_LanguageProficiencyID
                     }).ToList()
                 ));
+
+            CreateMap<LKP_Language, LKP_LanguageListQuery>();
 
         }
     }

@@ -1,4 +1,5 @@
-﻿using Application.Owner.Commands.BlogPostCommands;
+﻿using Application.Common.Entities;
+using Application.Owner.Commands.BlogPostCommands;
 using Application.Owner.Commands.ContactMessageCommands;
 using Application.Owner.Commands.EducationCommands;
 using Application.Owner.Commands.ExperienceCommands;
@@ -7,6 +8,7 @@ using Application.Owner.Commands.ProjectTechnologyCommands;
 using Application.Owner.Commands.SkillCommands;
 using Application.Owner.Commands.SocialLinkCommands;
 using Application.Owner.Commands.UserLanguageCommands;
+using Application.Owner.Queries.LKP_LanguageQuieries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,6 +17,9 @@ namespace Portfolio.Controllers
     [Authorize(Policy = "RequireOwnerRole")]
     public class OwnerController : ApiController
     {
+        [HttpGet]
+        public async Task<IActionResult> LKP_LanguageList([FromQuery]  ListQuery<LKP_LanguageListQuery> request) => Ok(await Mediator.Send(request));
+
         [HttpPost]
         public async Task<IActionResult> EditProfile(EditProfileCommand request) => Ok(await Mediator.Send(request));
 
