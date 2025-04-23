@@ -1,15 +1,16 @@
 ﻿using Application.Common.Entities;
 using MediatR;
 
-namespace Application.Account.Queries
+namespace Application.Account.Commands
 {
-    public class LoginQuery : IRequest<LQ_Response>
+    public class LoginCommand : IRequest<LC_Response>
     {
         public string Email { get; set; }
         public string Password { get; set; }
+        public bool RememberMe { get; set; }
     }
 
-    public class LQ_Response : AbstractViewModel
+    public class LC_Response : AbstractViewModel
     {
         public string Username { get; set; }
     }

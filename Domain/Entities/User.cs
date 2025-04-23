@@ -28,5 +28,6 @@
         public List<SocialLink> LstSocialLinks { get; set; }
         public List<ContactMessage> LstContactMessages { get; set; }
         public List<UserLanguage> LstUserLanguages { get; set; }
+        public List<RefreshToken> LstRefreshTokens { get; set; } = new List<RefreshToken>();
     }
 }

@@ -13,6 +13,7 @@ namespace DataAccess.DbContexts
         {
         }
 
+        public DbSet<RefreshToken> RefreshToken { get; set; }
         public DbSet<Role> Role { get; set; }
         public DbSet<User> User { get; set; }
         public DbSet<Skill> Skill { get; set; }
@@ -114,6 +115,11 @@ namespace DataAccess.DbContexts
                .HasOne(p => p.Role)
                .WithMany(u => u.LstUsers)
                .HasForeignKey(p => p.RoleID);
+
+            modelBuilder.Entity<RefreshToken>()
+                .HasOne(x => x.User)
+                .WithMany(x => x.LstRefreshTokens)
+                .HasForeignKey(x => x.UserID);
 
             modelBuilder.Entity<Project>()
                 .HasOne(p => p.User)

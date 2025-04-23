@@ -24,5 +24,19 @@ namespace Application.Common.Services.Service
 
         public string? Username =>
             _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Name)?.Value;
+
+        public string? IpAddress
+        {
+            get
+            {
+                var context = _httpContextAccessor.HttpContext;
+                var ip = context?.Request?.Headers["X-Forwarded-For"].FirstOrDefault();
+
+                if (string.IsNullOrWhiteSpace(ip))
+                    ip = context?.Connection?.RemoteIpAddress?.ToString();
+
+                return ip ?? "unknown";
+            }
+        }
     }
 }

@@ -1,21 +1,21 @@
-﻿using Application.Client.Queries;
+﻿using Application.Account.Commands;
 using Application.Common.Services.Interface;
 using MediatR;
 
-namespace Application.Client.Handlers
+namespace Application.Account.Handlers
 {
-    public class ValidateTokenQueryHandler : IRequestHandler<ValidateTokenQuery, VTQ_Response>
+    public class ValidateTokenCommandHandler : IRequestHandler<ValidateTokenCommand, VTC_Response>
     {
         private readonly ICurrentUserService _currentUserService;
 
-        public ValidateTokenQueryHandler(ICurrentUserService currentUserService)
+        public ValidateTokenCommandHandler(ICurrentUserService currentUserService)
         {
             _currentUserService = currentUserService;
         }
 
-        public async Task<VTQ_Response> Handle(ValidateTokenQuery request, CancellationToken cancellationToken)
+        public async Task<VTC_Response> Handle(ValidateTokenCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new VTQ_Response();
+            var Vm = new VTC_Response();
 
             // Use CurrentUserService to check if the user is authenticated
             if (!_currentUserService.IsAuthenticated)

@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Application.Common.Constants
+{
+    public static class TokenExpirationTimes
+    {
+        public static readonly TimeSpan AccessTokenLifetime = TimeSpan.FromMinutes(15);
+        public static readonly TimeSpan RefreshTokenLifetime = TimeSpan.FromDays(30);
+        public static readonly TimeSpan ExtendedRefreshTokenLifetime = TimeSpan.FromDays(60); // if "Remember Me"
+    }
+}

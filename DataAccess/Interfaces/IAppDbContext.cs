@@ -5,6 +5,7 @@ namespace DataAccess.Interfaces
 {
     public interface IAppDbContext
     {
+        public DbSet<RefreshToken> RefreshToken { get; set; }
         public DbSet<Role> Role { get; set; }
         public DbSet<User> User { get; set; }
         public DbSet<Skill> Skill { get; set; }

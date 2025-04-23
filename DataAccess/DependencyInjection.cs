@@ -27,7 +27,7 @@ namespace DataAccess
             services.AddAuthentication("Cookies")
                 .AddCookie("Cookies", options =>
                 {
-                    options.Cookie.Name = "AuthToken";  // The cookie name
+                    options.Cookie.Name = "AccessToken";  // The cookie name
                     options.Cookie.HttpOnly = true;     // Secure cookie
                     options.Cookie.SameSite = SameSiteMode.None; // SameSite for cross-origin requests
                     options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Always use Secure cookies (for HTTPS)
@@ -55,7 +55,7 @@ namespace DataAccess
                     OnMessageReceived = context =>
                     {
                         // Check for JWT token in the cookie
-                        var accessToken = context.Request.Cookies["AuthToken"];
+                        var accessToken = context.Request.Cookies["AccessToken"];
                         if (!string.IsNullOrEmpty(accessToken))
                         {
                             context.Token = accessToken;
