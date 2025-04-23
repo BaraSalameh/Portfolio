@@ -14,5 +14,8 @@ namespace Portfolio.Controllers
 
         [HttpPost]
         public async Task<IActionResult> ActiviateDeactivateUser(ActivateDeactivateUserCommand request) => Ok(await Mediator.Send(request));
+
+        [HttpPost]
+        public async Task<IActionResult> Logout(LogoutQuery request) => Ok(await Mediator.Send(request));
     }
 }

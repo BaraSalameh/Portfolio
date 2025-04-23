@@ -23,8 +23,13 @@ namespace Application.Account.Handlers
         public async Task<AbstractViewModel> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
             var Vm = new AbstractViewModel();
+
             request.Password = request.Password!.Encrypt(true);
+            var baseUserName = $"{request.Firstname}-{request.Lastname}".ToLower().Replace(" ", "-");
+            var guidSuffix = Guid.NewGuid().ToString("N").Substring(0, 6);
+
             var ResultToDB = _mapper.Map<User>(request);
+            ResultToDB.Username = $"{baseUserName}-{guidSuffix}";
             ResultToDB.RoleID =  RoleIdentifiers.Owner;
             ResultToDB.CreatedAt = DateTime.UtcNow;
 
@@ -34,10 +39,10 @@ namespace Application.Account.Handlers
                 await _context.SaveChangesAsync(cancellationToken);
                 Vm.status = true;
             }
-            catch (Exception ex)
+            catch
             {
                 Vm.status = false;
-                Vm.lstError.Add("Error while registering or the email is already exists");
+                Vm.lstError.Add("Email/Username doesint exist!");
             }
 
             return Vm;

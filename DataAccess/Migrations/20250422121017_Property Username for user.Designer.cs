@@ -4,6 +4,7 @@ using DataAccess.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250422121017_Property Username for user")]
+    partial class PropertyUsernameforuser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -590,7 +593,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Username")
+                    b.Property<string>("UserName")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("ID");
@@ -601,9 +604,9 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("RoleID");
 
-                    b.HasIndex("Username")
+                    b.HasIndex("UserName")
                         .IsUnique()
-                        .HasFilter("[Username] IS NOT NULL");
+                        .HasFilter("[UserName] IS NOT NULL");
 
                     b.ToTable("User");
                 });

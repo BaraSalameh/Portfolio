@@ -14,12 +14,15 @@ namespace Application.Common.Services.Service
         }
 
         public Guid? UserID =>
-            Guid.TryParse(_httpContextAccessor.HttpContext?.User?.FindFirst("ID")?.Value, out var id) ? id : null;
+            Guid.TryParse(_httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var id) ? id : null;
 
         public bool IsAuthenticated =>
             _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
 
         public string? Role => 
             _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Role)?.Value;
+
+        public string? Username =>
+            _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Name)?.Value;
     }
 }

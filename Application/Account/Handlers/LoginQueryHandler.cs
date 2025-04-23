@@ -2,7 +2,9 @@
 using Application.Common.Functions;
 using DataAccess.Interfaces;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -13,10 +15,14 @@ namespace Application.Account.Handlers
     class LoginQueryHandler : IRequestHandler<LoginQuery, LQ_Response>
     {
         private readonly IAppDbContext _context;
+        private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public LoginQueryHandler(IAppDbContext context)
+        public LoginQueryHandler(IAppDbContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _configuration = configuration;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<LQ_Response> Handle(LoginQuery request, CancellationToken cancellationToken)
@@ -36,31 +42,40 @@ namespace Application.Account.Handlers
                 return Vm;
             }
 
-            var lstRoleClaims = new List<Claim>()
+            var claims = new List<Claim>
             {
-                new ("ID", user.ID.ToString()!),
-                new ("Email", user.Email!),
-                new ("Firstname", user.Firstname!),
-                new ("Lastname", user.Lastname!),
+                new (ClaimTypes.NameIdentifier, user.ID.ToString()!),
+                new (ClaimTypes.Name, user.Username!),
                 new (ClaimTypes.Role, user.Role.Name!)
             };
 
+            var secretKey = _configuration["ApplicationSettings:JWT_Secret"];
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(lstRoleClaims),
+                Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddDays(1),
-                SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes("vFZJiZwVznnX3Pr65dZV9IsI0NtbvVasSG4kPRvn2p4=")),
-                    SecurityAlgorithms.HmacSha256Signature
-                )
+                SigningCredentials = creds
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var securityToken = tokenHandler.CreateToken(tokenDescriptor);
+            var token = tokenHandler.WriteToken(securityToken);
+
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true, // Make the cookie inaccessible to JavaScript
+                Secure = true, // Ensure the cookie is sent over HTTPS only
+                SameSite = SameSiteMode.None, // Prevent CSRF attacks
+                Expires = DateTime.UtcNow.AddDays(1) // Expiration time
+            };
+
+            _httpContextAccessor.HttpContext!.Response.Cookies.Append("AuthToken", token, cookieOptions);
+
+            Vm.Username = user.Username!;
             Vm.status = true;
-            Vm.token = tokenHandler.WriteToken(securityToken);
-            Vm.Firstname = user.Firstname;
-            Vm.Lastname = user.Lastname;
 
             return Vm;
         }

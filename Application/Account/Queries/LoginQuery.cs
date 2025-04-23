@@ -11,8 +11,6 @@ namespace Application.Account.Queries
 
     public class LQ_Response : AbstractViewModel
     {
-        public string? token { get; set; }
-        public string? Firstname { get; set; }
-        public string? Lastname { get; set; }
+        public string Username { get; set; }
     }
 }

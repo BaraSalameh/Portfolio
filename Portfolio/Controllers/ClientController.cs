@@ -12,5 +12,11 @@ namespace Portfolio.Controllers
 
         [HttpGet]
         public async Task<IActionResult> UsersList([FromQuery] ListQuery<ULQ_Response> request) => Ok(await Mediator.Send(request));
+
+        [HttpGet]
+        public async Task<IActionResult> UserByUsername([FromQuery] UserByUsernameQuery request) => Ok(await Mediator.Send(request));
+
+        [HttpGet]
+        public async Task<IActionResult> ValidateToken([FromQuery] ValidateTokenQuery request) => Ok(await Mediator.Send(request));
     }
 }

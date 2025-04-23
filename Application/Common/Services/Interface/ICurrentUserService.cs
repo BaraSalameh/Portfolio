@@ -5,5 +5,6 @@
         bool IsAuthenticated { get; }
         Guid? UserID { get; }
         string? Role { get; }
+        string? Username { get; }
     }
 }

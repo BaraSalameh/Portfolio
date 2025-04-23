@@ -2,6 +2,7 @@
 using DataAccess.Interfaces;
 using Domain.Enums;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,18 +24,28 @@ namespace DataAccess
             );
             services.AddScoped<IAppDbContext, AppDbContext>();
 
+            services.AddAuthentication("Cookies")
+                .AddCookie("Cookies", options =>
+                {
+                    options.Cookie.Name = "AuthToken";  // The cookie name
+                    options.Cookie.HttpOnly = true;     // Secure cookie
+                    options.Cookie.SameSite = SameSiteMode.None; // SameSite for cross-origin requests
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Always use Secure cookies (for HTTPS)
+                });
+
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(x => {
-                x.RequireHttpsMetadata = false;
+            })
+            .AddJwtBearer(x => {
+                x.RequireHttpsMetadata = false; // Set to true in production
                 x.SaveToken = false;
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["ApplicationSettings:JWT_Secret"]!.ToString())),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["ApplicationSettings:JWT_Secret"]!)),
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ClockSkew = TimeSpan.Zero
@@ -43,10 +54,11 @@ namespace DataAccess
                 {
                     OnMessageReceived = context =>
                     {
-                        var accessToken = context.Request.Headers["Authorization"];
+                        // Check for JWT token in the cookie
+                        var accessToken = context.Request.Cookies["AuthToken"];
                         if (!string.IsNullOrEmpty(accessToken))
                         {
-                            context.Token = accessToken.ToString().Substring(7, accessToken.ToString().Length - 7);
+                            context.Token = accessToken;
                         }
                         return Task.CompletedTask;
                     }
