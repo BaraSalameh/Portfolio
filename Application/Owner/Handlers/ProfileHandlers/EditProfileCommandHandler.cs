@@ -35,7 +35,7 @@ namespace Application.Owner.Handlers.Profile
             
             var oldUser =
                 await _context.User
-                    .Where(u => u.ID == _currentUserService.UserID.Value && u.IsActive == true)
+                    .Where(u => u.ID == _currentUserService.UserID.Value)
                     .FirstOrDefaultAsync();
 
             if (oldUser == null)

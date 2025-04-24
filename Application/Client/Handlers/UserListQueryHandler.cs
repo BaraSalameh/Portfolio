@@ -35,9 +35,7 @@ namespace Application.Client.Handlers
             }
 
             var ResultFromDB =
-                _context.User
-                    .Where(u => u.IsActive == true)
-                    .Where(Filter);
+                _context.User.Where(Filter);
 
             Vm.Items =
                 await _mapper.ProjectTo<ULQ_Response>(

@@ -1,4 +1,5 @@
 ﻿using Application.Account.Commands;
+using Application.Account.Queries;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Portfolio.Controllers
@@ -12,12 +13,12 @@ namespace Portfolio.Controllers
         public async Task<IActionResult> Register(RegisterCommand request) => Ok(await Mediator.Send(request));
 
         [HttpPost]
-        public async Task<IActionResult> ActiviateDeactivateUser(ActivateDeactivateUserCommand request) => Ok(await Mediator.Send(request));
-
-        [HttpPost]
         public async Task<IActionResult> Logout(LogoutCommand request) => Ok(await Mediator.Send(request));
 
         [HttpPost]
         public async Task<IActionResult> ValidateToken(ValidateTokenCommand request) => Ok(await Mediator.Send(request));
+
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail([FromQuery] ConfirmEmailQuery request) => Ok(await Mediator.Send(request));
     }
 }

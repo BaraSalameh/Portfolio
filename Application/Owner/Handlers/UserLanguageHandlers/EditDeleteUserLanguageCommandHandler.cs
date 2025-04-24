@@ -41,7 +41,7 @@ namespace Application.Owner.Handlers.UserLanguageHandlers
             }
 
             var oldUser = await _context.User
-                .Where(u => u.ID == _currentUser.UserID.Value && u.IsActive == true)
+                .Where(u => u.ID == _currentUser.UserID.Value)
                 .Include(y => y.LstUserLanguages)
                 .FirstOrDefaultAsync(cancellationToken);
 

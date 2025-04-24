@@ -10,5 +10,6 @@ namespace Application.Account.Commands
     public class VTC_Response : AbstractViewModel
     {
         public string Username { get; set; }
+        public string Role { get; set; }
     }
 }

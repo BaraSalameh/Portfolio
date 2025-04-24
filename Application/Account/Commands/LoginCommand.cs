@@ -13,5 +13,6 @@ namespace Application.Account.Commands
     public class LC_Response : AbstractViewModel
     {
         public string Username { get; set; }
+        public string Role { get; set; }
     }
 }

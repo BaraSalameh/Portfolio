@@ -19,7 +19,7 @@ namespace Application.Account.Handlers
         {
             var Vm = new VTC_Response();
 
-            if (!_currentUserService.IsAuthenticated || string.IsNullOrEmpty(_currentUserService.Username))
+            if (!_currentUserService.IsAuthenticated)
             {
                 var refreshedUsername = await _tokenRefreshService.TryRefreshTokenAsync(cancellationToken);
 
@@ -36,7 +36,8 @@ namespace Application.Account.Handlers
             }
 
             Vm.status = true;
-            Vm.Username = _currentUserService.Username;
+            Vm.Username = _currentUserService.Username!;
+            Vm.Role = _currentUserService.Role!;
             return Vm;
         }
     }

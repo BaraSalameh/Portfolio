@@ -1,5 +1,4 @@
 ﻿using Application.Account.Commands;
-using Application.Common.Entities;
 using Application.Common.Functions;
 using Application.Common.Services.Interface;
 using AutoMapper;
@@ -10,25 +9,24 @@ using MediatR;
 
 namespace Application.Account.Handlers
 {
-    public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AbstractViewModel>
+    public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RC_Response>
     {
         private readonly IAppDbContext _context;
         private readonly IMapper _mapper;
         private readonly IDateTimeProvider _dateTimeProvider;
-        private readonly IAuthService _authService;
+        private readonly IUserNotificationService _userNotificationService;
 
-
-        public RegisterCommandHandler(IAppDbContext context, IMapper mapper, IDateTimeProvider dateTimeProvider, IAuthService authService)
+        public RegisterCommandHandler(IAppDbContext context, IMapper mapper, IDateTimeProvider dateTimeProvider, IUserNotificationService userNotificationService)
         {
             _context = context;
             _mapper = mapper;
             _dateTimeProvider = dateTimeProvider;
-            _authService = authService;
+            _userNotificationService = userNotificationService;
         }
 
-        public async Task<AbstractViewModel> Handle(RegisterCommand request, CancellationToken cancellationToken)
+        public async Task<RC_Response> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new AbstractViewModel();
+            var Vm = new RC_Response();
 
             request.Password = request.Password!.Encrypt(true);
             var baseUserName = $"{request.Firstname}-{request.Lastname}".ToLower().Replace(" ", "-");
@@ -39,18 +37,47 @@ namespace Application.Account.Handlers
             ResultToDB.RoleID =  RoleIdentifiers.Owner;
             ResultToDB.CreatedAt = _dateTimeProvider.UtcNow;
 
+            var role = await _context.Role.FindAsync(RoleIdentifiers.Owner, cancellationToken);
+            if(role == null)
+            {
+                Vm.status = false;
+                Vm.lstError.Add("Error while assigning role!");
+                return Vm;
+            }
+
+            //ResultToDB.Role = role;
+
+            var confirmationToken = Guid.NewGuid().ToString();
+            
+            
+            var pendingEmail = new PendingEmailConfirmation
+            {
+                Email = request.Email,
+                Token = confirmationToken,
+                RememberMe = request.RememberMe,
+                IsEmailConfirmed = false,
+                ExpiresAt = _dateTimeProvider.UtcNow.AddMinutes(15)
+            };
+
+            ResultToDB.LstPendingEmailConfirmations.Add(pendingEmail);
+
             try
             {
                 await _context.User.AddAsync(ResultToDB, cancellationToken);
-                _authService.AuthSetupAsync(ResultToDB, request.RememberMe);
                 await _context.SaveChangesAsync(cancellationToken);
+
                 Vm.status = true;
+                Vm.Username = ResultToDB.Username;
+                Vm.Role = ResultToDB.Role!.Name!;
+
+                await _userNotificationService.SendEmailConfirmationAsync(pendingEmail);
             }
             catch
             {
                 Vm.status = false;
                 Vm.lstError.Add("Email/Username already exist!");
             }
+
 
             return Vm;
         }

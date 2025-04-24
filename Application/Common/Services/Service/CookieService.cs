@@ -21,24 +21,20 @@ namespace Application.Common.Services.Service
 
         public void SetAccessToken(string token)
         {
-            _httpContextAccessor.HttpContext!.Response.Cookies.Append("AccessToken", token, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = _dateTimeProvider.UtcNow.Add(TokenExpirationTimes.AccessTokenLifetime)
-            });
+            _httpContextAccessor.HttpContext!.Response.Cookies.Append(
+                "AccessToken",
+                token,
+                CookieDefaults.GetCookieOptions(_dateTimeProvider.UtcNow.Add(TokenExpirationTimes.AccessTokenLifetime)
+            ));
         }
 
         public void SetRefreshToken(string token)
         {
-            _httpContextAccessor.HttpContext!.Response.Cookies.Append("RefreshToken", token, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = _dateTimeProvider.UtcNow.Add(TokenExpirationTimes.RefreshTokenLifetime)
-            });
+            _httpContextAccessor.HttpContext!.Response.Cookies.Append(
+                "RefreshToken",
+                token,
+                CookieDefaults.GetCookieOptions(_dateTimeProvider.UtcNow.Add(TokenExpirationTimes.RefreshTokenLifetime)
+            ));
         }
 
         public void ClearAuthCookies()
@@ -46,8 +42,8 @@ namespace Application.Common.Services.Service
             var context = _httpContextAccessor.HttpContext;
             if (context != null)
             {
-                context.Response.Cookies.Delete("AccessToken");
-                context.Response.Cookies.Delete("RefreshToken");
+                context.Response.Cookies.Delete("AccessToken", CookieDefaults.GetCookieOptions());
+                context.Response.Cookies.Delete("RefreshToken", CookieDefaults.GetCookieOptions());
             }
         }
 

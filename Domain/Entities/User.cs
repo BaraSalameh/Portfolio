@@ -16,7 +16,6 @@
         public int? Gender { get; set; }
         public Guid? RoleID { get; set; }
         public Role Role { get; set; }
-        public bool? IsActive { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
@@ -29,5 +28,6 @@
         public List<ContactMessage> LstContactMessages { get; set; }
         public List<UserLanguage> LstUserLanguages { get; set; }
         public List<RefreshToken> LstRefreshTokens { get; set; } = new List<RefreshToken>();
+        public List<PendingEmailConfirmation> LstPendingEmailConfirmations { get; set; } = new List<PendingEmailConfirmation>();
     }
 }

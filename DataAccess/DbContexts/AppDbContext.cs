@@ -14,6 +14,7 @@ namespace DataAccess.DbContexts
         }
 
         public DbSet<RefreshToken> RefreshToken { get; set; }
+        public DbSet<PendingEmailConfirmation> PendingEmailConfirmation { get; set; }
         public DbSet<Role> Role { get; set; }
         public DbSet<User> User { get; set; }
         public DbSet<Skill> Skill { get; set; }
@@ -97,9 +98,9 @@ namespace DataAccess.DbContexts
                 }
             }
 
+            modelBuilder.Entity<PendingEmailConfirmation>().HasIndex(p => new { p.Email, p.Token });
             modelBuilder.Entity<ProjectTechnology>().HasKey(pt => new { pt.ProjectID, pt.LKP_TechnologyID });
             modelBuilder.Entity<UserLanguage>().HasKey(pt => new { pt.UserID, pt.LKP_LanguageID });
-            modelBuilder.Entity<User>().Property(x => x.IsActive).HasDefaultValue(false);
             modelBuilder.Entity<User>().HasIndex(x => x.Email).IsUnique();
             modelBuilder.Entity<User>().HasIndex(x => x.Username).IsUnique();
 
@@ -119,6 +120,11 @@ namespace DataAccess.DbContexts
             modelBuilder.Entity<RefreshToken>()
                 .HasOne(x => x.User)
                 .WithMany(x => x.LstRefreshTokens)
+                .HasForeignKey(x => x.UserID);
+
+            modelBuilder.Entity<PendingEmailConfirmation>()
+                .HasOne(x => x.User)
+                .WithMany(x => x.LstPendingEmailConfirmations)
                 .HasForeignKey(x => x.UserID);
 
             modelBuilder.Entity<Project>()

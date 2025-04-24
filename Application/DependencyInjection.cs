@@ -17,6 +17,8 @@ namespace Application
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenRefreshService, TokenRefreshService>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IUserNotificationService, UserNotificationService>();
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddHostedService<RefreshTokenCleanupService>();
             return services;

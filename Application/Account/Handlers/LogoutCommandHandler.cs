@@ -37,7 +37,7 @@ namespace Application.Account.Handlers
 
                 var user = await _context.User
                     .Include(u => u.LstRefreshTokens)
-                    .FirstOrDefaultAsync(u => (u.ID == userID && u.IsActive == true), cancellationToken);
+                    .FirstOrDefaultAsync(u => u.ID == userID, cancellationToken);
 
                 if (user != null)
                 {
