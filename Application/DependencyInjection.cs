@@ -16,6 +16,7 @@ namespace Application
             services.AddScoped<ICookieService, CookieService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ITokenRefreshService, TokenRefreshService>();
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddHostedService<RefreshTokenCleanupService>();
             return services;

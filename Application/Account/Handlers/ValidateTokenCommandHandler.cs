@@ -7,39 +7,38 @@ namespace Application.Account.Handlers
     public class ValidateTokenCommandHandler : IRequestHandler<ValidateTokenCommand, VTC_Response>
     {
         private readonly ICurrentUserService _currentUserService;
+        private readonly ITokenRefreshService _tokenRefreshService;
 
-        public ValidateTokenCommandHandler(ICurrentUserService currentUserService)
+        public ValidateTokenCommandHandler(ICurrentUserService currentUserService, ITokenRefreshService tokenRefreshService)
         {
             _currentUserService = currentUserService;
+            _tokenRefreshService = tokenRefreshService;
         }
 
         public async Task<VTC_Response> Handle(ValidateTokenCommand request, CancellationToken cancellationToken)
         {
             var Vm = new VTC_Response();
 
-            // Use CurrentUserService to check if the user is authenticated
-            if (!_currentUserService.IsAuthenticated)
+            if (!_currentUserService.IsAuthenticated || string.IsNullOrEmpty(_currentUserService.Username))
             {
-                Vm.status = false;
-                Vm.lstError.Add("User is not authenticated.");
+                var refreshedUsername = await _tokenRefreshService.TryRefreshTokenAsync(cancellationToken);
+
+                if (string.IsNullOrEmpty(refreshedUsername))
+                {
+                    Vm.status = false;
+                    Vm.lstError.Add("User is not authenticated and token refresh failed.");
+                    return Vm;
+                }
+
+                Vm.status = true;
+                Vm.Username = refreshedUsername;
                 return Vm;
             }
 
-            // Use CurrentUserService to extract the username
-            var username = _currentUserService.Username;
-
-            if (string.IsNullOrEmpty(username))
-            {
-                Vm.status = false;
-                Vm.lstError.Add("Username is not available.");
-                return Vm;
-            }
-
-            // If username exists and is authenticated, return success response
             Vm.status = true;
-            Vm.Username = username;
-
+            Vm.Username = _currentUserService.Username;
             return Vm;
         }
     }
+
 }

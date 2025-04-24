@@ -18,9 +18,6 @@ namespace Portfolio.Controllers
         public async Task<IActionResult> Logout(LogoutCommand request) => Ok(await Mediator.Send(request));
 
         [HttpPost]
-        public async Task<IActionResult> RefreshToken(RefreshTokenCommand request) => Ok(await Mediator.Send(request));
-
-        [HttpPost]
         public async Task<IActionResult> ValidateToken(ValidateTokenCommand request) => Ok(await Mediator.Send(request));
     }
 }
