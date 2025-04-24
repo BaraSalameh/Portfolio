@@ -49,7 +49,7 @@ namespace Application.Account.Handlers
             catch
             {
                 Vm.status = false;
-                Vm.lstError.Add("Email/Username doesint exist!");
+                Vm.lstError.Add("Email/Username already exist!");
             }
 
             return Vm;

@@ -26,17 +26,10 @@ namespace Application.Account.Handlers
 
             try
             {
-                if (!_currentUserService.IsAuthenticated)
+                if (!_currentUserService.IsAuthenticated || _currentUserService.UserID == null)
                 {
                     Vm.status = false;
                     Vm.lstError.Add("User is not authenticated.");
-                    return Vm;
-                }
-
-                if (_currentUserService.UserID == null)
-                {
-                    Vm.status = false;
-                    Vm.lstError.Add("ser ID is missing.");
                     return Vm;
                 }
 
