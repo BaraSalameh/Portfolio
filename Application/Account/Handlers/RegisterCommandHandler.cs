@@ -1,4 +1,5 @@
 ﻿using Application.Account.Commands;
+using Application.Common.Constants;
 using Application.Common.Functions;
 using Application.Common.Services.Interface;
 using AutoMapper;
@@ -32,34 +33,26 @@ namespace Application.Account.Handlers
             var baseUserName = $"{request.Firstname}-{request.Lastname}".ToLower().Replace(" ", "-");
             var guidSuffix = Guid.NewGuid().ToString("N").Substring(0, 6);
 
+            var confirmationToken = Guid.NewGuid().ToString();
+            var pendingEmail = _mapper.Map<PendingEmailConfirmation>(request);
+            pendingEmail.Token = confirmationToken;
+            pendingEmail.ExpiresAt = _dateTimeProvider.UtcNow.Add(ExpirationTimes.PendingEmailTokenLifeTime);
+
             var ResultToDB = _mapper.Map<User>(request);
             ResultToDB.Username = $"{baseUserName}-{guidSuffix}";
             ResultToDB.RoleID =  RoleIdentifiers.Owner;
             ResultToDB.CreatedAt = _dateTimeProvider.UtcNow;
+            ResultToDB.LstPendingEmailConfirmations.Add(pendingEmail);
 
             var role = await _context.Role.FindAsync(RoleIdentifiers.Owner, cancellationToken);
-            if(role == null)
+            if (role == null)
             {
                 Vm.status = false;
                 Vm.lstError.Add("Error while assigning role!");
                 return Vm;
             }
 
-            //ResultToDB.Role = role;
-
-            var confirmationToken = Guid.NewGuid().ToString();
-            
-            
-            var pendingEmail = new PendingEmailConfirmation
-            {
-                Email = request.Email,
-                Token = confirmationToken,
-                RememberMe = request.RememberMe,
-                IsEmailConfirmed = false,
-                ExpiresAt = _dateTimeProvider.UtcNow.AddMinutes(15)
-            };
-
-            ResultToDB.LstPendingEmailConfirmations.Add(pendingEmail);
+            ResultToDB.Role = role;
 
             try
             {
@@ -70,14 +63,14 @@ namespace Application.Account.Handlers
                 Vm.Username = ResultToDB.Username;
                 Vm.Role = ResultToDB.Role!.Name!;
 
-                await _userNotificationService.SendEmailConfirmationAsync(pendingEmail);
+                Console.WriteLine("I am in Register");
+                await _userNotificationService.SendEmailConfirmationAsync(ResultToDB);
             }
             catch
             {
                 Vm.status = false;
                 Vm.lstError.Add("Email/Username already exist!");
             }
-
 
             return Vm;
         }

@@ -35,12 +35,12 @@ namespace Application.Account.Handlers
 
             pendingEmail.IsEmailConfirmed = true;
             pendingEmail.Token = null;
+            pendingEmail.User.IsConfirmed = true;
 
             _authService.AuthSetupAsync(pendingEmail.User, pendingEmail.RememberMe);
             await _context.SaveChangesAsync(cancellationToken);
 
             Vm.status = true;
-            Vm.lstError.Add("Email confirmed successfully.");
             return Vm;
         }
     }

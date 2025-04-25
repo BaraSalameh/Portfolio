@@ -24,13 +24,13 @@ namespace Application.Account.Handlers
             string EncryptedPassword = request.Password.Encrypt(true);
             var user =
                  await _context.User
-                    .Where(u => u.Email == request.Email && u.Password == EncryptedPassword)
+                    .Where(u => u.Email == request.Email && u.Password == EncryptedPassword && u.IsConfirmed == true)
                     .Include(u => u.Role)
                     .FirstOrDefaultAsync();
 
             if (user == null)
             {
-                Vm.lstError.Add("Wrong username or password");
+                Vm.lstError.Add("Wrong username/password or lack confirmation");
                 Vm.status = false;
                 return Vm;
             }

@@ -16,6 +16,7 @@
         public int? Gender { get; set; }
         public Guid? RoleID { get; set; }
         public Role Role { get; set; }
+        public bool? IsConfirmed { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 

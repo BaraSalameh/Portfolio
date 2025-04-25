@@ -26,7 +26,7 @@ namespace Application.Common.Services.Service
 
             var mailMessage = new MailMessage
             {
-                From = new MailAddress(_configuration["Email:From"]),
+                From = new MailAddress(_configuration["Email:From"]!),
                 Subject = subject,
                 Body = htmlContent,
                 IsBodyHtml = true,

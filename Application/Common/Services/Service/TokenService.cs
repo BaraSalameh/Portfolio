@@ -39,7 +39,7 @@ namespace Application.Common.Services.Service
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = _dateTimeProvider.UtcNow.Add(TokenExpirationTimes.AccessTokenLifetime),
+                Expires = _dateTimeProvider.UtcNow.Add(ExpirationTimes.AccessTokenLifetime),
                 SigningCredentials = creds
             };
 
@@ -59,8 +59,8 @@ namespace Application.Common.Services.Service
             {
                 Token = Convert.ToBase64String(randomBytes),
                 ExpiresAt = rememberMe
-                    ? _dateTimeProvider.UtcNow.Add(TokenExpirationTimes.RefreshTokenLifetime)
-                    : _dateTimeProvider.UtcNow.Add(TokenExpirationTimes.AccessTokenLifetime),
+                    ? _dateTimeProvider.UtcNow.Add(ExpirationTimes.RefreshTokenLifetime)
+                    : _dateTimeProvider.UtcNow.Add(ExpirationTimes.AccessTokenLifetime),
                 CreatedAt = _dateTimeProvider.UtcNow,
                 CreatedByIp = _currentUserService.IpAddress!,
                 RememberMe = rememberMe

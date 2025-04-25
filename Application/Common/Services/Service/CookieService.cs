@@ -24,7 +24,7 @@ namespace Application.Common.Services.Service
             _httpContextAccessor.HttpContext!.Response.Cookies.Append(
                 "AccessToken",
                 token,
-                CookieDefaults.GetCookieOptions(_dateTimeProvider.UtcNow.Add(TokenExpirationTimes.AccessTokenLifetime)
+                CookieDefaults.GetCookieOptions(_dateTimeProvider.UtcNow.Add(ExpirationTimes.AccessTokenLifetime)
             ));
         }
 
@@ -33,7 +33,7 @@ namespace Application.Common.Services.Service
             _httpContextAccessor.HttpContext!.Response.Cookies.Append(
                 "RefreshToken",
                 token,
-                CookieDefaults.GetCookieOptions(_dateTimeProvider.UtcNow.Add(TokenExpirationTimes.RefreshTokenLifetime)
+                CookieDefaults.GetCookieOptions(_dateTimeProvider.UtcNow.Add(ExpirationTimes.RefreshTokenLifetime)
             ));
         }
 

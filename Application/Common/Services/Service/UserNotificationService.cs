@@ -15,18 +15,22 @@ namespace Application.Common.Services.Service
             _configuration = configuration;
         }
 
-        public async Task SendEmailConfirmationAsync(PendingEmailConfirmation pendingEmailConfirmation)
+        public async Task SendEmailConfirmationAsync(User user)
         {
+            Console.WriteLine("I am in NotificationSevice");
+            var pendingEmailConfirmation = user.LstPendingEmailConfirmations.LastOrDefault();
             var baseUrl = _configuration["App:FrontendUrl"];
             var confirmationUrl = $"{baseUrl}/api/Account/ConfirmEmail?token={pendingEmailConfirmation.Token}&email={pendingEmailConfirmation.Email}";
 
             var body = $@"
-                
+                <h3> Hello {user.Firstname} {user.Lastname} </h3>
                 <p>Click the link below to confirm your email address:</p>
                 <a href='{confirmationUrl}'>Confirm Email</a>
             ";
 
-            await _emailService.SendEmailAsync(pendingEmailConfirmation.Email!, "Confirm your email", body);
+            Console.WriteLine("UNS before ES");
+            await _emailService.SendEmailAsync(pendingEmailConfirmation.Email, "Confirm your email", body);
+            Console.WriteLine("UNS After ES");
         }
     }
 

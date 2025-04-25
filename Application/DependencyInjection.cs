@@ -21,6 +21,7 @@ namespace Application
             services.AddScoped<IUserNotificationService, UserNotificationService>();
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddHostedService<RefreshTokenCleanupService>();
+            services.AddHostedService<PendingEmailConfirmationCleanupService>();
             return services;
         }
     }
