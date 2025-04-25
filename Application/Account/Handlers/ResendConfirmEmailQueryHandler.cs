@@ -10,14 +10,12 @@ namespace Application.Account.Handlers
     public class ResendConfirmEmailQueryHandler : IRequestHandler<ResendConfirmEmailQuery, AbstractViewModel>
     {
         private readonly IAppDbContext _context;
-        private readonly IUserResolverService _userResolverService;
         private readonly IUserNotificationService _UserNotificationService;
         private readonly IPendingEmailConfirmationService _pendingEmailConfirmationService;
 
-        public ResendConfirmEmailQueryHandler(IUserResolverService userResolverService, IUserNotificationService userNotificationService, IPendingEmailConfirmationService pendingEmailConfirmationService, IAppDbContext context)
+        public ResendConfirmEmailQueryHandler(IUserNotificationService userNotificationService, IPendingEmailConfirmationService pendingEmailConfirmationService, IAppDbContext context)
         {
             _context = context;
-            _userResolverService = userResolverService;
             _UserNotificationService = userNotificationService;
             _pendingEmailConfirmationService = pendingEmailConfirmationService;
         }
@@ -29,7 +27,7 @@ namespace Application.Account.Handlers
             var pendingEmail = await _context.PendingEmailConfirmation
                 .Where(p => p.Email == request.Email && p.IsEmailConfirmed == false)
                 .Include(p => p.User).ThenInclude(u => u.Role)
-                .LastOrDefaultAsync(cancellationToken);
+                .FirstOrDefaultAsync(cancellationToken);
 
             if(pendingEmail == null)
             {

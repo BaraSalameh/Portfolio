@@ -19,8 +19,9 @@ namespace Application.Common.Services.Service
         {
             var pendingEmailConfirmation = user.LstPendingEmailConfirmations.LastOrDefault();
             var baseUrl = _configuration["App:FrontendUrl"];
-            var confirmationUrl = $"{baseUrl}/api/Account/ConfirmEmail?token={pendingEmailConfirmation!.Token}&email={pendingEmailConfirmation.Email}";
-            var resendUrl = $"{baseUrl}/api/Account/ResendConfirmEmail?email={pendingEmailConfirmation.Email}";
+
+            var confirmationUrl = $"{baseUrl}/account/register/{user.Username}/confirm-email/confirm?token={pendingEmailConfirmation!.Token}&email={pendingEmailConfirmation.Email}";
+            var resendUrl = $"{baseUrl}/account/register/{user.Username}/confirm-email/resend?email={pendingEmailConfirmation.Email}";
 
             var body = $@"
                 <h3> Hello {user.Firstname} {user.Lastname} </h3>

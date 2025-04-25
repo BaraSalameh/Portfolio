@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Account.Handlers
 {
-    public class ConfirmEmailQueryHandler : IRequestHandler<ConfirmEmailQuery, AbstractViewModel>
+    public class ConfirmEmailQueryHandler : IRequestHandler<ConfirmEmailQuery, CEQ_Response>
     {
         private readonly IAppDbContext _context;
         private readonly IAuthService _authService;
@@ -17,9 +17,9 @@ namespace Application.Account.Handlers
             _authService = authService;
         }
 
-        public async Task<AbstractViewModel> Handle(ConfirmEmailQuery request, CancellationToken cancellationToken)
+        public async Task<CEQ_Response> Handle(ConfirmEmailQuery request, CancellationToken cancellationToken)
         {
-            var Vm = new AbstractViewModel();
+            var Vm = new CEQ_Response();
 
             var pendingEmail = await _context.PendingEmailConfirmation
                 .Where(u => u.Email == request.Email)
@@ -41,6 +41,7 @@ namespace Application.Account.Handlers
             await _context.SaveChangesAsync(cancellationToken);
 
             Vm.status = true;
+            Vm.IsConfirmed = true;
             return Vm;
         }
     }
