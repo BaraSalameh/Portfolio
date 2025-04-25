@@ -20,5 +20,8 @@ namespace Portfolio.Controllers
 
         [HttpGet]
         public async Task<IActionResult> ConfirmEmail([FromQuery] ConfirmEmailQuery request) => Ok(await Mediator.Send(request));
+
+        [HttpGet]
+        public async Task<IActionResult> ResendConfirmEmail([FromQuery] ResendConfirmEmailQuery request) => Ok(await Mediator.Send(request));
     }
 }

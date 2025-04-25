@@ -4,6 +4,6 @@ namespace Application.Common.Services.Interface
 {
     public interface IUserResolverService
     {
-        Task<User?> GetUserByEmailAsync(string email);
+        Task<User?> GetUserByEmailAsync(string email, CancellationToken cancellationToken);
     }
 }

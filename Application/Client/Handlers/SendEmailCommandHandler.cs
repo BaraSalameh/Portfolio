@@ -25,7 +25,7 @@ namespace Application.Client.Handlers
         {
             var Vm = new AbstractViewModel();
 
-            var user = await _userResolver.GetUserByEmailAsync(request.EmailTo);
+            var user = await _userResolver.GetUserByEmailAsync(request.EmailTo, cancellationToken);
 
             if (user == null || user.ID == null)
             {

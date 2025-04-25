@@ -9,7 +9,6 @@ namespace Application.Account.MappingProfiles
         public RegisterMappingProfiles()
         {
             CreateMap<RegisterCommand, User>();
-            CreateMap<RegisterCommand, PendingEmailConfirmation>();
         }
     }
 }

@@ -16,33 +16,21 @@ namespace Application.Account.Handlers
         private readonly IMapper _mapper;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IUserNotificationService _userNotificationService;
+        private readonly IPendingEmailConfirmationService _pendingEmailConfirmationService;
 
-        public RegisterCommandHandler(IAppDbContext context, IMapper mapper, IDateTimeProvider dateTimeProvider, IUserNotificationService userNotificationService)
+
+        public RegisterCommandHandler(IAppDbContext context, IMapper mapper, IDateTimeProvider dateTimeProvider, IUserNotificationService userNotificationService, IPendingEmailConfirmationService pendingEmailConfirmationService)
         {
             _context = context;
             _mapper = mapper;
             _dateTimeProvider = dateTimeProvider;
             _userNotificationService = userNotificationService;
+            _pendingEmailConfirmationService = pendingEmailConfirmationService;
         }
 
         public async Task<RC_Response> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
             var Vm = new RC_Response();
-
-            request.Password = request.Password!.Encrypt(true);
-            var baseUserName = $"{request.Firstname}-{request.Lastname}".ToLower().Replace(" ", "-");
-            var guidSuffix = Guid.NewGuid().ToString("N").Substring(0, 6);
-
-            var confirmationToken = Guid.NewGuid().ToString();
-            var pendingEmail = _mapper.Map<PendingEmailConfirmation>(request);
-            pendingEmail.Token = confirmationToken;
-            pendingEmail.ExpiresAt = _dateTimeProvider.UtcNow.Add(ExpirationTimes.PendingEmailTokenLifeTime);
-
-            var ResultToDB = _mapper.Map<User>(request);
-            ResultToDB.Username = $"{baseUserName}-{guidSuffix}";
-            ResultToDB.RoleID =  RoleIdentifiers.Owner;
-            ResultToDB.CreatedAt = _dateTimeProvider.UtcNow;
-            ResultToDB.LstPendingEmailConfirmations.Add(pendingEmail);
 
             var role = await _context.Role.FindAsync(RoleIdentifiers.Owner, cancellationToken);
             if (role == null)
@@ -52,10 +40,19 @@ namespace Application.Account.Handlers
                 return Vm;
             }
 
+            request.Password = request.Password!.Encrypt(true);
+            var baseUserName = $"{request.Firstname}-{request.Lastname}".ToLower().Replace(" ", "-");
+            var guidSuffix = Guid.NewGuid().ToString("N").Substring(0, 6);
+
+            var ResultToDB = _mapper.Map<User>(request);
+            ResultToDB.Username = $"{baseUserName}-{guidSuffix}";
+            ResultToDB.RoleID =  RoleIdentifiers.Owner;
             ResultToDB.Role = role;
+            ResultToDB.CreatedAt = _dateTimeProvider.UtcNow;
 
             try
             {
+                _pendingEmailConfirmationService.GenerateAsync(ResultToDB, request.RememberMe);
                 await _context.User.AddAsync(ResultToDB, cancellationToken);
                 await _context.SaveChangesAsync(cancellationToken);
 
@@ -63,7 +60,6 @@ namespace Application.Account.Handlers
                 Vm.Username = ResultToDB.Username;
                 Vm.Role = ResultToDB.Role!.Name!;
 
-                Console.WriteLine("I am in Register");
                 await _userNotificationService.SendEmailConfirmationAsync(ResultToDB);
             }
             catch

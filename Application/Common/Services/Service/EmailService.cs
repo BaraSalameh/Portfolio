@@ -16,7 +16,6 @@ namespace Application.Common.Services.Service
 
         public async Task SendEmailAsync(string toEmail, string subject, string htmlContent)
         {
-            Console.WriteLine("I am in EmailService");
             var smtpClient = new SmtpClient(_configuration["Email:SmtpHost"])
             {
                 Port = int.Parse(_configuration["Email:SmtpPort"]!),

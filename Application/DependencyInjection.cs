@@ -20,6 +20,7 @@ namespace Application
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IUserNotificationService, UserNotificationService>();
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+            services.AddSingleton<IPendingEmailConfirmationService, PendingEmailConfirmationService>();
             services.AddHostedService<RefreshTokenCleanupService>();
             services.AddHostedService<PendingEmailConfirmationCleanupService>();
             return services;
