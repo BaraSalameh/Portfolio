@@ -1,7 +1,9 @@
-﻿namespace Application.Common.Services.Interface
+﻿using Domain.Entities;
+
+namespace Application.Common.Services.Interface
 {
     public interface ITokenRefreshService
     {
-        Task<string?> TryRefreshTokenAsync(CancellationToken cancellationToken);
+        Task<User?> TryRefreshTokenAsync(CancellationToken cancellationToken);
     }
 }

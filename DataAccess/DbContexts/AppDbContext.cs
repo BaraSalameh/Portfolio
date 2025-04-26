@@ -103,6 +103,7 @@ namespace DataAccess.DbContexts
             modelBuilder.Entity<UserLanguage>().HasKey(pt => new { pt.UserID, pt.LKP_LanguageID });
             modelBuilder.Entity<User>().HasIndex(x => x.Email).IsUnique();
             modelBuilder.Entity<User>().HasIndex(x => x.Username).IsUnique();
+            modelBuilder.Entity<User>().Property(x => x.Username).HasDefaultValue(false);
 
             modelBuilder.ApplyConfiguration(new RoleSeedConfiguration());
 

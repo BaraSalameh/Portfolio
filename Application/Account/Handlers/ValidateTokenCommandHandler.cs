@@ -21,9 +21,9 @@ namespace Application.Account.Handlers
 
             if (!_currentUserService.IsAuthenticated)
             {
-                var refreshedUsername = await _tokenRefreshService.TryRefreshTokenAsync(cancellationToken);
+                var refreshedUser = await _tokenRefreshService.TryRefreshTokenAsync(cancellationToken);
 
-                if (string.IsNullOrEmpty(refreshedUsername))
+                if (refreshedUser == null)
                 {
                     Vm.status = false;
                     Vm.lstError.Add("User is not authenticated and token refresh failed.");
@@ -31,13 +31,17 @@ namespace Application.Account.Handlers
                 }
 
                 Vm.status = true;
-                Vm.Username = refreshedUsername;
+                Vm.Username = refreshedUser.Username!;
+                Vm.Role = refreshedUser.Role.Name!;
+                Vm.IsConfirmed = true;
+                
                 return Vm;
             }
 
             Vm.status = true;
             Vm.Username = _currentUserService.Username!;
             Vm.Role = _currentUserService.Role!;
+            Vm.IsConfirmed = true;
             return Vm;
         }
     }

@@ -11,11 +11,16 @@ namespace Application.Account.Handlers
     {
         private readonly IAppDbContext _context;
         private readonly IAuthService _authService;
+        private readonly IPendingEmailConfirmationService _pendingEmailConfirmationService;
+        private readonly IUserNotificationService _userNotificationService;
 
-        public LoginCommandHandler(IAppDbContext context, ITokenService tokenService, ICookieService cookieService, IAuthService authService)
+
+        public LoginCommandHandler(IAppDbContext context, IAuthService authService, IPendingEmailConfirmationService pendingEmailConfirmationService, IUserNotificationService userNotificationService)
         {
             _context = context;
             _authService = authService;
+            _pendingEmailConfirmationService = pendingEmailConfirmationService;
+            _userNotificationService = userNotificationService;
         }
 
         public async Task<LC_Response> Handle(LoginCommand request, CancellationToken cancellationToken)
@@ -24,23 +29,44 @@ namespace Application.Account.Handlers
             string EncryptedPassword = request.Password.Encrypt(true);
             var user =
                  await _context.User
-                    .Where(u => u.Email == request.Email && u.Password == EncryptedPassword && u.IsConfirmed == true)
+                    .Where(u => u.Email == request.Email && u.Password == EncryptedPassword)
                     .Include(u => u.Role)
                     .FirstOrDefaultAsync();
 
             if (user == null)
             {
-                Vm.lstError.Add("Wrong username/password or lack confirmation");
+                Vm.lstError.Add("Wrong username/password");
                 Vm.status = false;
+                Vm.IsConfirmed = false;
                 return Vm;
+            }
+            else if (!user.IsConfirmed)
+            {
+                _context.PendingEmailConfirmation.RemoveRange(
+                    _context.PendingEmailConfirmation.Where(p => p.UserID == user.ID)
+                );
+                _pendingEmailConfirmationService.GenerateAsync(user, request.RememberMe);
+                await _context.SaveChangesAsync(cancellationToken);
+
+                Vm.status = true;
+                Vm.Username = user.Username!;
+                Vm.Role = user.Role.Name!;
+                Vm.IsConfirmed = false;
+                Vm.lstError.Add("User lacks confirmation.");
+
+                await _userNotificationService.SendEmailConfirmationAsync(user);
+
+                return Vm;
+
             }
 
             _authService.AuthSetupAsync(user, request.RememberMe);
             await _context.SaveChangesAsync(cancellationToken);
 
+            Vm.status = true;
             Vm.Username = user.Username!;
             Vm.Role = user.Role.Name!;
-            Vm.status = true;
+            Vm.IsConfirmed = true;
 
             return Vm;
         }

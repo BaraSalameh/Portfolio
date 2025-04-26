@@ -2,7 +2,6 @@
 using Application.Common.Entities;
 using Application.Common.Services.Interface;
 using DataAccess.Interfaces;
-using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

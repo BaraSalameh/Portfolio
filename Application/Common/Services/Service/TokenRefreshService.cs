@@ -1,5 +1,6 @@
 ﻿using Application.Common.Services.Interface;
 using DataAccess.Interfaces;
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Common.Services.Service
@@ -19,7 +20,7 @@ namespace Application.Common.Services.Service
             _dateTimeProvider = dateTimeProvider;
         }
 
-        public async Task<string?> TryRefreshTokenAsync(CancellationToken cancellationToken)
+        public async Task<User?> TryRefreshTokenAsync(CancellationToken cancellationToken)
         {
             var token = _cookieService.GetRefreshToken();
 
@@ -45,7 +46,7 @@ namespace Application.Common.Services.Service
             _authService.AuthSetupAsync(refreshToken.User, refreshToken.RememberMe);
             await _context.SaveChangesAsync(cancellationToken);
 
-            return refreshToken.User.Username;
+            return refreshToken.User;
         }
     }
 }
