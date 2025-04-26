@@ -33,15 +33,14 @@ namespace Application.Account.Handlers
                 Vm.status = true;
                 Vm.Username = refreshedUser.Username!;
                 Vm.Role = refreshedUser.Role.Name!;
-                Vm.IsConfirmed = true;
-                
+                Vm.IsConfirmed = refreshedUser.IsConfirmed!;
                 return Vm;
             }
 
             Vm.status = true;
             Vm.Username = _currentUserService.Username!;
             Vm.Role = _currentUserService.Role!;
-            Vm.IsConfirmed = true;
+            Vm.IsConfirmed = _currentUserService.IsConfirmed;
             return Vm;
         }
     }

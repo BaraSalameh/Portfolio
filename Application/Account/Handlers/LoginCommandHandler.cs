@@ -14,7 +14,6 @@ namespace Application.Account.Handlers
         private readonly IPendingEmailConfirmationService _pendingEmailConfirmationService;
         private readonly IUserNotificationService _userNotificationService;
 
-
         public LoginCommandHandler(IAppDbContext context, IAuthService authService, IPendingEmailConfirmationService pendingEmailConfirmationService, IUserNotificationService userNotificationService)
         {
             _context = context;
@@ -26,21 +25,22 @@ namespace Application.Account.Handlers
         public async Task<LC_Response> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
             var Vm = new LC_Response();
+
             string EncryptedPassword = request.Password.Encrypt(true);
             var user =
                  await _context.User
                     .Where(u => u.Email == request.Email && u.Password == EncryptedPassword)
                     .Include(u => u.Role)
-                    .FirstOrDefaultAsync();
+                    .FirstOrDefaultAsync(cancellationToken);
 
             if (user == null)
             {
                 Vm.lstError.Add("Wrong username/password");
                 Vm.status = false;
-                Vm.IsConfirmed = false;
                 return Vm;
             }
-            else if (!user.IsConfirmed)
+            
+            if (!user.IsConfirmed)
             {
                 _context.PendingEmailConfirmation.RemoveRange(
                     _context.PendingEmailConfirmation.Where(p => p.UserID == user.ID)
@@ -51,13 +51,10 @@ namespace Application.Account.Handlers
                 Vm.status = true;
                 Vm.Username = user.Username!;
                 Vm.Role = user.Role.Name!;
-                Vm.IsConfirmed = false;
+                Vm.IsConfirmed = user.IsConfirmed;
                 Vm.lstError.Add("User lacks confirmation.");
-
                 await _userNotificationService.SendEmailConfirmationAsync(user);
-
                 return Vm;
-
             }
 
             _authService.AuthSetupAsync(user, request.RememberMe);
@@ -66,7 +63,7 @@ namespace Application.Account.Handlers
             Vm.status = true;
             Vm.Username = user.Username!;
             Vm.Role = user.Role.Name!;
-            Vm.IsConfirmed = true;
+            Vm.IsConfirmed = user.IsConfirmed;
 
             return Vm;
         }

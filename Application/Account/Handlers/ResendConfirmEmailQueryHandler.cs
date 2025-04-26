@@ -38,7 +38,7 @@ namespace Application.Account.Handlers
             if(pendingEmail == null)
             {
                 Vm.status = false;
-                Vm.lstError.Add("User is not registered");
+                Vm.lstError.Add("Invalid confirmation link.");
                 return Vm;
             }
 

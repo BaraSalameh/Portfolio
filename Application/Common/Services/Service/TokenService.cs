@@ -26,11 +26,12 @@ namespace Application.Common.Services.Service
         public string GenerateAccessToken(User user)
         {
             var claims = new List<Claim>
-        {
-            new (ClaimTypes.NameIdentifier, user.ID.ToString()!),
-            new (ClaimTypes.Name, user.Username!),
-            new (ClaimTypes.Role, user.Role.Name!)
-        };
+            {
+                new (ClaimTypes.NameIdentifier, user.ID.ToString()!),
+                new (ClaimTypes.Name, user.Username!),
+                new (ClaimTypes.Role, user.Role.Name!),
+                new ("IsConfirmed", user.IsConfirmed.ToString())
+            };
 
             var secretKey = _configuration["ApplicationSettings:JWT_Secret"];
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!));

@@ -22,6 +22,9 @@ namespace Application.Common.Services.Service
         public string? Role => 
             _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Role)?.Value;
 
+        public bool IsConfirmed =>
+            bool.TryParse(_httpContextAccessor.HttpContext?.User?.FindFirst("IsConfirmed")?.Value, out var result) && result ;
+
         public string? Username =>
             _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Name)?.Value;
 
