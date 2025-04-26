@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useParams, usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
 
-type SidebarProps = { role?: | 'admin' | 'owner' };
+type SidebarProps = { role?:  'Admin' | 'Owner' | null };
 
 
 export default function Sidebar({ role }: SidebarProps) {
@@ -19,13 +19,13 @@ export default function Sidebar({ role }: SidebarProps) {
             ? [
                 { href: `/client/${username}/about`, label: 'About' }
             ]
-            : username && role == 'admin' 
+            : username && role == 'Admin' 
                 ? [
                     
                 ]
-                : username && role === 'owner'
+                : username && role === 'Owner'
                     ? [
-                        { href: '/education', label: 'Education' },
+                        { href: `/owner/${username}/education`, label: 'Education' },
                         { href: '/experience', label: 'Experience' },
                         { href: '/projects', label: 'Projects' },
                         { href: '/skills', label: 'Skills' },
