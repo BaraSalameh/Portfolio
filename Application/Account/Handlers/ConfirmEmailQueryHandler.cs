@@ -1,5 +1,4 @@
 ﻿using Application.Account.Queries;
-using Application.Common.Entities;
 using Application.Common.Services.Interface;
 using DataAccess.Interfaces;
 using MediatR;
@@ -11,10 +10,12 @@ namespace Application.Account.Handlers
     {
         private readonly IAppDbContext _context;
         private readonly IAuthService _authService;
-        public ConfirmEmailQueryHandler(IAppDbContext context, IAuthService authService)
+        private readonly IDateTimeProvider _dateTimeProvider;
+        public ConfirmEmailQueryHandler(IAppDbContext context, IAuthService authService, IDateTimeProvider dateTimeProvider)
         {
             _context = context;
             _authService = authService;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<CEQ_Response> Handle(ConfirmEmailQuery request, CancellationToken cancellationToken)
@@ -22,9 +23,13 @@ namespace Application.Account.Handlers
             var Vm = new CEQ_Response();
 
             var pendingEmail = await _context.PendingEmailConfirmation
-                .Where(u => u.Email == request.Email)
                 .Include(p => p.User).ThenInclude(u => u.Role)
-                .FirstOrDefaultAsync(cancellationToken);
+                .FirstOrDefaultAsync(
+                    pec => pec.Email == request.Email &&
+                    !pec.IsRevoked &&
+                    !pec.IsEmailConfirmed,
+                    cancellationToken
+                );
 
             if (pendingEmail == null || pendingEmail.Token != request.Token)
             {
@@ -34,6 +39,8 @@ namespace Application.Account.Handlers
             }
 
             pendingEmail.IsEmailConfirmed = true;
+            pendingEmail.IsRevoked = true;
+            pendingEmail.RevokedAt = _dateTimeProvider.UtcNow;
             pendingEmail.Token = null;
             pendingEmail.User.IsConfirmed = true;
 
