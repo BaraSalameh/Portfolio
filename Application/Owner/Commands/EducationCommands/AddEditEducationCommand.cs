@@ -11,6 +11,6 @@ namespace Application.Owner.Commands.EducationCommands
         public string FieldOfStudy { get; set; }
         public DateOnly StartDate { get; set; }
         public DateOnly? EndDate { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
     }
 }
