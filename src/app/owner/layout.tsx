@@ -24,9 +24,11 @@ export default function OwnerLayout({children}: Readonly<{children: React.ReactN
     }, [username]);
 
     return (
-        <>
+        <div className='flex'>
             <Sidebar role={role} />
-            {children}
-        </>
+            <div className="w-full">
+                {children}
+            </div>
+        </div>
     );
 };

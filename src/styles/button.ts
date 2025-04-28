@@ -13,6 +13,8 @@ export const button = cva(
                     'text-red-700 border-red-600 hover:bg-red-50 dark:text-red-400 dark:border-red-500 dark:hover:bg-red-900/10',
                 standard:
                     'bg-foreground text-background hover:bg-[#383838] dark:hover:bg-[#ccc]',
+                basic:
+                    'bg-transparent border-0 focus:ring-2 focus:ring-offset-0'
             },
             size: {
                 sm: 'text-sm px-3 py-1',

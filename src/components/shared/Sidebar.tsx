@@ -1,110 +1,103 @@
-'use client'
+'use client';
 
-import { useEffect, useRef, useState } from 'react'
-import { useParams, usePathname } from 'next/navigation'
-import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react';
+import { useParams, usePathname, useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import {
+    Menu, X, Home, Info, LayoutDashboard, Book, Briefcase, Folder, BadgePercent,
+    Languages, PenSquare, MessageSquare, Settings, LogOut
+} from 'lucide-react';
+import { Paragraph } from '../ui/Paragraph';
 
-type SidebarProps = { role?:  'Admin' | 'Owner' | null };
-
+type SidebarProps = { role?: 'Admin' | 'Owner' | null };
 
 export default function Sidebar({ role }: SidebarProps) {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(false);
     const pathname = usePathname();
-    const sidebarRef = useRef<HTMLDivElement>(null);
     const { username } = useParams<{ username: string }>();
-  
+    const router = useRouter();
+    
+    // Define nav links with icons
     const navLinks = [
-        { href: '/', label: 'Home'},
+        { href: '/', label: 'Home', icon: Home },
         ...(username && !role
+            ? [{ href: `/client/${username}/about`, label: 'About', icon: Info }]
+            : username && role === 'Owner'
             ? [
-                { href: `/client/${username}/about`, label: 'About' }
-            ]
-            : username && role == 'Admin' 
-                ? [
-                    
-                ]
-                : username && role === 'Owner'
-                    ? [
-                        { href: `/owner/${username}/education`, label: 'Education' },
-                        { href: '/experience', label: 'Experience' },
-                        { href: '/projects', label: 'Projects' },
-                        { href: '/skills', label: 'Skills' },
-                        { href: '/language', label: 'Languages' },
-                        { href: '/blog', label: 'Blog' },
-                        { href: `/owner/${username}/logout`, label: 'Logout' }
-                    ]
-                    : [])
-    ]
+                  { href: `/owner/${username}/dashboard`, label: 'Dashboard', icon: LayoutDashboard },
+                  { href: `/owner/${username}/education`, label: 'Education', icon: Book },
+                  { href: `/owner/${username}/experience`, label: 'Experience', icon: Briefcase },
+                  { href: `/owner/${username}/project`, label: 'Projects', icon: Folder },
+                  { href: `/owner/${username}/skill`, label: 'Skills', icon: BadgePercent },
+                  { href: `/owner/${username}/language`, label: 'Languages', icon: Languages },
+                  { href: `/owner/${username}/blog-post`, label: 'Blog Post', icon: PenSquare },
+                  { href: `/owner/${username}/message`, label: 'Messages', icon: MessageSquare },
+                  { href: `/owner/${username}/setting`, label: 'Settings', icon: Settings },
+                  { href: `/owner/${username}/logout`, label: 'Logout', icon: LogOut },
+              ]
+            : []),
+    ];
 
-  // Handle click outside to close sidebar
+    const handleNavigate = (e: React.MouseEvent, url: string) => {
+        e.preventDefault()
+        router.push(url); // Navigate to another page
+    };
+
+    // Handle outside click for mobile
     useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
-            if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
-                setIsOpen(false)
+        const handleResize = () => {
+            if (window.innerWidth < 640) { // 640px = sm breakpoint in Tailwind
+                setIsCollapsed(true);
+            } else {
+                setIsCollapsed(false);
             }
-        }
+        };
 
-        if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside)
-        } else {
-            document.removeEventListener('mousedown', handleClickOutside)
-        }
+        handleResize(); // Set on first render
+        window.addEventListener('resize', handleResize);
 
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside)
-        }
-    }, [isOpen]);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     return (
-        <>
-        {/* ☰ Burger Button */}
-        <button
-            onClick={() => setIsOpen(true)}
-            className="fixed top-4 left-4 z-50 bg-green-900 text-white p-4 rounded-md cursor-pointer"
-            aria-label="Open sidebar"
-        >
-            ☰
-        </button>
-
-        {/* Sidebar */}
-        <motion.aside
-            ref={sidebarRef}
-            initial={{ x: '-100%' }}
-            animate={{ x: isOpen ? 0 : '-100%' }}
-            transition={{ type: 'tween', duration: 0.3 }}
-            className="fixed top-0 left-0 h-full w-64 bg-green-900 text-white shadow-xl z-50 p-6 rounded-r-xl text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]"
-            style={{ overflow: 'hidden' }} // no scroll
-        >
-            {/* ✕ Close Button */}
-            <button
-                onClick={() => setIsOpen(false)}
-                className="text-white text-xl absolute top-4 right-4 cursor-pointer"
-                aria-label="Close sidebar"
+        <div className="bg-green-900">
+            {/* Sidebar */}
+            <motion.aside
+                initial={{ x: 0 }}
+                animate={{ x: 0 }}
+                transition={{ type: 'tween', duration: 0.3 }}
+                className={`flex flex-col p-6 duration-100 sticky top-0`}
             >
-                ✕
-            </button>
+                {/* Burger Button INSIDE sidebar */}
+                <button
+                    onClick={() => setIsCollapsed(!isCollapsed)}
+                    className="absolute -right-6 top-3 bg-green-900 p-2 rounded-full cursor-pointer duration-300"
+                >
+                    <Menu  />
+                </button>
 
-            {/* Nav Links */}
-            <nav className="flex flex-col space-y-4 mt-12">
-                {navLinks.map(({ href, label }) => {
-                    const isActive = pathname === href
-                    return (
-                        <a
-                            key={href}
-                            href={isActive ? '#' : href}
-                            className={`px-4 py-2 rounded-md transition ${
-                                isActive
-                                    ? 'bg-gray-600  cursor-not-allowed opacity-60'
-                                    : 'hover:bg-gray-700 hover:underline'
-                            }`}
-                            onClick={(e) => isActive && e.preventDefault()}
-                        >
-                            {label}
-                        </a>
-                    )
-                })}
-            </nav>
-        </motion.aside>
-        </>
-    )
+                {/* Navigation */}
+                <nav className="flex flex-col space-y-3 py-5">
+                    {navLinks.map(({ href, label, icon: Icon }) => {
+                        const isActive = pathname === href;
+                        return (
+                            <button
+                                key={href}
+                                onClick={(e) => !isActive && handleNavigate(e, href)}
+                               
+                                className={`flex items-center gap-3 py-2 cursor-pointer ${
+                                    isActive
+                                        ? 'text-gray-300 cursor-not-allowed opacity-50'
+                                        : 'hover:text-gray-900'
+                                }`}
+                            >
+                                <Icon />
+                                {!isCollapsed && <Paragraph size="sm">{label}</Paragraph>}
+                            </button>
+                        );
+                    })}
+                </nav>
+            </motion.aside>
+        </div>
+    );
 }

@@ -22,7 +22,7 @@ export default function LoginPage() {
         const run = async () => {
             const u = user.username || await getUsername();
             if (u && user.isConfirmed == true) {
-                router.push(`/owner/${u}/home`);
+                router.push(`/owner/${u}/dashboard`);
             } else if(u && user.isConfirmed == false){
                 router.push(`/account/register/${u}`);
             }
