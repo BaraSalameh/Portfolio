@@ -8,6 +8,7 @@ using Application.Owner.Commands.ProjectTechnologyCommands;
 using Application.Owner.Commands.SkillCommands;
 using Application.Owner.Commands.SocialLinkCommands;
 using Application.Owner.Commands.UserLanguageCommands;
+using Application.Owner.Queries.EducationQueries;
 using Application.Owner.Queries.LKP_LanguageQuieries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -46,6 +47,9 @@ namespace Portfolio.Controllers
 
         [HttpDelete]
         public async Task<IActionResult> DeleteExperience(DeleteExperienceCommand request) => Ok(await Mediator.Send(request));
+
+        [HttpGet]
+        public async Task<IActionResult> EducationList([FromQuery] EducationListQuery request) => Ok(await Mediator.Send(request));
 
         [HttpPost]
         public async Task<IActionResult> AddEditEducation(AddEditEducationCommand request) => Ok(await Mediator.Send(request));

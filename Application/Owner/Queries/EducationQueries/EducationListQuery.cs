@@ -1,6 +1,14 @@
-﻿namespace Domain.Entities
+﻿using Application.Common.Entities;
+using MediatR;
+
+namespace Application.Owner.Queries.EducationQueries
 {
-    public class Education : AbstractEntity
+    public class EducationListQuery : ListQuery<ELQ_Educations>
+    {
+        public string Username { get; set; }
+    }
+
+    public class ELQ_Educations
     {
         public Guid ID { get; set; }
         public string Institution { get; set; }
@@ -9,7 +17,5 @@
         public DateOnly StartDate { get; set; }
         public DateOnly? EndDate { get; set; }
         public string? Description { get; set; }
-        public Guid UserID { get; set; }
-        public User User { get; set; }
     }
 }
