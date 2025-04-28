@@ -11,6 +11,7 @@ import { Container } from "@/components/shared/Container";
 import { Header } from "@/components/shared/Header";
 import { Main } from "@/components/shared/Main";
 import { SubFooter } from "@/components/shared/SubFooter";
+import { BlurBackGround } from "@/components/ui/BlurBackGround";
 
 export default function Home() {
     const [searchOpen, setSearchOpen] = useState(false);
@@ -26,7 +27,7 @@ export default function Home() {
     return (
         <>
            {searchOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                <BlurBackGround intent='sm'>
                     {/* Backdrop */}
                     <div
                         className="absolute inset-0 bg-black/30 backdrop-blur-sm cursor-pointer"
@@ -40,7 +41,7 @@ export default function Home() {
                     >
                         <SearchBar />
                     </div>
-                </div>
+                </BlurBackGround>
             )}
             {/* Main content */}
             <Container>
@@ -53,7 +54,7 @@ export default function Home() {
                         priority
                     />
                 </Header>
-                <Main>
+                <Main className='sm:items-start items-center'>
                     <Paragraph size="md">
                         {abstractParagraph}
                     </Paragraph>

@@ -11,10 +11,13 @@ import { FormInput } from "@/components/ui/FormInput";
 import { List } from "@/components/ui/List";
 import { FormCheckbox } from "@/components/ui/FormCheckbox";
 import { addEditEducation } from "@/lib/apis/owner/addEditEducation";
+import { educationListQuery } from "@/lib/apis/owner/educationListQuery";
+import { useParams } from "next/navigation";
 
 export default function EducationForm() {
 
     const dispatch = useAppDispatch();
+    const { username } = useParams<{username: string}>();
     const { loading, error } = useAppSelector((state) => state.auth);
 
     const {
@@ -35,8 +38,13 @@ export default function EducationForm() {
         defaultValue: false,
     });
 
-    const onSubmit = (data: EducationFormData) => {
-        dispatch(addEditEducation(data));
+    const onSubmit = async (data: EducationFormData) => {
+        try {
+            await dispatch(addEditEducation(data)).unwrap();
+            await dispatch(educationListQuery({ username }));
+        } catch (error) {
+            // console.log('Error creating education: ', error);
+        }
     };
       
     return (

@@ -11,11 +11,16 @@ interface HeaderProps extends HeaderVariantProps {
 
 export const Header: React.FC<HeaderProps> = ({
     children,
-    className
+    className,
+    itemsX,
+    itemsY,
+    paddingX,
+    paddingY,
+    space
 
 }) => {
     return (
-        <div className={cn(header(), className)}>
+        <div className={cn(header({ itemsX, itemsY, paddingX, paddingY, space}), className)}>
             {children}
         </div>
     );

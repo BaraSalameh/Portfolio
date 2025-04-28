@@ -38,11 +38,6 @@ export default function Sidebar({ role }: SidebarProps) {
             : []),
     ];
 
-    const handleNavigate = (e: React.MouseEvent, url: string) => {
-        e.preventDefault()
-        router.push(url); // Navigate to another page
-    };
-
     // Handle outside click for mobile
     useEffect(() => {
         const handleResize = () => {
@@ -83,7 +78,7 @@ export default function Sidebar({ role }: SidebarProps) {
                         return (
                             <button
                                 key={href}
-                                onClick={(e) => !isActive && handleNavigate(e, href)}
+                                onClick={() => !isActive && router.push(href)}
                                
                                 className={`flex items-center gap-3 py-2 cursor-pointer ${
                                     isActive

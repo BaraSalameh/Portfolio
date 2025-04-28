@@ -1,5 +1,7 @@
 'use client'
 
+import { Container } from "@/components/shared/Container";
+import { Main } from "@/components/shared/Main";
 import Sidebar from "@/components/shared/Sidebar";
 import { useAppSelector } from "@/lib/store/hooks";
 import { useCheckAndGetUsername } from "@/lib/utils/appFunctions";
@@ -26,9 +28,9 @@ export default function OwnerLayout({children}: Readonly<{children: React.ReactN
     return (
         <div className='flex'>
             <Sidebar role={role} />
-            <div className="w-full">
+            <Container>
                 {children}
-            </div>
+            </Container>
         </div>
     );
 };

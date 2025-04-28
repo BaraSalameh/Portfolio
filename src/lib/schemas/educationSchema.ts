@@ -17,7 +17,6 @@ export const educationSchema = z.object({
         .refine(val => !isNaN(Date.parse(val)), { message: 'Start date not valid' }),
 
     endDate: z.string()
-        .refine(val => !isNaN(Date.parse(val)), { message: 'End date not valid' })
         .optional(),
 
     description: z.string()
@@ -27,14 +26,24 @@ export const educationSchema = z.object({
     isStudying: z.boolean({
         required_error: "Please specify if you are still studying",
     }),
-}).refine((data) => {
-    if (!data.isStudying && !data.endDate) {
-        return false;
+}).superRefine((data, ctx) => {
+    // Validate endDate format if provided
+    if (data.endDate && isNaN(Date.parse(data.endDate))) {
+            ctx.addIssue({
+            path: ['endDate'],
+            message: 'End date not valid',
+            code: z.ZodIssueCode.custom,
+        });
     }
-    return true;
-}, {
-    path: ['endDate'],
-    message: 'End date is required if not still studying',
+
+    // Validate presence of endDate if not studying
+    if (!data.isStudying && !data.endDate) {
+            ctx.addIssue({
+            path: ['endDate'],
+            message: 'End date is required if not still studying',
+            code: z.ZodIssueCode.custom,
+        });
+    }
 });
 
 export type EducationFormData = z.infer<typeof educationSchema>;

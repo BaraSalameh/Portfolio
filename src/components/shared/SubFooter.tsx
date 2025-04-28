@@ -11,11 +11,16 @@ interface SubFooterProps extends SubFooterVariantProps {
 
 export const SubFooter: React.FC<SubFooterProps> = ({
     children,
-    className
+    className,
+    itemsX,
+    itemsY,
+    paddingX,
+    paddingY,
+    space
 
 }) => {
     return (
-        <div className={cn(subFooter(), className)}>
+        <div className={cn(subFooter({ itemsX, itemsY, paddingX, paddingY, space}), className)}>
             {children}
         </div>
     );

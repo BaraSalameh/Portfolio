@@ -11,7 +11,7 @@ interface ContainerProps extends ContainerVariantProps {
 
 export const Container: React.FC<ContainerProps> = ({
     children,
-    className,
+    className
 }) => {
     return (
         <div className={cn(container(), className)}>

@@ -3,6 +3,7 @@
 import React from 'react';
 import { anchor, AnchorVariantProps } from '@/styles/anchor';
 import { cn } from '@/components/utils/cn'; // optional helper
+import { useRouter } from 'next/navigation';
 
 interface AnchorProps extends AnchorVariantProps {
     children: React.ReactNode;
@@ -17,9 +18,11 @@ export const Anchor: React.FC<AnchorProps> = ({
     size,
     url
 }) => {
+
+    const router = useRouter();
     return (
-        <a href={url} className={cn(anchor({ size }), className)}>
+        <button onClick={() => url && router.push(url)} className={cn(anchor({ size }), className)}>
             {children}
-        </a>
+        </button>
     );
 };

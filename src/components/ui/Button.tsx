@@ -3,6 +3,7 @@
 import React from 'react';
 import { button, ButtonVariantProps } from '@/styles/button';
 import { cn } from '@/components/utils/cn'; // optional helper
+import { useRouter } from 'next/navigation';
 
 interface ButtonProps extends ButtonVariantProps {
     children: React.ReactNode;
@@ -24,7 +25,10 @@ export const Button: React.FC<ButtonProps> = ({
     url,
     disabled
 }) => {
+    const router = useRouter();
+    
     const buttonContent = (
+
         <button
             type={type}
             className={cn(button({ intent, size, rounded }), className)}
@@ -37,9 +41,9 @@ export const Button: React.FC<ButtonProps> = ({
 
     if (url) {
         return (
-            <a href={url} className={cn(button({ intent, size, rounded }), className)}>
+            <button onClick={() => router.push(url)} className={cn(button({ intent, size }), className)}>
                 {children}
-            </a>
+            </button>
         );
     }
 
