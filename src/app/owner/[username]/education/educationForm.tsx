@@ -13,17 +13,25 @@ import { FormCheckbox } from "@/components/ui/FormCheckbox";
 import { addEditEducation } from "@/lib/apis/owner/addEditEducation";
 import { educationListQuery } from "@/lib/apis/owner/educationListQuery";
 import { useParams } from "next/navigation";
+import { useEffect } from "react";
 
-export default function EducationForm() {
+type props = {
+    educationId?: string;
+}
+
+export default function EducationForm({educationId} : props) {
 
     const dispatch = useAppDispatch();
     const { username } = useParams<{username: string}>();
     const { loading, error } = useAppSelector((state) => state.auth);
+    const { educationList } = useAppSelector((state) => state.education);
+    const educationToHandle = educationList.find(ed => ed.id === educationId);
 
     const {
         register,
-        handleSubmit,
+        handleSubmit, 
         control,
+        reset,
         formState: { errors },
     } = useForm<EducationFormData>({
         resolver: zodResolver(educationSchema),
@@ -46,6 +54,16 @@ export default function EducationForm() {
             // console.log('Error creating education: ', error);
         }
     };
+
+    useEffect(() => {
+        if (educationToHandle) {
+            reset({
+                ...educationToHandle,
+                startDate: educationToHandle.startDate?.slice(0, 10),
+                endDate: educationToHandle.endDate?.slice(0, 10),
+            });
+        }
+    }, [educationId]);
       
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

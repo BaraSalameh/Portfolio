@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 export const educationSchema = z.object({
+    id: z.string().optional(),
     institution: z.string()
         .min(2, 'Institution name must be at least 2 characters')
         .max(100, 'Institution name is too long'),

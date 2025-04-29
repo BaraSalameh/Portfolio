@@ -9,16 +9,26 @@ import { useEffect } from "react";
 import { educationListQuery } from "@/lib/apis/owner/educationListQuery";
 import { Header } from "@/components/shared/Header";
 import { Main } from "@/components/shared/Main";
+import { deleteEducation } from "@/lib/apis/owner/deleteEducation";
 
 export default function OwnerEducationPage() {
 
     const dispatch = useAppDispatch();
-    const { education } = useAppSelector(state => state.education);
+    const { educationList } = useAppSelector(state => state.education);
     const { username } = useParams<{username: string}>();
 
     useEffect(() => {
-        education.length === 0 && dispatch(educationListQuery({username}));
+        educationList.length === 0 && dispatch(educationListQuery({username}));
     }, []);
+
+    const handleDelete = async (id: string) => {
+        try {
+            await dispatch(deleteEducation(id)).unwrap();
+            await dispatch(educationListQuery({ username }));
+        } catch (err) {
+            console.error('Failed to delete:', err);
+        }
+    };
 
     return (
         <>
@@ -30,7 +40,7 @@ export default function OwnerEducationPage() {
             </div>
         </Header>
         <Main direction='row' itemsY='start' className='flex-wrap'>
-            {education?.map((edu : any) => 
+            {educationList?.map(edu => 
                 <Card
                     key={edu.id}
                     institution={edu.institution}
@@ -41,10 +51,10 @@ export default function OwnerEducationPage() {
                     description={edu.description}
                 >
                     <CUDModal as='update' subTitle="Update Education">
-                        <EducationForm />
+                        <EducationForm educationId={edu.id} />
                     </CUDModal>
-                    <CUDModal as='delete' subTitle="Delete Education">
-                        <EducationForm />
+                    <CUDModal as='delete' subTitle="Delete Education" idToDelete={edu.id} CBRedux={handleDelete}>
+                        Are you sure?
                     </CUDModal>
                 </Card>
             )}

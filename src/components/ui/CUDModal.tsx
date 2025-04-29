@@ -5,8 +5,11 @@ import React, { InputHTMLAttributes, useState } from 'react';
 import { Paragraph } from './Paragraph';
 import { Button } from './Button';
 import Image from "next/image";
+import { useAppDispatch } from '@/lib/store/hooks';
 
 interface CUDProps extends InputHTMLAttributes<HTMLInputElement> {
+    idToDelete?: string;
+    CBRedux?: (id: string) => any;
     as?: 'create' | 'update' | 'delete';
     title?: string;
     subTitle?: string;
@@ -16,6 +19,8 @@ interface CUDProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const CUDModal = ({
+    idToDelete,
+    CBRedux,
     as = 'create',
     title,
     subTitle = title,
@@ -53,7 +58,20 @@ export const CUDModal = ({
                     <hr />
                     {as !== 'delete'
                         ?   children
-                        :   <Button intent="standard" rounded="full" size="lg" type="submit">
+                        :   <>
+                            <Paragraph size="md">{children}</Paragraph>
+                            <Button
+                                onClick={async () => {
+                                    if (CBRedux && idToDelete) {
+                                        await CBRedux(idToDelete);
+                                        setOpenModal(false);
+                                    }
+                                }}
+                                intent="standard"
+                                rounded="full"
+                                size="lg"
+                                type="submit"
+                            >
                                 <Image
                                     className="dark:invert"
                                     src="/vercel.svg"
@@ -63,6 +81,7 @@ export const CUDModal = ({
                                 />
                                     Delete
                             </Button>
+                            </>
                         }
                 </div>
             </div>
