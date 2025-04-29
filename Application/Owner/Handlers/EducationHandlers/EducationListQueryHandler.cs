@@ -37,6 +37,7 @@ namespace Application.Owner.Handlers.EducationHandlers
                 .AsNoTracking()
                 .Where(u => u.Username == request.Username)
                 .SelectMany(u => u.LstEducations)
+                .Where(ed => ed.IsDeleted == false)
                 .Where(filter);
 
             Vm.Items =

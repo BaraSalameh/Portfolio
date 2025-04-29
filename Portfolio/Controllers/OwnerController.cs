@@ -55,7 +55,8 @@ namespace Portfolio.Controllers
         public async Task<IActionResult> AddEditEducation(AddEditEducationCommand request) => Ok(await Mediator.Send(request));
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteEducation(DeleteEducationCommand request) => Ok(await Mediator.Send(request));
+        public async Task<IActionResult> DeleteEducation(DeleteEducationCommand request)
+            => Result.HandleResult(await Mediator.Send(request));
 
         [HttpPost]
         public async Task<IActionResult> AddEditBlogPost(AddEditBlogPostCommand request) => Ok(await Mediator.Send(request));

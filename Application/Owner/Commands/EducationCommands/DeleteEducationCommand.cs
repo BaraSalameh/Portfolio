@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.Owner.Commands.EducationCommands
 {
-    public class DeleteEducationCommand : IRequest<AbstractViewModel>
+    public class DeleteEducationCommand : IRequest<CommandResponse>
     {
         public Guid ID { get; set; }
     }

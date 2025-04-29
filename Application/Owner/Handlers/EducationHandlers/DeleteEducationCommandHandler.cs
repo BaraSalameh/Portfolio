@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Owner.Handlers.EducationHandlers
 {
-    public class DeleteEducationCommandHandler: IRequestHandler<DeleteEducationCommand, AbstractViewModel>
+    public class DeleteEducationCommandHandler: IRequestHandler<DeleteEducationCommand, CommandResponse>
     {
         private readonly ICurrentUserService _currentUser;
         private readonly IAppDbContext _context;
@@ -18,13 +18,12 @@ namespace Application.Owner.Handlers.EducationHandlers
             _context = context;
         }
 
-        public async Task<AbstractViewModel> Handle(DeleteEducationCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(DeleteEducationCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new AbstractViewModel();
+            var Vm = new CommandResponse();
 
             if (!_currentUser.IsAuthenticated || _currentUser.UserID == null)
             {
-                Vm.status = false;
                 Vm.lstError.Add("Unauthorized user.");
                 return Vm;
             }
@@ -36,7 +35,6 @@ namespace Application.Owner.Handlers.EducationHandlers
 
             if (EducationToDelete == null)
             {
-                Vm.status = false;
                 Vm.lstError.Add("Education not found");
                 return Vm;
             }
@@ -46,11 +44,9 @@ namespace Application.Owner.Handlers.EducationHandlers
                 EducationToDelete.IsDeleted = true;
                 EducationToDelete.DeletedAt = DateTime.UtcNow;
                 await _context.SaveChangesAsync(cancellationToken);
-                Vm.status = true;
             }
             catch
             {
-                Vm.status = false;
                 Vm.lstError.Add("Error while deleting the Education");
             }
 
