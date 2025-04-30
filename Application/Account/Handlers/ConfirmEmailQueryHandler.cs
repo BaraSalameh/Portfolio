@@ -1,4 +1,5 @@
 ﻿using Application.Account.Queries;
+using Application.Common.Entities;
 using Application.Common.Services.Interface;
 using DataAccess.Interfaces;
 using MediatR;
@@ -6,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Account.Handlers
 {
-    public class ConfirmEmailQueryHandler : IRequestHandler<ConfirmEmailQuery, CEQ_Response>
+    public class ConfirmEmailQueryHandler : IRequestHandler<ConfirmEmailQuery, CommandResponse>
     {
         private readonly IAppDbContext _context;
         private readonly IAuthService _authService;
@@ -18,9 +19,9 @@ namespace Application.Account.Handlers
             _dateTimeProvider = dateTimeProvider;
         }
 
-        public async Task<CEQ_Response> Handle(ConfirmEmailQuery request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(ConfirmEmailQuery request, CancellationToken cancellationToken)
         {
-            var Vm = new CEQ_Response();
+            var Vm = new CommandResponse();
 
             var pendingEmail = await _context.PendingEmailConfirmation
                 .Include(p => p.User).ThenInclude(u => u.Role)
@@ -33,7 +34,6 @@ namespace Application.Account.Handlers
 
             if (pendingEmail == null || pendingEmail.Token != request.Token)
             {
-                Vm.status = false;
                 Vm.lstError.Add("Invalid confirmation link.");
                 return Vm;
             }
@@ -47,8 +47,6 @@ namespace Application.Account.Handlers
             _authService.AuthSetupAsync(pendingEmail.User, pendingEmail.RememberMe);
             await _context.SaveChangesAsync(cancellationToken);
 
-            Vm.status = true;
-            Vm.IsConfirmed = true;
             return Vm;
         }
     }

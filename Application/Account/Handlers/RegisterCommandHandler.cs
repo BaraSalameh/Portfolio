@@ -1,5 +1,6 @@
 ﻿using Application.Account.Commands;
 using Application.Common.Constants;
+using Application.Common.Entities;
 using Application.Common.Functions;
 using Application.Common.Services.Interface;
 using AutoMapper;
@@ -10,7 +11,7 @@ using MediatR;
 
 namespace Application.Account.Handlers
 {
-    public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RC_Response>
+    public class RegisterCommandHandler : IRequestHandler<RegisterCommand, CommandResponse<RC_Response>>
     {
         private readonly IAppDbContext _context;
         private readonly IMapper _mapper;
@@ -28,15 +29,15 @@ namespace Application.Account.Handlers
             _pendingEmailConfirmationService = pendingEmailConfirmationService;
         }
 
-        public async Task<RC_Response> Handle(RegisterCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse<RC_Response>> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new RC_Response();
+            var Vm = new CommandResponse<RC_Response>();
 
             var role = await _context.Role.FindAsync(RoleIdentifiers.Owner, cancellationToken);
             if (role == null)
             {
-                Vm.status = false;
-                Vm.lstError.Add("Error while assigning role!");
+                Vm.ResultType = ResultType.ServerError;
+                Vm.lstError.Add("Default user role not found.");
                 return Vm;
             }
 
@@ -56,16 +57,18 @@ namespace Application.Account.Handlers
                 await _context.User.AddAsync(ResultToDB, cancellationToken);
                 await _context.SaveChangesAsync(cancellationToken);
 
-                Vm.status = true;
-                Vm.Username = ResultToDB.Username;
-                Vm.Role = ResultToDB.Role!.Name!;
+                Vm.Data = new RC_Response
+                {
+                    Username = ResultToDB.Username,
+                    Role = ResultToDB.Role.Name!
+                };
 
                 await _userNotificationService.SendEmailConfirmationAsync(ResultToDB);
             }
             catch
             {
-                Vm.status = false;
-                Vm.lstError.Add("Email/Username already exist!");
+                Vm.ResultType = ResultType.Conflict;
+                Vm.lstError.Add("Email is already registered.");
             }
 
             return Vm;

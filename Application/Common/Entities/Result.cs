@@ -1,4 +1,5 @@
 ﻿using Domain.Enums;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Application.Common.Entities
@@ -20,12 +21,14 @@ namespace Application.Common.Entities
                 return res.ResultType switch
                 {
                     ResultType.Unauthorized => new UnauthorizedObjectResult(res.lstError),
-                    ResultType.Forbidden => new ObjectResult(res.lstError) { StatusCode = 403 },
+                    ResultType.Forbidden => new ObjectResult(res.lstError) { StatusCode = StatusCodes.Status403Forbidden },
                     ResultType.NotFound => new NotFoundObjectResult(res.lstError),
                     ResultType.ValidationError => new BadRequestObjectResult(res.lstError),
+                    ResultType.ServerError => new ObjectResult(res.lstError) { StatusCode = StatusCodes.Status500InternalServerError },
+                    ResultType.Conflict => new ConflictObjectResult(res.lstError),
                     _ => res.lstError.Count == 0
-                        ? new OkObjectResult(res)
-                        : new BadRequestObjectResult(res)
+                        ? new OkObjectResult(res.Data)
+                        : new BadRequestObjectResult(res.lstError)
                 };
             }
 

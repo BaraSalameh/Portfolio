@@ -1,13 +1,15 @@
 ﻿using Application.Account.Commands;
+using Application.Common.Entities;
 using Application.Common.Functions;
 using Application.Common.Services.Interface;
 using DataAccess.Interfaces;
+using Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Account.Handlers
 {
-    class LoginCommandHandler : IRequestHandler<LoginCommand, LC_Response>
+    class LoginCommandHandler : IRequestHandler<LoginCommand, CommandResponse<LC_Response>>
     {
         private readonly IAppDbContext _context;
         private readonly IAuthService _authService;
@@ -22,9 +24,9 @@ namespace Application.Account.Handlers
             _userNotificationService = userNotificationService;
         }
 
-        public async Task<LC_Response> Handle(LoginCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse<LC_Response>> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new LC_Response();
+            var Vm = new CommandResponse<LC_Response>();
 
             string EncryptedPassword = request.Password.Encrypt(true);
             var user =
@@ -35,8 +37,8 @@ namespace Application.Account.Handlers
 
             if (user == null)
             {
+                Vm.ResultType = ResultType.NotFound;
                 Vm.lstError.Add("Wrong username/password");
-                Vm.status = false;
                 return Vm;
             }
             
@@ -48,10 +50,7 @@ namespace Application.Account.Handlers
                 _pendingEmailConfirmationService.GenerateAsync(user, request.RememberMe);
                 await _context.SaveChangesAsync(cancellationToken);
 
-                Vm.status = true;
-                Vm.Username = user.Username!;
-                Vm.Role = user.Role.Name!;
-                Vm.IsConfirmed = user.IsConfirmed;
+                Vm.ResultType = ResultType.Forbidden;
                 Vm.lstError.Add("User lacks confirmation.");
                 await _userNotificationService.SendEmailConfirmationAsync(user);
                 return Vm;
@@ -60,10 +59,11 @@ namespace Application.Account.Handlers
             _authService.AuthSetupAsync(user, request.RememberMe);
             await _context.SaveChangesAsync(cancellationToken);
 
-            Vm.status = true;
-            Vm.Username = user.Username!;
-            Vm.Role = user.Role.Name!;
-            Vm.IsConfirmed = user.IsConfirmed;
+            Vm.Data = new LC_Response
+            {
+                Username = user.Username!,
+                Role = user.Role.Name!
+            };
 
             return Vm;
         }

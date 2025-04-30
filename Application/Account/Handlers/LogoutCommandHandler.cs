@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Account.Handlers
 {
-    public class LogoutCommandHandler : IRequestHandler<LogoutCommand, AbstractViewModel>
+    public class LogoutCommandHandler : IRequestHandler<LogoutCommand, CommandResponse>
     {
         private readonly ICurrentUserService _currentUserService;
         private readonly IAppDbContext _context;
@@ -20,39 +20,27 @@ namespace Application.Account.Handlers
             _cookieService = cookieService;
         }
 
-        public async Task<AbstractViewModel> Handle(LogoutCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(LogoutCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new AbstractViewModel();
+            var Vm = new CommandResponse();
 
-            try
+            _cookieService.ClearAuthCookies();
+
+            if (!_currentUserService.IsAuthenticated || _currentUserService.UserID == null)
             {
-                if (!_currentUserService.IsAuthenticated || _currentUserService.UserID == null)
-                {
-                    Vm.status = false;
-                    Vm.lstError.Add("User is not authenticated.");
-                    return Vm;
-                }
-
-                var userID = _currentUserService.UserID.Value;
-
-                var user = await _context.User
-                    .Include(u => u.LstRefreshTokens)
-                    .FirstOrDefaultAsync(u => u.ID == userID, cancellationToken);
-
-                if (user != null)
-                {
-                    user.LstRefreshTokens.Clear();
-                    await _context.SaveChangesAsync(cancellationToken);
-                }
-
-                _cookieService.ClearAuthCookies();
-
-                Vm.status = true;
+                return Vm;
             }
-            catch
+
+            var userID = _currentUserService.UserID.Value;
+
+            var user = await _context.User
+                .Include(u => u.LstRefreshTokens)
+                .FirstOrDefaultAsync(u => u.ID == userID, cancellationToken);
+
+            if (user != null)
             {
-                Vm.status = false;
-                Vm.lstError.Add("error while logging out!");
+                user.LstRefreshTokens.Clear();
+                await _context.SaveChangesAsync(cancellationToken);
             }
 
             return Vm;

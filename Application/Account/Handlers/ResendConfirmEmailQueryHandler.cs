@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Account.Handlers
 {
-    public class ResendConfirmEmailQueryHandler : IRequestHandler<ResendConfirmEmailQuery, AbstractViewModel>
+    public class ResendConfirmEmailQueryHandler : IRequestHandler<ResendConfirmEmailQuery, CommandResponse>
     {
         private readonly IAppDbContext _context;
         private readonly IUserNotificationService _UserNotificationService;
@@ -22,9 +22,9 @@ namespace Application.Account.Handlers
             _dateTimeProvider = dateTimeProvider;
         }
 
-        public async Task<AbstractViewModel> Handle(ResendConfirmEmailQuery request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(ResendConfirmEmailQuery request, CancellationToken cancellationToken)
         {
-            var Vm = new AbstractViewModel();
+            var Vm = new CommandResponse();
 
             var pendingEmail = await _context.PendingEmailConfirmation
                .Include(pe => pe.User).ThenInclude(u => u.Role)
@@ -37,7 +37,6 @@ namespace Application.Account.Handlers
 
             if(pendingEmail == null)
             {
-                Vm.status = false;
                 Vm.lstError.Add("Invalid confirmation link.");
                 return Vm;
             }

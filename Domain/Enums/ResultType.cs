@@ -6,6 +6,8 @@
         ValidationError,
         Unauthorized,
         Forbidden,
-        NotFound
+        NotFound,
+        ServerError,
+        Conflict
     }
 }

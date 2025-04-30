@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.Account.Queries
 {
-    public class ResendConfirmEmailQuery : IRequest<AbstractViewModel>
+    public class ResendConfirmEmailQuery : IRequest<CommandResponse>
     {
         public string Email { get; set; }
     }

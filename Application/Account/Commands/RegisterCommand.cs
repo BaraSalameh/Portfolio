@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.Account.Commands
 {
-    public class RegisterCommand : IRequest<RC_Response>
+    public class RegisterCommand : IRequest<CommandResponse<RC_Response>>
     {
         public string? Firstname { get; set; }
         public string? Lastname { get; set; }
@@ -12,7 +12,7 @@ namespace Application.Account.Commands
         public bool RememberMe { get; set; } = false;
     }
 
-    public class RC_Response : AbstractViewModel
+    public class RC_Response
     {
         public string Username { get; set; }
         public string Role { get; set; }
