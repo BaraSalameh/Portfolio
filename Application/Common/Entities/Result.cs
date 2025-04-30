@@ -40,8 +40,8 @@ namespace Application.Common.Entities
                     : new BadRequestObjectResult(cmd.lstError);
             }
 
-            // ListQuery_Response<T>
-            if (resultType.IsGenericType && resultType.GetGenericTypeDefinition() == typeof(ListQuery_Response<>))
+            // ListQueryResponse<T>
+            if (resultType.IsGenericType && resultType.GetGenericTypeDefinition() == typeof(ListQueryResponse<>))
             {
                 var items = resultType.GetProperty("Items")?.GetValue(result) as System.Collections.ICollection;
                 return (items == null || items.Count == 0)

@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 
 namespace Application.Client.Handlers
 {
-    public class UserListQueryHandler : IRequestHandler<ListQuery<ULQ_Response>, ListQuery_Response<ULQ_Response>>
+    public class UserListQueryHandler : IRequestHandler<UserListQuery, ListQueryResponse<ULQ_Response>>
     {
         private readonly IAppDbContext _context;
         private readonly IMapper _mapper;
@@ -20,9 +20,9 @@ namespace Application.Client.Handlers
             _mapper = mapper;
         }
 
-        public async Task<ListQuery_Response<ULQ_Response>> Handle(ListQuery<ULQ_Response> request, CancellationToken cancellationToken)
+        public async Task<ListQueryResponse<ULQ_Response>> Handle(UserListQuery request, CancellationToken cancellationToken)
         {
-            var Vm = new ListQuery_Response<ULQ_Response>();
+            var response = new ListQueryResponse<ULQ_Response>();
             Expression<Func<User, bool>> Filter = f => true;
 
             if (!string.IsNullOrEmpty(request.Search))
@@ -34,16 +34,16 @@ namespace Application.Client.Handlers
                     (f.Lastname ?? "").Contains(StrSearch);
             }
 
-            var ResultFromDB =
-                _context.User.Where(Filter);
+            var wxistingEntity =_context.User
+                .Where(Filter);
 
-            Vm.Items =
+            response.Items =
                 await _mapper.ProjectTo<ULQ_Response>(
-                    ResultFromDB.Skip((int)(request.PageNumber * request.PageSize)!).Take((int)request.PageSize!)
+                    wxistingEntity.Skip((int)(request.PageNumber * request.PageSize)!).Take((int)request.PageSize!)
                 ).ToListAsync();
-            Vm.RowCount = Vm.Items.Count();
+            response.RowCount = response.Items.Count();
 
-            return Vm;
+            return response;
         }
     }
 }

@@ -1,8 +1,9 @@
-﻿using MediatR;
+﻿using Application.Common.Entities;
+using MediatR;
 
 namespace Application.Client.Queries
 {
-    public class UserByUsernameQuery : IRequest<UBUQ_Response>
+    public class UserByUsernameQuery : IRequest<SingleQueryResponse<UBUQ_Response>>
     {
         public string Username { get; set; }
     }

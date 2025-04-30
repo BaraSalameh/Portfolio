@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 
 namespace Application.Owner.Handlers.EducationHandlers
 {
-    public class EducationListQueryHandler : IRequestHandler<EducationListQuery, ListQuery_Response<ELQ_Educations>>
+    public class EducationListQueryHandler : IRequestHandler<EducationListQuery, ListQueryResponse<ELQ_Educations>>
     {
         private readonly IAppDbContext _context;
         private readonly IMapper _mapper;
@@ -20,9 +20,9 @@ namespace Application.Owner.Handlers.EducationHandlers
             _mapper = mapper;
         }
 
-        public async Task<ListQuery_Response<ELQ_Educations>> Handle(EducationListQuery request, CancellationToken cancellationToken)
+        public async Task<ListQueryResponse<ELQ_Educations>> Handle(EducationListQuery request, CancellationToken cancellationToken)
         {
-            var Vm = new ListQuery_Response<ELQ_Educations>();
+            var Vm = new ListQueryResponse<ELQ_Educations>();
 
             Expression<Func<Education, bool>> filter = f => true;
 

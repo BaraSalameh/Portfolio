@@ -5,10 +5,11 @@ using AutoMapper;
 using DataAccess.Interfaces;
 using Domain.Entities;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Client.Handlers
 {
-    public class SendEmailCommandHandler : IRequestHandler<SendEmailCommand, AbstractViewModel>
+    public class SendEmailCommandHandler : IRequestHandler<SendEmailCommand, CommandResponse>
     {
         private readonly IAppDbContext _context;
         private readonly IMapper _mapper;
@@ -21,36 +22,36 @@ namespace Application.Client.Handlers
             _userResolver = userResolver;
 
         }
-        public async Task<AbstractViewModel> Handle(SendEmailCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(SendEmailCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new AbstractViewModel();
-
-            var user = await _userResolver.GetUserByEmailAsync(request.EmailTo, cancellationToken);
-
-            if (user == null || user.ID == null)
-            {
-                Vm.status = false;
-                Vm.lstError.Add("Error while finding the user");
-                return Vm;
-            }
-
-            var ResultToDB = _mapper.Map<ContactMessage>(request);
-            ResultToDB.UserID = user.ID.Value;
-
-            await _context.ContactMessage.AddAsync(ResultToDB);
+            var response = new CommandResponse();
 
             try
             {
+                var user = await _userResolver.GetUserByEmailAsync(request.EmailTo, cancellationToken);
+
+                if (user == null || user.ID == null)
+                {
+                    response.lstError.Add("User not found.");
+                    return response;
+                }
+
+                var newEntity = _mapper.Map<ContactMessage>(request);
+                newEntity.UserID = user.ID.Value;
+
+                await _context.ContactMessage.AddAsync(newEntity, cancellationToken);
                 await _context.SaveChangesAsync();
-                Vm.status = true;
             }
-            catch
+            catch (DbUpdateException dbEx)
             {
-                Vm.status = false;
-                Vm.lstError.Add("Error while sending Email");
+                response.lstError.Add("Unable to send email.");
+            }
+            catch (Exception ex)
+            {
+                response.lstError.Add("Unexpected error occurred.");
             }
 
-            return Vm;
+            return response;
         }
     }
 }

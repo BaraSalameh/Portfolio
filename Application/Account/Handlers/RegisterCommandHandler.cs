@@ -7,6 +7,7 @@ using DataAccess.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Account.Handlers
 {
@@ -32,26 +33,27 @@ namespace Application.Account.Handlers
         {
             var response = new CommandResponse<RC_Response>();
 
-            var existingEntity = await _context.Role.FindAsync(RoleIdentifiers.Owner, cancellationToken);
-            if (existingEntity == null)
-            {
-                response.ResultType = ResultType.ServerError;
-                response.lstError.Add("Default user role not found.");
-                return response;
-            }
-
-            request.Password = request.Password!.Encrypt(true);
-            var baseUserName = $"{request.Firstname}-{request.Lastname}".ToLower().Replace(" ", "-");
-            var guidSuffix = Guid.NewGuid().ToString("N").Substring(0, 6);
-
-            var newEntity = _mapper.Map<User>(request);
-            newEntity.Username = $"{baseUserName}-{guidSuffix}";
-            newEntity.RoleID =  RoleIdentifiers.Owner;
-            newEntity.Role = existingEntity;
-            newEntity.CreatedAt = _dateTimeProvider.UtcNow;
-
             try
             {
+                var role = await _context.Role.FindAsync(RoleIdentifiers.Owner, cancellationToken);
+                if (role == null)
+                {
+                    response.ResultType = ResultType.ServerError;
+                    response.lstError.Add("Default user role not found.");
+                    return response;
+                }
+
+                request.Password = request.Password!.Encrypt(true);
+                var baseUserName = $"{request.Firstname}-{request.Lastname}".ToLower().Replace(" ", "-");
+                var guidSuffix = Guid.NewGuid().ToString("N").Substring(0, 6);
+
+                var newEntity = _mapper.Map<User>(request);
+                newEntity.Username = $"{baseUserName}-{guidSuffix}";
+                newEntity.RoleID =  RoleIdentifiers.Owner;
+                newEntity.Role = role;
+                newEntity.CreatedAt = _dateTimeProvider.UtcNow;
+
+            
                 _pendingEmailConfirmationService.GenerateAsync(newEntity, request.RememberMe);
                 await _context.User.AddAsync(newEntity, cancellationToken);
                 await _context.SaveChangesAsync(cancellationToken);
@@ -64,10 +66,14 @@ namespace Application.Account.Handlers
 
                 await _userNotificationService.SendEmailConfirmationAsync(newEntity);
             }
-            catch
+            catch (DbUpdateException dbEx)
             {
                 response.ResultType = ResultType.Conflict;
                 response.lstError.Add("Email is already registered.");
+            }
+            catch (Exception ex)
+            {
+                response.lstError.Add("Unexpected error occurred.");
             }
 
             return response;

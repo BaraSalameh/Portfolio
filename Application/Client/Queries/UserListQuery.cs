@@ -1,5 +1,8 @@
-﻿namespace Application.Client.Queries
+﻿using Application.Common.Entities;
+
+namespace Application.Client.Queries
 {
+    public class UserListQuery : ListQuery<ULQ_Response> { }
     public class ULQ_Response
     {
         public string? Firstname { get; set; }

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Admin.Handlers.RoleHandlers
 {
-    public class RolesListQueryHandler : IRequestHandler<ListQuery<LKP_LanguageListQuery>, ListQuery_Response<LKP_LanguageListQuery>>
+    public class RolesListQueryHandler : IRequestHandler<ListQuery<LKP_LanguageListQuery>, ListQueryResponse<LKP_LanguageListQuery>>
     {
 
         private readonly IAppDbContext _context;
@@ -19,9 +19,9 @@ namespace Application.Admin.Handlers.RoleHandlers
             _mapper = mapper;
         }
 
-        public async Task<ListQuery_Response<LKP_LanguageListQuery>> Handle(ListQuery<LKP_LanguageListQuery> request, CancellationToken cancellationToken)
+        public async Task<ListQueryResponse<LKP_LanguageListQuery>> Handle(ListQuery<LKP_LanguageListQuery> request, CancellationToken cancellationToken)
         {
-            var Output = new ListQuery_Response<LKP_LanguageListQuery>();
+            var Output = new ListQueryResponse<LKP_LanguageListQuery>();
 
             var ResultFromDB = _context.LKP_Language;
 

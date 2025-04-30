@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.Client.Commands
 {
-    public class SendEmailCommand : IRequest<AbstractViewModel>
+    public class SendEmailCommand : IRequest<CommandResponse>
     {
         public string EmailTo { get; set; }
         public string Name { get; set; }
