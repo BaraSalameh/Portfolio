@@ -1,4 +1,5 @@
 ﻿using Application.Common.Entities;
+using Application.Common.Services.Interface;
 using Application.Owner.Queries.EducationQueries;
 using AutoMapper;
 using DataAccess.Interfaces;
@@ -11,11 +12,13 @@ namespace Application.Owner.Handlers.EducationHandlers
     {
         private readonly IAppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly ICurrentUserService _currentUserService;
 
-        public EducationListQueryHandler(IAppDbContext context, IMapper mapper)
+        public EducationListQueryHandler(IAppDbContext context, IMapper mapper, ICurrentUserService currentUserService)
         {
             _context = context;
             _mapper = mapper;
+            _currentUserService = currentUserService;
         }
 
         public async Task<ListQueryResponse<ELQ_Educations>> Handle(EducationListQuery request, CancellationToken cancellationToken)
@@ -24,7 +27,7 @@ namespace Application.Owner.Handlers.EducationHandlers
 
             var existingEntity = _context.User
                 .AsNoTracking()
-                .Where(u => u.Username == request.Username)
+                .Where(u => u.ID == _currentUserService.UserID)
                 .SelectMany(u => u.LstEducations)
                 .Where(ed => ed.IsDeleted == false);
 
