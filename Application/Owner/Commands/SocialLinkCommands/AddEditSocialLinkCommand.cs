@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.Owner.Commands.SocialLinkCommands
 {
-    public class AddEditSocialLinkCommand : IRequest<AbstractViewModel>
+    public class AddEditSocialLinkCommand : IRequest<CommandResponse>
     {
         public Guid? ID { get; set; }
         public string Platform { get; set; }

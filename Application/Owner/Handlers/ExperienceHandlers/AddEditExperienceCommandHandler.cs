@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Owner.Handlers.ExperienceHandlers
 {
-    public class AddEditExperienceCommandHandler : IRequestHandler<AddEditExperienceCommand, AbstractViewModel>
+    public class AddEditExperienceCommandHandler : IRequestHandler<AddEditExperienceCommand, CommandResponse>
     {
         private readonly ICurrentUserService _currentUser;
         private readonly IAppDbContext _context;
@@ -22,52 +22,50 @@ namespace Application.Owner.Handlers.ExperienceHandlers
             _mapper = mapper;
         }
 
-        public async Task<AbstractViewModel> Handle(AddEditExperienceCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(AddEditExperienceCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new AbstractViewModel();
-
-            if (!_currentUser.IsAuthenticated || _currentUser.UserID == null)
-            {
-                Vm.status = false;
-                Vm.lstError.Add("Unauthorized user.");
-                return Vm;
-            }
-
-            if (request.ID == null)
-            {
-                var ResultToDB = _mapper.Map<Experience>(request);
-                ResultToDB.UserID = _currentUser.UserID.Value;
-                await _context.Experience.AddAsync(ResultToDB, cancellationToken);
-            }
-            else
-            {
-                var oldExperience = await _context.Experience
-                    .Where(x => x.UserID == _currentUser.UserID.Value && x.ID == request.ID && (x.IsDeleted == false || x.IsDeleted == null))
-                    .FirstOrDefaultAsync();
-
-                if (oldExperience == null)
-                {
-                    Vm.status = false;
-                    Vm.lstError.Add("Experience not found.");
-                    return Vm;
-                }
-
-                _mapper.Map(request, oldExperience);
-                oldExperience.UpdatedAt = DateTime.UtcNow;
-            }
+            var response = new CommandResponse();
 
             try
             {
+                if (request.ID == null)
+                {
+                    var newEntity = _mapper.Map<Experience>(request);
+                    newEntity.UserID = _currentUser.UserID!.Value;
+                    await _context.Experience.AddAsync(newEntity, cancellationToken);
+                }
+                else
+                {
+                    var existingEntity = await _context.Experience
+                        .FirstOrDefaultAsync(x =>
+                            x.UserID == _currentUser.UserID!.Value &&
+                            x.ID == request.ID &&
+                            x.IsDeleted == false,
+                            cancellationToken
+                        );
+
+                    if (existingEntity == null)
+                    {
+                        response.lstError.Add("Experience not found.");
+                        return response;
+                    }
+
+                    _mapper.Map(request, existingEntity);
+                    existingEntity.UpdatedAt = DateTime.UtcNow;
+                }
+
                 await _context.SaveChangesAsync(cancellationToken);
-                Vm.status = true;
             }
-            catch
+            catch (DbUpdateException dbEx)
             {
-                Vm.status = false;
-                Vm.lstError.Add("Error while saving the Experience.");
+                response.lstError.Add("Error while adding/updating the Experience.");
+            }
+            catch (Exception ex)
+            {
+                response.lstError.Add("Unexpected error occurred.");
             }
 
-            return Vm;
+            return response;
         }
     }
 }

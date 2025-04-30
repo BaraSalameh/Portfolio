@@ -2,10 +2,8 @@
 using Application.Owner.Queries.EducationQueries;
 using AutoMapper;
 using DataAccess.Interfaces;
-using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace Application.Owner.Handlers.EducationHandlers
 {
@@ -22,31 +20,18 @@ namespace Application.Owner.Handlers.EducationHandlers
 
         public async Task<ListQueryResponse<ELQ_Educations>> Handle(EducationListQuery request, CancellationToken cancellationToken)
         {
-            var Vm = new ListQueryResponse<ELQ_Educations>();
+            var response = new ListQueryResponse<ELQ_Educations>();
 
-            Expression<Func<Education, bool>> filter = f => true;
-
-            if (!string.IsNullOrEmpty(request.Search))
-            {
-                var StrSearch = request.Search;
-                filter = f =>
-                    (f.Institution ?? "").Contains(StrSearch);
-            }
-
-            var ResultFromDB = _context.User
+            var existingEntity = _context.User
                 .AsNoTracking()
                 .Where(u => u.Username == request.Username)
                 .SelectMany(u => u.LstEducations)
-                .Where(ed => ed.IsDeleted == false)
-                .Where(filter);
+                .Where(ed => ed.IsDeleted == false);
 
-            Vm.Items =
-                await _mapper.ProjectTo<ELQ_Educations>(
-                    ResultFromDB.Skip((int)(request.PageNumber * request.PageSize)!).Take((int)request.PageSize!)
-                ).ToListAsync();
-            Vm.RowCount = Vm.Items.Count();
+            response.Items = await _mapper.ProjectTo<ELQ_Educations>(existingEntity).ToListAsync(cancellationToken);
+            response.RowCount = response.Items.Count();
 
-            return Vm;
+            return response;
         }
     }
 }

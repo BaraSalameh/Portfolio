@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.Owner.Commands.UserLanguageCommands
 {
-    public class EditDeleteUserLanguageCommand : IRequest<AbstractViewModel>
+    public class EditDeleteUserLanguageCommand : IRequest<CommandResponse>
     {
         public List<EDULC_LKP_Language>? LstLanguages { get; set; }
     }

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Owner.Handlers.ContactMessage
 {
-    public class SignMessageCommandHandler : IRequestHandler<SignMessageCommand, AbstractViewModel>
+    public class SignMessageCommandHandler : IRequestHandler<SignMessageCommand, CommandResponse>
     {
         private readonly ICurrentUserService _currentUserService;
         private readonly IAppDbContext _context;
@@ -17,44 +17,42 @@ namespace Application.Owner.Handlers.ContactMessage
             _context = context;
         }
 
-        public async Task<AbstractViewModel> Handle(SignMessageCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(SignMessageCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new AbstractViewModel();
+            var response = new CommandResponse();
 
-            if(!_currentUserService.IsAuthenticated || _currentUserService.UserID == null)
-            {
-                Vm.status = false;
-                Vm.lstError.Add("Unauthorized user");
-                return Vm;
-            }
-
-            var oldMessage =
-                await _context.ContactMessage
-                    .Where(m => m.UserID == _currentUserService.UserID.Value && m.ID == request.ID && m.IsRead == false && m.IsDeleted == false)
-                    .FirstOrDefaultAsync(cancellationToken);
-
-            if (oldMessage == null)
-            {
-                Vm.status = false;
-                Vm.lstError.Add("Message not found or it's already been read");
-                return Vm;
-            }
-
-            oldMessage.IsRead = true;
-            oldMessage.UpdatedAt = DateTime.UtcNow;
-            
             try
             {
+                var existingEntity = await _context.ContactMessage
+                    .FirstOrDefaultAsync(m => 
+                        m.UserID == _currentUserService.UserID!.Value && 
+                        m.ID == request.ID && 
+                        m.IsRead == false && 
+                        m.IsDeleted == false, 
+                        cancellationToken
+                    );
+
+                if (existingEntity == null)
+                {
+                    response.lstError.Add("Message not found.");
+                    return response;
+                }
+
+                existingEntity.IsRead = true;
+                existingEntity.UpdatedAt = DateTime.UtcNow;
+            
                 await _context.SaveChangesAsync(cancellationToken);
-                Vm.status = true;
             }
-            catch
+            catch (DbUpdateException dbEx)
             {
-                Vm.status = false;
-                Vm.lstError.Add("Error while reading the Message");
+                response.lstError.Add("Error while signing the Message.");
+            }
+            catch (Exception ex)
+            {
+                response.lstError.Add("Unexpected error occurred.");
             }
 
-            return Vm;
+            return response;
         }
     }
 }

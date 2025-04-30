@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Owner.Handlers.BlogPostHandlers
 {
-    public class DeleteBlogPostCommandHandler: IRequestHandler<DeleteBlogPostCommand, AbstractViewModel>
+    public class DeleteBlogPostCommandHandler: IRequestHandler<DeleteBlogPostCommand, CommandResponse>
     {
         private readonly ICurrentUserService _currentUser;
         private readonly IAppDbContext _context;
@@ -18,43 +18,40 @@ namespace Application.Owner.Handlers.BlogPostHandlers
             _context = context;
         }
 
-        public async Task<AbstractViewModel> Handle(DeleteBlogPostCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(DeleteBlogPostCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new AbstractViewModel();
-
-            if (!_currentUser.IsAuthenticated || _currentUser.UserID == null)
-            {
-                Vm.status = false;
-                Vm.lstError.Add("Unauthorized user.");
-                return Vm;
-            }
-
-            var BlogPostToDelete =
-                await _context.BlogPost
-                    .Where(x => x.UserID == _currentUser.UserID.Value && x.ID == request.ID && x.IsDeleted == false)
-                    .FirstOrDefaultAsync(cancellationToken);
-
-            if (BlogPostToDelete == null)
-            {
-                Vm.status = false;
-                Vm.lstError.Add("BlogPost not found");
-                return Vm;
-            }
+            var response = new CommandResponse();
 
             try
             {
-                BlogPostToDelete.IsDeleted = true;
-                BlogPostToDelete.DeletedAt = DateTime.UtcNow;
+                var existingEntity = await _context.BlogPost
+                    .FirstOrDefaultAsync(x =>
+                        x.UserID == _currentUser.UserID!.Value &&
+                        x.ID == request.ID &&
+                        x.IsDeleted == false,
+                        cancellationToken
+                    );
+
+                if (existingEntity == null)
+                {
+                    response.lstError.Add("BlogPost not found.");
+                    return response;
+                }
+
+                existingEntity.IsDeleted = true;
+                existingEntity.DeletedAt = DateTime.UtcNow;
                 await _context.SaveChangesAsync(cancellationToken);
-                Vm.status = true;
             }
-            catch
+            catch (DbUpdateException dbEx)
             {
-                Vm.status = false;
-                Vm.lstError.Add("Error while deleting the BlogPost");
+                response.lstError.Add("Error while deleting the BlogPost.");
+            }
+            catch (Exception ex)
+            {
+                response.lstError.Add("Unexpected error occurred");
             }
 
-            return Vm;
+            return response;
         }
     }
 }

@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.Owner.Commands.EducationCommands
 {
-    public class AddEditEducationCommand : IRequest<AbstractViewModel>
+    public class AddEditEducationCommand : IRequest<CommandResponse>
     {
         public Guid? ID { get; set; }
         public string Institution { get; set; }

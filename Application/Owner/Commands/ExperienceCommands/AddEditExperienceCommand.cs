@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.Owner.Commands.ExperienceCommands
 {
-    public class AddEditExperienceCommand : IRequest<AbstractViewModel>
+    public class AddEditExperienceCommand : IRequest<CommandResponse>
     {
         public Guid? ID { get; set; }
         public string JobTitle { get; set; }

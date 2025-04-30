@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Owner.Handlers.ExperienceHandlers
 {
-    public class DeleteExperienceCommandHandler: IRequestHandler<DeleteExperienceCommand, AbstractViewModel>
+    public class DeleteExperienceCommandHandler: IRequestHandler<DeleteExperienceCommand, CommandResponse>
     {
         private readonly ICurrentUserService _currentUser;
         private readonly IAppDbContext _context;
@@ -18,43 +18,40 @@ namespace Application.Owner.Handlers.ExperienceHandlers
             _context = context;
         }
 
-        public async Task<AbstractViewModel> Handle(DeleteExperienceCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(DeleteExperienceCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new AbstractViewModel();
-
-            if (!_currentUser.IsAuthenticated || _currentUser.UserID == null)
-            {
-                Vm.status = false;
-                Vm.lstError.Add("Unauthorized user.");
-                return Vm;
-            }
-
-            var ExperienceToDelete =
-                await _context.Experience
-                    .Where(x => x.UserID == _currentUser.UserID.Value && x.ID == request.ID && x.IsDeleted == false)
-                    .FirstOrDefaultAsync(cancellationToken);
-
-            if (ExperienceToDelete == null)
-            {
-                Vm.status = false;
-                Vm.lstError.Add("Experience not found");
-                return Vm;
-            }
+            var response = new CommandResponse();
 
             try
             {
-                ExperienceToDelete.IsDeleted = true;
-                ExperienceToDelete.DeletedAt = DateTime.UtcNow;
+                var existingEntity = await _context.Experience
+                    .FirstOrDefaultAsync(x =>
+                        x.UserID == _currentUser.UserID!.Value &&
+                        x.ID == request.ID &&
+                        x.IsDeleted == false,
+                        cancellationToken
+                    );
+
+                if (existingEntity == null)
+                {
+                    response.lstError.Add("Experience not found.");
+                    return response;
+                }
+
+                existingEntity.IsDeleted = true;
+                existingEntity.DeletedAt = DateTime.UtcNow;
                 await _context.SaveChangesAsync(cancellationToken);
-                Vm.status = true;
             }
-            catch
+            catch (DbUpdateException dbEx)
             {
-                Vm.status = false;
-                Vm.lstError.Add("Error while deleting the Experience");
+                response.lstError.Add("Error while deleting the Experience.");
+            }
+            catch (Exception ex)
+            {
+                response.lstError.Add("Unexpected error occurred.");
             }
 
-            return Vm;
+            return response;
         }
     }
 }

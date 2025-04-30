@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.Owner.Commands.SkillCommands
 {
-    public class AddEditSkillCommand : IRequest<AbstractViewModel>
+    public class AddEditSkillCommand : IRequest<CommandResponse>
     {
         public Guid? ID { get; set; }
         public string Name { get; set; }

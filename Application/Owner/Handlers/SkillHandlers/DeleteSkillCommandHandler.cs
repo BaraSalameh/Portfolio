@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Owner.Handlers.SkillHandlers
 {
-    public class DeleteSkillCommandHandler: IRequestHandler<DeleteSkillCommand, AbstractViewModel>
+    public class DeleteSkillCommandHandler: IRequestHandler<DeleteSkillCommand, CommandResponse>
     {
         private readonly ICurrentUserService _currentUser;
         private readonly IAppDbContext _context;
@@ -18,43 +18,40 @@ namespace Application.Owner.Handlers.SkillHandlers
             _context = context;
         }
 
-        public async Task<AbstractViewModel> Handle(DeleteSkillCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(DeleteSkillCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new AbstractViewModel();
-
-            if (!_currentUser.IsAuthenticated || _currentUser.UserID == null)
-            {
-                Vm.status = false;
-                Vm.lstError.Add("Unauthorized user.");
-                return Vm;
-            }
-
-            var SkillToDelete =
-                await _context.Skill
-                    .Where(x => x.UserID == _currentUser.UserID.Value && x.ID == request.ID && x.IsDeleted == false)
-                    .FirstOrDefaultAsync(cancellationToken);
-
-            if (SkillToDelete == null)
-            {
-                Vm.status = false;
-                Vm.lstError.Add("Skill not found");
-                return Vm;
-            }
+            var response = new CommandResponse();
 
             try
             {
-                SkillToDelete.IsDeleted = true;
-                SkillToDelete.DeletedAt = DateTime.UtcNow;
+                var existingEntity = await _context.Skill
+                    .FirstOrDefaultAsync(x =>
+                        x.UserID == _currentUser.UserID!.Value &&
+                        x.ID == request.ID &&
+                        x.IsDeleted == false,
+                        cancellationToken
+                    );
+
+                if (existingEntity == null)
+                {
+                    response.lstError.Add("Skill not found.");
+                    return response;
+                }
+
+                existingEntity.IsDeleted = true;
+                existingEntity.DeletedAt = DateTime.UtcNow;
                 await _context.SaveChangesAsync(cancellationToken);
-                Vm.status = true;
             }
-            catch
+            catch (DbUpdateException dbEx)
             {
-                Vm.status = false;
-                Vm.lstError.Add("Error while deleting the Skill");
+                response.lstError.Add("Error while deleting the Skill.");
+            }
+            catch (Exception ex)
+            {
+                response.lstError.Add("Unexpected error occurred.");
             }
 
-            return Vm;
+            return response;
         }
     }
 }

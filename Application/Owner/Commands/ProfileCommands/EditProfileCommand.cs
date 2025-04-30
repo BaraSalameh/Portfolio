@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.Owner.Commands.Profile
 {
-    public class EditProfileCommand : IRequest<AbstractViewModel>
+    public class EditProfileCommand : IRequest<CommandResponse>
     {
         public string? Firstname { get; set; }
         public string? Lastname { get; set; }

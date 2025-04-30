@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.Owner.Commands.BlogPostCommands
 {
-    public class AddEditBlogPostCommand : IRequest<AbstractViewModel>
+    public class AddEditBlogPostCommand : IRequest<CommandResponse>
     {
         public Guid? ID { get; set; }
         public string Title { get; set; }

@@ -18,7 +18,7 @@ namespace Application.Owner.MappingProfiles
                     }).ToList()
                 ));
 
-            CreateMap<LKP_Language, LKP_LanguageListQuery>();
+            CreateMap<LKP_Language, LKPLLQ_Response>();
 
         }
     }

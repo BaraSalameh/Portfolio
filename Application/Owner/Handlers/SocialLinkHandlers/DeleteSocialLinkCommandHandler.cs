@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Owner.Handlers.SocialLinkHandlers
 {
-    public class DeleteSocialLinkCommandHandler: IRequestHandler<DeleteSocialLinkCommand, AbstractViewModel>
+    public class DeleteSocialLinkCommandHandler: IRequestHandler<DeleteSocialLinkCommand, CommandResponse>
     {
         private readonly ICurrentUserService _currentUser;
         private readonly IAppDbContext _context;
@@ -18,43 +18,40 @@ namespace Application.Owner.Handlers.SocialLinkHandlers
             _context = context;
         }
 
-        public async Task<AbstractViewModel> Handle(DeleteSocialLinkCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(DeleteSocialLinkCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new AbstractViewModel();
-
-            if (!_currentUser.IsAuthenticated || _currentUser.UserID == null)
-            {
-                Vm.status = false;
-                Vm.lstError.Add("Unauthorized user.");
-                return Vm;
-            }
-
-            var SocialLinkToDelete =
-                await _context.SocialLink
-                    .Where(x => x.UserID == _currentUser.UserID.Value && x.ID == request.ID && x.IsDeleted == false)
-                    .FirstOrDefaultAsync(cancellationToken);
-
-            if (SocialLinkToDelete == null)
-            {
-                Vm.status = false;
-                Vm.lstError.Add("SocialLink not found");
-                return Vm;
-            }
+            var response = new CommandResponse();
 
             try
             {
-                SocialLinkToDelete.IsDeleted = true;
-                SocialLinkToDelete.DeletedAt = DateTime.UtcNow;
+                var existingEntity = await _context.SocialLink
+                    .FirstOrDefaultAsync(x =>
+                        x.UserID == _currentUser.UserID!.Value &&
+                        x.ID == request.ID &&
+                        x.IsDeleted == false,
+                        cancellationToken
+                    );
+
+                if (existingEntity == null)
+                {
+                    response.lstError.Add("SocialLink not found.");
+                    return response;
+                }
+
+                existingEntity.IsDeleted = true;
+                existingEntity.DeletedAt = DateTime.UtcNow;
                 await _context.SaveChangesAsync(cancellationToken);
-                Vm.status = true;
             }
-            catch
+            catch (DbUpdateException dbEx)
             {
-                Vm.status = false;
-                Vm.lstError.Add("Error while deleting the SocialLink");
+                response.lstError.Add("Error while deleting the SocialLink.");
+            }
+            catch (Exception ex)
+            {
+                response.lstError.Add("Unexpected error occurred.");
             }
 
-            return Vm;
+            return response;
         }
     }
 }

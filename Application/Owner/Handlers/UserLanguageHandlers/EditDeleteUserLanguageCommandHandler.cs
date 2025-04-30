@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Owner.Handlers.UserLanguageHandlers
 {
-    public class EditDeleteUserLanguageCommandHandler : IRequestHandler<EditDeleteUserLanguageCommand, AbstractViewModel>
+    public class EditDeleteUserLanguageCommandHandler : IRequestHandler<EditDeleteUserLanguageCommand, CommandResponse>
     {
         private readonly ICurrentUserService _currentUser;
         private readonly IAppDbContext _context;
@@ -21,65 +21,56 @@ namespace Application.Owner.Handlers.UserLanguageHandlers
             _mapper = mapper;
         }
 
-        public async Task<AbstractViewModel> Handle(EditDeleteUserLanguageCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(EditDeleteUserLanguageCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new AbstractViewModel();
-
-            if (!_currentUser.IsAuthenticated || _currentUser.UserID == null)
-            {
-                Vm.status = false;
-                Vm.lstError.Add("Unauthorized user.");
-                return Vm;
-            }
+            var response = new CommandResponse();
 
             if (request.LstLanguages == null)
             {
-
-                Vm.status = false;
-                Vm.lstError.Add("There Should be some languages to add.");
-                return Vm;
+                response.lstError.Add("Language list can't be null.");
+                return response;
             }
-
-            var oldUser = await _context.User
-                .Where(u => u.ID == _currentUser.UserID.Value)
-                .Include(y => y.LstUserLanguages)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            if (oldUser == null)
-            {
-                Vm.status = false;
-                Vm.lstError.Add("User not found.");
-                return Vm;
-            }
-
-            var RequestedLanguages = request.LstLanguages.Select(x => x.LKP_LanguageID).ToList();
-
-            var LKP_LanguageIDs = await _context.LKP_Language
-                .Where(l => RequestedLanguages.Contains(l.ID))
-                .Select(l => l.ID)
-                .ToListAsync(cancellationToken);
-
-            if (RequestedLanguages.Count != LKP_LanguageIDs.Count)
-            {
-                Vm.status = false;
-                Vm.lstError.Add("Wrong Language Entry.");
-                return Vm;
-            }
-
-            _mapper.Map(request, oldUser);
 
             try
             {
+
+                var existingEntity = await _context.User
+                    .Include(y => y.LstUserLanguages)
+                    .FirstOrDefaultAsync(u => u.ID == _currentUser.UserID!.Value, cancellationToken);
+
+                if (existingEntity == null)
+                {
+                    response.lstError.Add("User not found.");
+                    return response;
+                }
+
+                var RequestedLanguages = request.LstLanguages.Select(x => x.LKP_LanguageID).ToList();
+
+                var LKP_LanguageIDs = await _context.LKP_Language
+                    .Where(l => RequestedLanguages.Contains(l.ID))
+                    .Select(l => l.ID)
+                    .ToListAsync(cancellationToken);
+
+                if (RequestedLanguages.Count != LKP_LanguageIDs.Count)
+                {
+                    response.lstError.Add("Wrong Language Entry.");
+                    return response;
+                }
+
+                _mapper.Map(request, existingEntity);
+
                 await _context.SaveChangesAsync(cancellationToken);
-                Vm.status = true;
             }
-            catch
+            catch (DbUpdateException dbEx)
             {
-                Vm.status = false;
-                Vm.lstError.Add("Error while saving the Language.");
+                response.lstError.Add("Error while editting/deleting the Language.");
+            }
+            catch (Exception ex)
+            {
+                response.lstError.Add("Unexpected error occurred");
             }
 
-            return Vm;
+            return response;
         }
     }
 }

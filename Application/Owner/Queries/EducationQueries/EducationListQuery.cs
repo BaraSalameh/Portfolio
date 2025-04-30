@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.Owner.Queries.EducationQueries
 {
-    public class EducationListQuery : ListQuery<ELQ_Educations>
+    public class EducationListQuery : IRequest<ListQueryResponse<ELQ_Educations>>
     {
         public string Username { get; set; }
     }

@@ -20,37 +20,38 @@ namespace Application.Owner.Handlers.EducationHandlers
 
         public async Task<CommandResponse> Handle(DeleteEducationCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new CommandResponse();
-
-            if (!_currentUser.IsAuthenticated || _currentUser.UserID == null)
-            {
-                Vm.lstError.Add("Unauthorized user.");
-                return Vm;
-            }
-
-            var EducationToDelete =
-                await _context.Education
-                    .Where(x => x.UserID == _currentUser.UserID.Value && x.ID == request.ID && x.IsDeleted == false)
-                    .FirstOrDefaultAsync(cancellationToken);
-
-            if (EducationToDelete == null)
-            {
-                Vm.lstError.Add("Education not found");
-                return Vm;
-            }
+            var response = new CommandResponse();
 
             try
             {
-                EducationToDelete.IsDeleted = true;
-                EducationToDelete.DeletedAt = DateTime.UtcNow;
+                var existingEntity = await _context.Education
+                    .FirstOrDefaultAsync(x =>
+                        x.UserID == _currentUser.UserID!.Value &&
+                        x.ID == request.ID &&
+                        x.IsDeleted == false,
+                        cancellationToken
+                    );
+
+                if (existingEntity == null)
+                {
+                    response.lstError.Add("Education not found.");
+                    return response;
+                }
+
+                existingEntity.IsDeleted = true;
+                existingEntity.DeletedAt = DateTime.UtcNow;
                 await _context.SaveChangesAsync(cancellationToken);
             }
-            catch
+            catch (DbUpdateException dbEx)
             {
-                Vm.lstError.Add("Error while deleting the Education");
+                response.lstError.Add("Error while deleting the Education.");
+            }
+            catch (Exception ex)
+            {
+                response.lstError.Add("Unexpected error occurred.");
             }
 
-            return Vm;
+            return response;
         }
     }
 }
