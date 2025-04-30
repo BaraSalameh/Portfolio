@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Admin.Handlers.LKP_LanguageProficiencyHandlers
 {
-    public class DeleteLKP_LanguageProficiencyCommandHandler : IRequestHandler<DeleteLKP_LanguageProficiencyCommand, AbstractViewModel>
+    public class DeleteLKP_LanguageProficiencyCommandHandler : IRequestHandler<DeleteLKP_LanguageProficiencyCommand, CommandResponse>
     {
         private readonly IAppDbContext _context;
 
@@ -15,36 +15,35 @@ namespace Application.Admin.Handlers.LKP_LanguageProficiencyHandlers
             _context = context;
         }
 
-        public async Task<AbstractViewModel> Handle(DeleteLKP_LanguageProficiencyCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(DeleteLKP_LanguageProficiencyCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new AbstractViewModel();
-
-            var LKP_LanguageProficiencyToDelete =
-                await _context.LKP_LanguageProficiency
-                    .Where(x => x.ID == request.ID && x.IsDeleted == false)
-                    .FirstOrDefaultAsync();
-
-            if (LKP_LanguageProficiencyToDelete == null)
-            {
-                Vm.status = false;
-                Vm.lstError.Add("LKP_LanguageProficiency not found");
-                return Vm;
-            }
+            var response = new CommandResponse();
 
             try
             {
-                LKP_LanguageProficiencyToDelete.IsDeleted = true;
-                LKP_LanguageProficiencyToDelete.DeletedAt = DateTime.UtcNow;
+                var existingEntity = await _context.LKP_LanguageProficiency
+                    .FirstOrDefaultAsync(x => x.ID == request.ID && x.IsDeleted == false, cancellationToken);
+
+                if (existingEntity == null)
+                {
+                    response.lstError.Add("LKP_LanguageProficiency not found.");
+                    return response;
+                }
+
+                existingEntity.IsDeleted = true;
+                existingEntity.DeletedAt = DateTime.UtcNow;
                 await _context.SaveChangesAsync();
-                Vm.status = true;
             }
-            catch
+            catch (DbUpdateException dbEx)
             {
-                Vm.status = false;
-                Vm.lstError.Add("Error while deleting the LKP_LanguageProficiency");
+                response.lstError.Add("Error while deleting the LKP_LanguageProficiency.");
+            }
+            catch (Exception ex)
+            {
+                response.lstError.Add("Unexpected error occurred.");
             }
 
-            return Vm;
+            return response;
         }
     }
 }

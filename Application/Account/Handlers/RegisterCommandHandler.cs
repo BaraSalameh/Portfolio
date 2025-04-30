@@ -1,5 +1,4 @@
 ﻿using Application.Account.Commands;
-using Application.Common.Constants;
 using Application.Common.Entities;
 using Application.Common.Functions;
 using Application.Common.Services.Interface;
@@ -31,47 +30,47 @@ namespace Application.Account.Handlers
 
         public async Task<CommandResponse<RC_Response>> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new CommandResponse<RC_Response>();
+            var response = new CommandResponse<RC_Response>();
 
-            var role = await _context.Role.FindAsync(RoleIdentifiers.Owner, cancellationToken);
-            if (role == null)
+            var existingEntity = await _context.Role.FindAsync(RoleIdentifiers.Owner, cancellationToken);
+            if (existingEntity == null)
             {
-                Vm.ResultType = ResultType.ServerError;
-                Vm.lstError.Add("Default user role not found.");
-                return Vm;
+                response.ResultType = ResultType.ServerError;
+                response.lstError.Add("Default user role not found.");
+                return response;
             }
 
             request.Password = request.Password!.Encrypt(true);
             var baseUserName = $"{request.Firstname}-{request.Lastname}".ToLower().Replace(" ", "-");
             var guidSuffix = Guid.NewGuid().ToString("N").Substring(0, 6);
 
-            var ResultToDB = _mapper.Map<User>(request);
-            ResultToDB.Username = $"{baseUserName}-{guidSuffix}";
-            ResultToDB.RoleID =  RoleIdentifiers.Owner;
-            ResultToDB.Role = role;
-            ResultToDB.CreatedAt = _dateTimeProvider.UtcNow;
+            var newEntity = _mapper.Map<User>(request);
+            newEntity.Username = $"{baseUserName}-{guidSuffix}";
+            newEntity.RoleID =  RoleIdentifiers.Owner;
+            newEntity.Role = existingEntity;
+            newEntity.CreatedAt = _dateTimeProvider.UtcNow;
 
             try
             {
-                _pendingEmailConfirmationService.GenerateAsync(ResultToDB, request.RememberMe);
-                await _context.User.AddAsync(ResultToDB, cancellationToken);
+                _pendingEmailConfirmationService.GenerateAsync(newEntity, request.RememberMe);
+                await _context.User.AddAsync(newEntity, cancellationToken);
                 await _context.SaveChangesAsync(cancellationToken);
 
-                Vm.Data = new RC_Response
+                response.Data = new RC_Response
                 {
-                    Username = ResultToDB.Username,
-                    Role = ResultToDB.Role.Name!
+                    Username = newEntity.Username,
+                    Role = newEntity.Role.Name!
                 };
 
-                await _userNotificationService.SendEmailConfirmationAsync(ResultToDB);
+                await _userNotificationService.SendEmailConfirmationAsync(newEntity);
             }
             catch
             {
-                Vm.ResultType = ResultType.Conflict;
-                Vm.lstError.Add("Email is already registered.");
+                response.ResultType = ResultType.Conflict;
+                response.lstError.Add("Email is already registered.");
             }
 
-            return Vm;
+            return response;
         }
     }
 }

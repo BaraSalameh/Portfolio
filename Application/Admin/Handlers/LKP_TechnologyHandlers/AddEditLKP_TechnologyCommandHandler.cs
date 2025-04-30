@@ -8,55 +8,57 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Admin.Handlers.LKP_TechnologyHandlers
 {
-    public class AddEditLKP_TechnologyCommandHandler : IRequestHandler<AddEditLKP_TechnologyCommand, AbstractViewModel>
+    public class AddEditLKP_TechnologyCommandHandler : IRequestHandler<AddEditLKP_TechnologyCommand, CommandResponse>
     {
         private readonly IAppDbContext _context;
         private readonly IMapper _mapper;
+
         public AddEditLKP_TechnologyCommandHandler(IAppDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
-            
         }
-        public async Task<AbstractViewModel> Handle(AddEditLKP_TechnologyCommand request, CancellationToken cancellationToken)
+
+        public async Task<CommandResponse> Handle(AddEditLKP_TechnologyCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new AbstractViewModel();
-            var ResultToDB = _mapper.Map<LKP_Technology>(request);
-
-            if (request.ID == null)
-            {
-                await _context.LKP_Technology.AddAsync(ResultToDB);
-            }
-            else
-            {
-                var oldLKP_Technology =
-                    await _context.LKP_Technology
-                        .Where(x => x.ID == request.ID && (x.IsDeleted == false || x.IsDeleted == null))
-                        .FirstOrDefaultAsync();
-
-                if (oldLKP_Technology == null)
-                {
-                    Vm.status = false;
-                    Vm.lstError.Add("LKP_Technology not found");
-                    return Vm;
-                }
-
-                _mapper.Map(request, oldLKP_Technology);
-                oldLKP_Technology.UpdatedAt = DateTime.UtcNow;
-            }
+            var response = new CommandResponse();
 
             try
             {
-                await _context.SaveChangesAsync();
-                Vm.status = true;
+                if (request.ID == null)
+                {
+                    var newEntity = _mapper.Map<LKP_Technology>(request);
+                    await _context.LKP_Technology.AddAsync(newEntity, cancellationToken);
+                }
+                else
+                {
+                    var existingEntity =
+                        await _context.LKP_Technology
+                            .FirstOrDefaultAsync(x => x.ID == request.ID && x.IsDeleted == false, cancellationToken);
+
+                    if (existingEntity == null)
+                    {
+                        response.lstError.Add("LKP_Technology not found.");
+                        return response;
+                    }
+
+                    _mapper.Map(request, existingEntity);
+                    existingEntity.UpdatedAt = DateTime.UtcNow;
+                }
+
+            
+                await _context.SaveChangesAsync(cancellationToken);
             }
-            catch
+            catch (DbUpdateException dbEx)
             {
-                Vm.status = false;
-                Vm.lstError.Add("Error while adding/updating the LKP_Technology");
+                response.lstError.Add("Error while adding/updating the LKP_Technology.");
+            }
+            catch (Exception ex)
+            {
+                response.lstError.Add("Unexpected error occurred.");
             }
 
-            return Vm;
+            return response;
         }
     }
 }

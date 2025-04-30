@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Admin.Handlers.LKP_LanguageHandlers
 {
-    public class DeleteLKP_LanguageCommandHandler : IRequestHandler<DeleteLKP_LanguageCommand, AbstractViewModel>
+    public class DeleteLKP_LanguageCommandHandler : IRequestHandler<DeleteLKP_LanguageCommand, CommandResponse>
     {
         private readonly IAppDbContext _context;
 
@@ -15,36 +15,35 @@ namespace Application.Admin.Handlers.LKP_LanguageHandlers
             _context = context;
         }
 
-        public async Task<AbstractViewModel> Handle(DeleteLKP_LanguageCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(DeleteLKP_LanguageCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new AbstractViewModel();
-
-            var LKP_LanguageToDelete =
-                await _context.LKP_Language
-                    .Where(x => x.ID == request.ID && x.IsDeleted == false)
-                    .FirstOrDefaultAsync();
-
-            if (LKP_LanguageToDelete == null)
-            {
-                Vm.status = false;
-                Vm.lstError.Add("LKP_Language not found");
-                return Vm;
-            }
+            var response = new CommandResponse();
 
             try
             {
-                LKP_LanguageToDelete.IsDeleted = true;
-                LKP_LanguageToDelete.DeletedAt = DateTime.UtcNow;
+                var existingEntity = await _context.LKP_Language
+                    .FirstOrDefaultAsync(x => x.ID == request.ID && x.IsDeleted == false, cancellationToken);
+
+                if (existingEntity == null)
+                {
+                    response.lstError.Add("LKP_Language not found.");
+                    return response;
+                }
+
+                existingEntity.IsDeleted = true;
+                existingEntity.DeletedAt = DateTime.UtcNow;
                 await _context.SaveChangesAsync();
-                Vm.status = true;
             }
-            catch
+            catch (DbUpdateException dbEx)
             {
-                Vm.status = false;
-                Vm.lstError.Add("Error while deleting the LKP_Language");
+                response.lstError.Add("Error while deleting the LKP_Language.");
+            }
+            catch (Exception ex)
+            {
+                response.lstError.Add("Unexpected error occurred.");
             }
 
-            return Vm;
+            return response;
         }
     }
 }

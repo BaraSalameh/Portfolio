@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Admin.Handlers.RoleHandlers
 {
-    public class DeleteRoleCommandHandler : IRequestHandler<DeleteRoleCommand, AbstractViewModel>
+    public class DeleteRoleCommandHandler : IRequestHandler<DeleteRoleCommand, CommandResponse>
     {
         private readonly IAppDbContext _context;
 
@@ -15,36 +15,35 @@ namespace Application.Admin.Handlers.RoleHandlers
             _context = context;
         }
 
-        public async Task<AbstractViewModel> Handle(DeleteRoleCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(DeleteRoleCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new AbstractViewModel();
-
-            var RoleToDelete =
-                await _context.Role
-                    .Where(x => x.ID == request.ID && x.IsDeleted == false)
-                    .FirstOrDefaultAsync();
-
-            if (RoleToDelete == null)
-            {
-                Vm.status = false;
-                Vm.lstError.Add("Role not found");
-                return Vm;
-            }
+            var response = new CommandResponse();
 
             try
             {
-                RoleToDelete.IsDeleted = true;
-                RoleToDelete.DeletedAt = DateTime.UtcNow;
+                var existingEntity = await _context.Role
+                    .FirstOrDefaultAsync(x => x.ID == request.ID && x.IsDeleted == false, cancellationToken);
+
+                if (existingEntity == null)
+                {
+                    response.lstError.Add("Role not found.");
+                    return response;
+                }
+
+                existingEntity.IsDeleted = true;
+                existingEntity.DeletedAt = DateTime.UtcNow;
                 await _context.SaveChangesAsync();
-                Vm.status = true;
             }
-            catch
+            catch (DbUpdateException dbEx)
             {
-                Vm.status = false;
-                Vm.lstError.Add("Error while deleting the Role");
+                response.lstError.Add("Error while deleting the Role.");
+            }
+            catch (Exception ex)
+            {
+                response.lstError.Add("Unexpected error occurred.");
             }
 
-            return Vm;
+            return response;
         }
     }
 }

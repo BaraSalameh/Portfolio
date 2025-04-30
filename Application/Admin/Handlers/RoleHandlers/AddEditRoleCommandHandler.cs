@@ -1,5 +1,6 @@
 ﻿using Application.Admin.Commands.RoleCommands;
 using Application.Common.Entities;
+using Application.Common.Functions;
 using AutoMapper;
 using DataAccess.Interfaces;
 using Domain.Entities;
@@ -8,55 +9,56 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Admin.Handlers.RoleHandlers
 {
-    public class AddEditRoleCommandHandler : IRequestHandler<AddEditRoleCommand, AbstractViewModel>
+    public class AddEditRoleCommandHandler : IRequestHandler<AddEditRoleCommand, CommandResponse>
     {
         private readonly IAppDbContext _context;
         private readonly IMapper _mapper;
+
         public AddEditRoleCommandHandler(IAppDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
             
         }
-        public async Task<AbstractViewModel> Handle(AddEditRoleCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(AddEditRoleCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new AbstractViewModel();
-            var ResultToDB = _mapper.Map<Role>(request);
-
-            if (request.ID == null)
-            {
-                await _context.Role.AddAsync(ResultToDB);
-            }
-            else
-            {
-                var oldRole =
-                    await _context.Role
-                        .Where(x => x.ID == request.ID && (x.IsDeleted == false || x.IsDeleted == null))
-                        .FirstOrDefaultAsync();
-
-                if (oldRole == null)
-                {
-                    Vm.status = false;
-                    Vm.lstError.Add("Role not found");
-                    return Vm;
-                }
-
-                _mapper.Map(request, oldRole);
-                oldRole.UpdatedAt = DateTime.UtcNow;
-            }
-
+            var response = new CommandResponse();
+            request.Name = request.Name.ToPascalCase();
+            
             try
             {
+                if (request.ID == null)
+                {
+                    var newEntity = _mapper.Map<Role>(request);
+                    await _context.Role.AddAsync(newEntity);
+                }
+                else
+                {
+                    var existingEntity = await _context.Role
+                        .FirstOrDefaultAsync(x => x.ID == request.ID && x.IsDeleted == false, cancellationToken);
+
+                    if (existingEntity == null)
+                    {
+                        response.lstError.Add("Role not found.");
+                        return response;
+                    }
+
+                    _mapper.Map(request, existingEntity);
+                    existingEntity.UpdatedAt = DateTime.UtcNow;
+                }
+
                 await _context.SaveChangesAsync();
-                Vm.status = true;
             }
-            catch
+            catch (DbUpdateException dbEx)
             {
-                Vm.status = false;
-                Vm.lstError.Add("Error while adding/updating the Role");
+                response.lstError.Add("Error while adding/updating the Role");
+            }
+            catch (Exception ex)
+            {
+                response.lstError.Add("Unexpected error occurred.");
             }
 
-            return Vm;
+            return response;
         }
     }
 }

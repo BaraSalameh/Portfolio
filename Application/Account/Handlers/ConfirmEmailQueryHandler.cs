@@ -21,9 +21,9 @@ namespace Application.Account.Handlers
 
         public async Task<CommandResponse> Handle(ConfirmEmailQuery request, CancellationToken cancellationToken)
         {
-            var Vm = new CommandResponse();
+            var response = new CommandResponse();
 
-            var pendingEmail = await _context.PendingEmailConfirmation
+            var existingEntity = await _context.PendingEmailConfirmation
                 .Include(p => p.User).ThenInclude(u => u.Role)
                 .FirstOrDefaultAsync(
                     pec => pec.Email == request.Email &&
@@ -32,22 +32,22 @@ namespace Application.Account.Handlers
                     cancellationToken
                 );
 
-            if (pendingEmail == null || pendingEmail.Token != request.Token)
+            if (existingEntity == null || existingEntity.Token != request.Token)
             {
-                Vm.lstError.Add("Invalid confirmation link.");
-                return Vm;
+                response.lstError.Add("Invalid confirmation link.");
+                return response;
             }
 
-            pendingEmail.IsEmailConfirmed = true;
-            pendingEmail.IsRevoked = true;
-            pendingEmail.RevokedAt = _dateTimeProvider.UtcNow;
-            pendingEmail.Token = null;
-            pendingEmail.User.IsConfirmed = true;
+            existingEntity.IsEmailConfirmed = true;
+            existingEntity.IsRevoked = true;
+            existingEntity.RevokedAt = _dateTimeProvider.UtcNow;
+            existingEntity.Token = null;
+            existingEntity.User.IsConfirmed = true;
 
-            _authService.AuthSetupAsync(pendingEmail.User, pendingEmail.RememberMe);
+            _authService.AuthSetupAsync(existingEntity.User, existingEntity.RememberMe);
             await _context.SaveChangesAsync(cancellationToken);
 
-            return Vm;
+            return response;
         }
     }
 }

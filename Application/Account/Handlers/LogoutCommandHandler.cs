@@ -22,28 +22,28 @@ namespace Application.Account.Handlers
 
         public async Task<CommandResponse> Handle(LogoutCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new CommandResponse();
+            var response = new CommandResponse();
 
             _cookieService.ClearAuthCookies();
 
             if (!_currentUserService.IsAuthenticated || _currentUserService.UserID == null)
             {
-                return Vm;
+                return response;
             }
 
             var userID = _currentUserService.UserID.Value;
 
-            var user = await _context.User
+            var existingEntity = await _context.User
                 .Include(u => u.LstRefreshTokens)
                 .FirstOrDefaultAsync(u => u.ID == userID, cancellationToken);
 
-            if (user != null)
+            if (existingEntity != null)
             {
-                user.LstRefreshTokens.Clear();
+                existingEntity.LstRefreshTokens.Clear();
                 await _context.SaveChangesAsync(cancellationToken);
             }
 
-            return Vm;
+            return response;
         }
     }
 }

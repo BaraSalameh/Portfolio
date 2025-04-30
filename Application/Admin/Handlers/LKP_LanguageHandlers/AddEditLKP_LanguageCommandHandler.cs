@@ -1,5 +1,6 @@
 ﻿using Application.Admin.Commands.LKP_LanguageCommands;
 using Application.Common.Entities;
+using Application.Common.Functions;
 using AutoMapper;
 using DataAccess.Interfaces;
 using Domain.Entities;
@@ -8,66 +9,56 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Admin.Handlers.LKP_LanguageHandlers
 {
-    public class AddEditLKP_LanguageCommandHandler : IRequestHandler<AddEditLKP_LanguageCommand, AbstractViewModel>
+    public class AddEditLKP_LanguageCommandHandler : IRequestHandler<AddEditLKP_LanguageCommand, CommandResponse>
     {
         private readonly IAppDbContext _context;
         private readonly IMapper _mapper;
+
         public AddEditLKP_LanguageCommandHandler(IAppDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
-            
         }
-        public async Task<AbstractViewModel> Handle(AddEditLKP_LanguageCommand request, CancellationToken cancellationToken)
+
+        public async Task<CommandResponse> Handle(AddEditLKP_LanguageCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new AbstractViewModel();
-            request.name = request.name.Trim();
-            var ResultToDB = _mapper.Map<LKP_Language>(request);
-
-            var LanguageFromDB = await _context.LKP_Language
-                .Where(l => (l.name ?? "").ToLower() == request.name.ToLower() && (l.IsDeleted == false || l.IsDeleted == null))
-                .FirstOrDefaultAsync(cancellationToken);
-
-            if (request.ID == null && LanguageFromDB == null && request.name != "")
-            {
-                await _context.LKP_Language.AddAsync(ResultToDB, cancellationToken);
-            }
-            else if(LanguageFromDB == null && request.name != "")
-            {
-                var oldLKP_Language =
-                    await _context.LKP_Language
-                        .Where(x => x.ID == request.ID && (x.IsDeleted == false || x.IsDeleted == null))
-                        .FirstOrDefaultAsync(cancellationToken);
-
-                if (oldLKP_Language == null)
-                {
-                    Vm.status = false;
-                    Vm.lstError.Add("LKP_Language not found");
-                    return Vm;
-                }
-
-                _mapper.Map(request, oldLKP_Language);
-                oldLKP_Language.UpdatedAt = DateTime.UtcNow;
-            }
-            else
-            {
-                Vm.status = false;
-                Vm.lstError.Add("The language exists");
-                return Vm;
-            }
-
+            var response = new CommandResponse();
+            request.Name = request.Name.ToPascalCase();
+            
             try
             {
+                if (request.ID == null)
+                {
+                    var newEntity = _mapper.Map<LKP_Language>(request);
+                    await _context.LKP_Language.AddAsync(newEntity, cancellationToken);
+                }
+                else
+                {
+                    var existingEntity = await _context.LKP_Language
+                        .FirstOrDefaultAsync(x => x.ID == request.ID && x.IsDeleted == false, cancellationToken);
+
+                    if (existingEntity == null)
+                    {
+                        response.lstError.Add("LKP_Language not found.");
+                        return response;
+                    }
+
+                    _mapper.Map(request, existingEntity);
+                    existingEntity.UpdatedAt = DateTime.UtcNow;
+                }
+
                 await _context.SaveChangesAsync(cancellationToken);
-                Vm.status = true;
             }
-            catch
+            catch (DbUpdateException dbEx)
             {
-                Vm.status = false;
-                Vm.lstError.Add("Error while adding/updating the LKP_Language");
+                response.lstError.Add("Error while adding/updating the LKP_Language.");
+            }
+            catch (Exception ex)
+            {
+                response.lstError.Add("Unexpected error occurred.");
             }
 
-            return Vm;
+            return response;
         }
     }
 }

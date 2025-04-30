@@ -26,46 +26,45 @@ namespace Application.Account.Handlers
 
         public async Task<CommandResponse<LC_Response>> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new CommandResponse<LC_Response>();
+            var response = new CommandResponse<LC_Response>();
 
             string EncryptedPassword = request.Password.Encrypt(true);
-            var user =
+            var existingEntity =
                  await _context.User
-                    .Where(u => u.Email == request.Email && u.Password == EncryptedPassword)
                     .Include(u => u.Role)
-                    .FirstOrDefaultAsync(cancellationToken);
+                    .FirstOrDefaultAsync(u => u.Email == request.Email && u.Password == EncryptedPassword, cancellationToken);
 
-            if (user == null)
+            if (existingEntity == null)
             {
-                Vm.ResultType = ResultType.NotFound;
-                Vm.lstError.Add("Wrong username/password");
-                return Vm;
+                response.ResultType = ResultType.NotFound;
+                response.lstError.Add("Wrong username/password");
+                return response;
             }
             
-            if (!user.IsConfirmed)
+            if (!existingEntity.IsConfirmed)
             {
                 _context.PendingEmailConfirmation.RemoveRange(
-                    _context.PendingEmailConfirmation.Where(p => p.UserID == user.ID)
+                    _context.PendingEmailConfirmation.Where(p => p.UserID == existingEntity.ID)
                 );
-                _pendingEmailConfirmationService.GenerateAsync(user, request.RememberMe);
+                _pendingEmailConfirmationService.GenerateAsync(existingEntity, request.RememberMe);
                 await _context.SaveChangesAsync(cancellationToken);
 
-                Vm.ResultType = ResultType.Forbidden;
-                Vm.lstError.Add("User lacks confirmation.");
-                await _userNotificationService.SendEmailConfirmationAsync(user);
-                return Vm;
+                response.ResultType = ResultType.Forbidden;
+                response.lstError.Add("User lacks confirmation.");
+                await _userNotificationService.SendEmailConfirmationAsync(existingEntity);
+                return response;
             }
 
-            _authService.AuthSetupAsync(user, request.RememberMe);
+            _authService.AuthSetupAsync(existingEntity, request.RememberMe);
             await _context.SaveChangesAsync(cancellationToken);
 
-            Vm.Data = new LC_Response
+            response.Data = new LC_Response
             {
-                Username = user.Username!,
-                Role = user.Role.Name!
+                Username = existingEntity.Username!,
+                Role = existingEntity.Role.Name!
             };
 
-            return Vm;
+            return response;
         }
     }
 } 

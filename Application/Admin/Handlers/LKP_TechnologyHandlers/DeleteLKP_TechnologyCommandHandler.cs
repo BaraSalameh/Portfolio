@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Admin.Handlers.LKP_TechnologyHandlers
 {
-    public class DeleteLKP_TechnologyCommandHandler : IRequestHandler<DeleteLKP_TechnologyCommand, AbstractViewModel>
+    public class DeleteLKP_TechnologyCommandHandler : IRequestHandler<DeleteLKP_TechnologyCommand, CommandResponse>
     {
         private readonly IAppDbContext _context;
 
@@ -15,36 +15,35 @@ namespace Application.Admin.Handlers.LKP_TechnologyHandlers
             _context = context;
         }
 
-        public async Task<AbstractViewModel> Handle(DeleteLKP_TechnologyCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(DeleteLKP_TechnologyCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new AbstractViewModel();
-
-            var LKP_TechnologyToDelete =
-                await _context.LKP_Technology
-                    .Where(x => x.ID == request.ID && x.IsDeleted == false)
-                    .FirstOrDefaultAsync();
-
-            if (LKP_TechnologyToDelete == null)
-            {
-                Vm.status = false;
-                Vm.lstError.Add("LKP_Technology not found");
-                return Vm;
-            }
+            var response = new CommandResponse();
 
             try
             {
-                LKP_TechnologyToDelete.IsDeleted = true;
-                LKP_TechnologyToDelete.DeletedAt = DateTime.UtcNow;
-                await _context.SaveChangesAsync();
-                Vm.status = true;
+                var existingEntity = await _context.LKP_Technology
+                    .FirstOrDefaultAsync(x => x.ID == request.ID && x.IsDeleted == false, cancellationToken);
+
+                if (existingEntity == null)
+                {
+                    response.lstError.Add("LKP_Technology not found.");
+                    return response;
+                }
+
+                existingEntity.IsDeleted = true;
+                existingEntity.DeletedAt = DateTime.UtcNow;
+                await _context.SaveChangesAsync(cancellationToken);
             }
-            catch
+            catch (DbUpdateException dbEx)
             {
-                Vm.status = false;
-                Vm.lstError.Add("Error while deleting the LKP_Technology");
+                response.lstError.Add("Error while deleting the LKP_Technology.");
+            }
+            catch(Exception ex)
+            {
+                response.lstError.Add("Unexpected error occured.");
             }
 
-            return Vm;
+            return response;
         }
     }
 }

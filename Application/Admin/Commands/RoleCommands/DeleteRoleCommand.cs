@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.Admin.Commands.RoleCommands
 {
-    public class DeleteRoleCommand : IRequest<AbstractViewModel>
+    public class DeleteRoleCommand : IRequest<CommandResponse>
     {
         public Guid ID { get; set; }
     }

@@ -19,7 +19,7 @@ namespace Application.Account.Handlers
 
         public async Task<CommandResponse<VTC_Response>> Handle(ValidateTokenCommand request, CancellationToken cancellationToken)
         {
-            var Vm = new CommandResponse<VTC_Response>();
+            var response = new CommandResponse<VTC_Response>();
 
             if (!_currentUserService.IsAuthenticated)
             {
@@ -27,27 +27,27 @@ namespace Application.Account.Handlers
 
                 if (refreshedUser == null)
                 {
-                    Vm.ResultType = ResultType.Unauthorized;
-                    Vm.lstError.Add("Your session has expired. Please log in again.");
-                    return Vm;
+                    response.ResultType = ResultType.Unauthorized;
+                    response.lstError.Add("Your session has expired. Please log in again.");
+                    return response;
                 }
 
-                Vm.Data = new VTC_Response
+                response.Data = new VTC_Response
                 {
                     Username = refreshedUser.Username!,
                     Role = refreshedUser.Role.Name!
                 };
 
-                return Vm;
+                return response;
             }
 
-            Vm.Data = new VTC_Response
+            response.Data = new VTC_Response
             {
                 Username = _currentUserService.Username!,
                 Role = _currentUserService.Role!
             };
             
-            return Vm;
+            return response;
         }
     }
 
