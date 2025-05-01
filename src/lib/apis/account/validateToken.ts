@@ -3,26 +3,23 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 export const validateToken = createAsyncThunk(
     'auth/validateToken',
     async (_, thunkAPI) => {
-        try {
-            const response = await fetch(`https://localhost:7206/api/Account/ValidateToken`,{
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({}),
-            });
+        const res = await fetch(`https://localhost:7206/api/Account/ValidateToken`,{
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({}),
+        });
 
-            const data = await response.json();
-
-            if(!data.status){
-                return thunkAPI.rejectWithValue({
-                    error: 'data.lstError || "Unknown error occured"'
-                });
-            }
-    
-            return data;
-
-        } catch (error) {
-            return thunkAPI.rejectWithValue('Unauthorized');
+        if (res.status === 401){
+            const error = await res.json();
+            return thunkAPI.rejectWithValue(error);
         }
+
+        if (!res.ok) {
+            return thunkAPI.rejectWithValue(["Unexpected error occurred"]);
+        }
+
+        const data = await res.json();
+        return data;
     }
 );

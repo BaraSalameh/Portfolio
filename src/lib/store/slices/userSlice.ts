@@ -21,7 +21,7 @@ const userSlice = createSlice({
         })
         .addCase(userByUsernameQuery.rejected, (state, action) => {
             state.loading = false;
-            state.error = (action.payload as any)?.error || 'Login failed';
+            state.error = (action.payload as string);
         });
     },
 });

@@ -11,9 +11,9 @@ const authSlice = createSlice({
     initialState: {
         username: null,
         role: null,
-        isConfirmed: null,
+        isConfirmed: null as boolean | null,
         loading: false,
-        error: null as string | null,
+        error: null as string[] | null,
     },
     reducers: {},
     extraReducers: (builder) => {
@@ -30,7 +30,11 @@ const authSlice = createSlice({
         })
         .addCase(login.rejected, (state, action) => {
             state.loading = false;
-            state.error = (action.payload as any)?.error || 'Login failed';
+            if (Array.isArray(action.payload)){
+                state.error = (action.payload as string[]);
+            } else {
+                state.isConfirmed = action.payload as boolean;
+            }
         })
 
         .addCase(register.pending, (state) => {
@@ -48,11 +52,16 @@ const authSlice = createSlice({
             state.error = (action.payload as any)?.error || 'Register failed';
         })
 
+        .addCase(validateToken.pending, (state) => {
+            state.loading = true;
+        })
         .addCase(validateToken.fulfilled, (state, action) => {
             state.loading = false;
             state.username = action.payload.username;
             state.role = action.payload.role;
-            state.isConfirmed = action.payload.isConfirmed;
+        })
+        .addCase(validateToken.rejected, (state) => {
+            state.loading = false;
         })
 
         .addCase(logout.pending, (state) => {

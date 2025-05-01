@@ -12,7 +12,7 @@ export const SearchBar = () => {
     const [query, setQuery] = useState('');
     const dispatch = useAppDispatch();
     const router = useRouter();
-    const { users, loading, error } = useAppSelector(state => state.search);
+    const { userList, loading, error } = useAppSelector(state => state.search);
 
     const debouncedSearch = useCallback(
         debounce((value: string) => {
@@ -78,13 +78,13 @@ export const SearchBar = () => {
                     "
                 >
                     {error
-                        ? <Paragraph intent="danger" size="sm" className='p-3'>Something went wrong</Paragraph> 
+                        ? <Paragraph intent="danger" size="sm" className='p-3'>{error}</Paragraph> 
                         : loading
                             ? <Paragraph size="sm" className='p-3'>Loading...</Paragraph>
-                            : users?.length === 0 && <Paragraph size="sm" className='p-3'>No users found</Paragraph>
+                            : userList?.length === 0 && <Paragraph size="sm" className='p-3'>No Result</Paragraph>
                     }
                     
-                    {users?.map((user: any, id: number) => (
+                    {userList?.map((user: any, id: number) => (
                         <div
                             key={id}
                             onClick={() => handleSelect(user)}

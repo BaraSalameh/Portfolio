@@ -4,7 +4,7 @@ import { userListQuery } from '@/lib/apis/client/userListQuery';
 const searchSlice = createSlice({
     name: 'search',
     initialState: {
-        users: [],
+        userList: [],
         loading: false,
         error: null as string | null,
     },
@@ -17,11 +17,11 @@ const searchSlice = createSlice({
         })
         .addCase(userListQuery.fulfilled, (state, action) => {
             state.loading = false;
-            state.users = action.payload.items;
+            state.userList = action.payload.items;
         })
-        .addCase(userListQuery.rejected, (state, action) => {
+        .addCase(userListQuery.rejected, (state) => {
             state.loading = false;
-            state.error = action.error.message || 'Search failed';
+            state.error = 'Unexpected error occurred';
         });
     },
 });
