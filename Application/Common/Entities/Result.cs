@@ -20,9 +20,9 @@ namespace Application.Common.Entities
 
                 return res.ResultType switch
                 {
-                    ResultType.Unauthorized => new UnauthorizedObjectResult(res.lstError),
+                    ResultType.Unauthorized => new UnauthorizedObjectResult(res.lstError), //401
                     ResultType.Forbidden => new ObjectResult(res.lstError) { StatusCode = StatusCodes.Status403Forbidden },
-                    ResultType.NotFound => new NotFoundObjectResult(res.lstError),
+                    ResultType.NotFound => new NotFoundObjectResult(res.lstError), //404
                     ResultType.ValidationError => new BadRequestObjectResult(res.lstError),
                     ResultType.ServerError => new ObjectResult(res.lstError) { StatusCode = StatusCodes.Status500InternalServerError },
                     ResultType.Conflict => new ConflictObjectResult(res.lstError),
@@ -57,9 +57,7 @@ namespace Application.Common.Entities
                 if (res.lstError?.Count > 0)
                     return new BadRequestObjectResult(res.lstError);
 
-                return res.Data == null
-                    ? new NotFoundResult()
-                    : new OkObjectResult(result);
+                return new OkObjectResult(res.Data);
             }
 
             // Default fallback
