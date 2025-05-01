@@ -9,11 +9,11 @@ import { createSlice } from '@reduxjs/toolkit';
 const authSlice = createSlice({
     name: 'auth',
     initialState: {
-        username: null,
-        role: null,
-        isConfirmed: null as boolean | null,
         loading: false,
         error: null as string[] | null,
+        username: null,
+        isConfirmed: null as boolean | null,
+        role: null
     },
     reducers: {},
     extraReducers: (builder) => {
@@ -24,16 +24,14 @@ const authSlice = createSlice({
         })
         .addCase(login.fulfilled, (state, action) => {
             state.loading = false;
-            state.username = action.payload.username;
-            state.role = action.payload.role;
-            state.isConfirmed = action.payload.isConfirmed;
+            Object.assign(state, action.payload);
         })
         .addCase(login.rejected, (state, action) => {
             state.loading = false;
             if (Array.isArray(action.payload)){
                 state.error = (action.payload as string[]);
             } else {
-                state.isConfirmed = action.payload as boolean;
+                Object.assign(state, action.payload)
             }
         })
 
@@ -43,22 +41,20 @@ const authSlice = createSlice({
         })
         .addCase(register.fulfilled, (state, action) => {
             state.loading = false;
-            state.username = action.payload.username;
-            state.role = action.payload.role;
-            state.isConfirmed = action.payload.isConfirmed;
+            Object.assign(state, action.payload)
         })
         .addCase(register.rejected, (state, action) => {
             state.loading = false;
-            state.error = (action.payload as any)?.error || 'Register failed';
+            state.error = (action.payload as string[]);
         })
 
         .addCase(validateToken.pending, (state) => {
             state.loading = true;
+            state.error = null;
         })
         .addCase(validateToken.fulfilled, (state, action) => {
             state.loading = false;
-            state.username = action.payload.username;
-            state.role = action.payload.role;
+            Object.assign(state, action.payload)
         })
         .addCase(validateToken.rejected, (state) => {
             state.loading = false;
@@ -68,13 +64,23 @@ const authSlice = createSlice({
             state.loading = true;
             state.error = null;
         })
-        .addCase(logout.fulfilled, (state) => {
-            state.loading = false;
-            state.username = null;
+        .addCase(logout.fulfilled, () => {
+            return{
+                loading: false,
+                error: null,
+                username: null,
+                isConfirmed: null,
+                role: null
+            }
         })
-        .addCase(logout.rejected, (state, action) => {
-            state.loading = false;
-            state.error = (action.payload as any)?.error || 'Logout failed';
+        .addCase(logout.rejected, (_, action) => {
+            return{
+                loading: false,
+                error: action.payload as string[],
+                username: null,
+                isConfirmed: null,
+                role: null
+            }
         })
 
         .addCase(confirmEmail.pending, (state) => {
@@ -83,11 +89,11 @@ const authSlice = createSlice({
         })
         .addCase(confirmEmail.fulfilled, (state, action) => {
             state.loading = false;
-            state.isConfirmed = action.payload.isConfirmed;
+            Object.assign(state, action.payload);
         })
         .addCase(confirmEmail.rejected, (state, action) => {
             state.loading = false;
-            state.error = (action.payload as any)?.error || 'Confirming failed';
+            state.error = action.payload as string[];
         })
 
         .addCase(resendEmail.pending, (state) => {
@@ -99,7 +105,7 @@ const authSlice = createSlice({
         })
         .addCase(resendEmail.rejected, (state, action) => {
             state.loading = false;
-            state.error = (action.payload as any)?.error || 'Resending email failed';
+            state.error = (action.payload as string[]);
         });
     },
 });

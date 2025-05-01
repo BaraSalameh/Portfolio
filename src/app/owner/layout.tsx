@@ -13,7 +13,7 @@ export default function OwnerLayout({children}: Readonly<{children: React.ReactN
     const router = useRouter();
     const getUsername = useCheckAndGetUsername();
     const username = useAppSelector(state => state.auth.username);
-    const role = useAppSelector(state => state.auth.role);
+    const { role } = useAppSelector(state => state.auth);
 
     useEffect(() => {
         const run = async () => {

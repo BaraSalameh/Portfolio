@@ -17,7 +17,7 @@ export default function RegisterPage() {
     const { username } = useAppSelector((state) => state.auth);
 
     useEffect(() => {
-        username && router.push(`/account/register/${username}`);
+        username && router.push(`/account/register/confirm-email`);
     }, [username])
 
     return (

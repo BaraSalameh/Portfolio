@@ -4,25 +4,19 @@ export const logout = createAsyncThunk(
     'auth/logout',
     async (_, thunkAPI) => {
         try {
-            const response = await fetch('https://localhost:7206/api/Account/Logout', {
+            const res = await fetch('https://localhost:7206/api/Account/Logout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({}),
                 credentials: "include"
             });
 
-            const data = await response.json();
-
-            if(!data.status){
-                return thunkAPI.rejectWithValue({
-                    error: data.lstError
-                });
+            if (res.status === 204){
+                return;
             }
-    
-            return data;
 
         } catch (error) {
-            return thunkAPI.rejectWithValue('Network error');
+            return thunkAPI.rejectWithValue(['Unexpected error occurred.']);
         }
     }
 );

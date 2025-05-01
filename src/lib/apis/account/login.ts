@@ -18,20 +18,14 @@ export const login = createAsyncThunk(
 
             if (res.status === 403){
                 var error = await res.json();
-                return thunkAPI.rejectWithValue(false);
+                return thunkAPI.rejectWithValue({error: error, isConfirmed: false});
             }
-            const data = await res.json();
 
-            if(!data.status){
-                return thunkAPI.rejectWithValue({
-                    error: data.lstError
-                });
-            }
-    
+            const data = await res.json();
             return data;
 
         } catch (error) {
-            return thunkAPI.rejectWithValue('Network error');
+            return thunkAPI.rejectWithValue(['Unexpected error occurred.']);
         }
     }
 );

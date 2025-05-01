@@ -8,21 +8,19 @@ export const resendEmail = createAsyncThunk(
                 email: payload.email
             }).toString();
     
-            const response = await fetch(`https://localhost:7206/api/Account/ResendConfirmEmail?${query}`, {
+            const res = await fetch(`https://localhost:7206/api/Account/ResendConfirmEmail?${query}`, {
                 method: 'GET',
             });
-    
-            const data = await response.json();
-    
-            if (!data.status) {
-                return thunkAPI.rejectWithValue({
-                    error: data.lstError
-                });
+
+            if (res.status === 204) return;
+        
+            if (!res.ok){
+                const error = await res.json();
+                return thunkAPI.rejectWithValue(error)
             }
-    
-            return data;
+
         } catch (error) {
-            return thunkAPI.rejectWithValue('Network error');
+            return thunkAPI.rejectWithValue(['Unexpected error occurred']);
         }
     }
 );

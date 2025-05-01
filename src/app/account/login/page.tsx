@@ -20,11 +20,14 @@ export default function LoginPage() {
 
     useEffect(() => {
         const run = async () => {
+            if(user.isConfirmed == false){
+                router.push(`/account/register/confirm-email`);
+                return;
+            }
+
             const u = user.username || await getUsername();
-            if (u && user.isConfirmed == true) {
+            if (u) {
                 router.push(`/owner/${u}/dashboard`);
-            } else if(u && user.isConfirmed == false){
-                router.push(`/account/register/${u}`);
             }
         };
         run();
