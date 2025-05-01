@@ -20,8 +20,8 @@ namespace Application.Common.Services.Service
             var pendingEmailConfirmation = user.LstPendingEmailConfirmations.LastOrDefault();
             var baseUrl = _configuration["App:FrontendUrl"];
 
-            var confirmationUrl = $"{baseUrl}/account/register/{user.Username}/confirm-email/confirm?token={pendingEmailConfirmation!.Token}&email={pendingEmailConfirmation.Email}";
-            var resendUrl = $"{baseUrl}/account/register/{user.Username}/confirm-email/resend?email={pendingEmailConfirmation.Email}";
+            var confirmationUrl = $"{baseUrl}/account/register/confirm-email/confirm?token={pendingEmailConfirmation!.Token}&email={pendingEmailConfirmation.Email}";
+            var resendUrl = $"{baseUrl}/account/register/confirm-email/resend?email={pendingEmailConfirmation.Email}";
 
             var body = $@"
                 <div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;'>
