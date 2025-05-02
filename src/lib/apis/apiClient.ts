@@ -11,7 +11,11 @@ const refreshAccessToken = async () => {
     if (!isRefreshing) {
         isRefreshing = true;
         try {
-            await api.post('/Account/ValidateToken'); 
+            await api.post('/Account/ValidateToken', {}, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }); 
         } finally {
             isRefreshing = false;
         }
@@ -24,6 +28,7 @@ interface DynamicApiOptions extends AxiosRequestConfig {
     method: HTTPMethod;
     url: string;
     data?: any;
+    
 }
 
 export const dynamicApi = async <T = any>(
@@ -45,7 +50,7 @@ export const dynamicApi = async <T = any>(
                 });
             } catch (refreshError) {
                 // Optionally redirect to login if refresh fails
-                window.location.href = '/login';
+                window.location.href = '/';
             }
         }
         throw error;

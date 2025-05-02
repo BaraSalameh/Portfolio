@@ -16,7 +16,7 @@ export default function LoginPage() {
 
     const router = useRouter();
     const getUsername = useCheckAndGetUsername();
-    const { username, isConfirmed, loading } = useAppSelector(state => state.auth);
+    const { username, isConfirmed } = useAppSelector(state => state.auth);
 
     useEffect(() => {
         const run = async () => {
@@ -31,7 +31,7 @@ export default function LoginPage() {
             }
         };
         run();
-    }, [username, isConfirmed]);
+    }, [username, isConfirmed]); 
 
     return (
         <Container>
