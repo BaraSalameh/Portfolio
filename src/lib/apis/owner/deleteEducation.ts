@@ -12,18 +12,13 @@ export const deleteEducation = createAsyncThunk(
                 credentials: 'include'
             });
 
-            const data = await response.json();
-
-            if(!data.status){
-                return thunkAPI.rejectWithValue({
-                    error: data.lstError
-                });
+            if(!response.ok){
+                const error = await response.json();
+                return thunkAPI.rejectWithValue(error);
             }
-    
-            return data;
 
         } catch (error) {
-            return thunkAPI.rejectWithValue('Network error');
+            return thunkAPI.rejectWithValue(['Unexpected error occurred']);
         }
     }
 );

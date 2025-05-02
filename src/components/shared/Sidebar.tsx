@@ -21,21 +21,23 @@ export default function Sidebar({ role }: SidebarProps) {
     const navLinks = [
         { href: '/', label: 'Home', icon: Home },
         ...(username && !role
-            ? [{ href: `/client/${username}/about`, label: 'About', icon: Info }]
+            ?   [
+                    { href: `/client/${username}/about`, label: 'About', icon: Info }
+                ]
             : username && role === 'Owner'
-            ? [
-                  { href: `/owner/${username}/dashboard`, label: 'Dashboard', icon: LayoutDashboard },
-                  { href: `/owner/${username}/education`, label: 'Education', icon: Book },
-                  { href: `/owner/${username}/experience`, label: 'Experience', icon: Briefcase },
-                  { href: `/owner/${username}/project`, label: 'Projects', icon: Folder },
-                  { href: `/owner/${username}/skill`, label: 'Skills', icon: BadgePercent },
-                  { href: `/owner/${username}/language`, label: 'Languages', icon: Languages },
-                  { href: `/owner/${username}/blog-post`, label: 'Blog Post', icon: PenSquare },
-                  { href: `/owner/${username}/message`, label: 'Messages', icon: MessageSquare },
-                  { href: `/owner/${username}/setting`, label: 'Settings', icon: Settings },
-                  { href: `/owner/${username}/logout`, label: 'Logout', icon: LogOut },
-              ]
-            : []),
+                ?   [
+                        { href: `/owner/${username}/dashboard`, label: 'Dashboard', icon: LayoutDashboard },
+                        { href: `/owner/${username}/education`, label: 'Education', icon: Book },
+                        { href: `/owner/${username}/experience`, label: 'Experience', icon: Briefcase },
+                        { href: `/owner/${username}/project`, label: 'Projects', icon: Folder },
+                        { href: `/owner/${username}/skill`, label: 'Skills', icon: BadgePercent },
+                        { href: `/owner/${username}/language`, label: 'Languages', icon: Languages },
+                        { href: `/owner/${username}/blog-post`, label: 'Blog Post', icon: PenSquare },
+                        { href: `/owner/${username}/message`, label: 'Messages', icon: MessageSquare },
+                        { href: `/owner/${username}/setting`, label: 'Settings', icon: Settings },
+                        { href: `/owner/${username}/logout`, label: 'Logout', icon: LogOut },
+                    ]
+                :   []),
     ];
 
     // Handle outside click for mobile

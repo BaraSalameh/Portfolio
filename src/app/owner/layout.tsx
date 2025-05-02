@@ -1,8 +1,9 @@
 'use client'
 
 import { Container } from "@/components/shared/Container";
-import { Main } from "@/components/shared/Main";
+import { Header } from "@/components/shared/Header";
 import Sidebar from "@/components/shared/Sidebar";
+import { Paragraph } from "@/components/ui/Paragraph";
 import { useAppSelector } from "@/lib/store/hooks";
 import { useCheckAndGetUsername } from "@/lib/utils/appFunctions";
 import { useRouter } from "next/navigation";
@@ -12,8 +13,7 @@ export default function OwnerLayout({children}: Readonly<{children: React.ReactN
 
     const router = useRouter();
     const getUsername = useCheckAndGetUsername();
-    const username = useAppSelector(state => state.auth.username);
-    const { role } = useAppSelector(state => state.auth);
+    const { username, role, loading } = useAppSelector(state => state.auth);
 
     useEffect(() => {
         const run = async () => {

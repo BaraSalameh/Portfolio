@@ -5,7 +5,6 @@ import React, { InputHTMLAttributes, useState } from 'react';
 import { Paragraph } from './Paragraph';
 import { Button } from './Button';
 import Image from "next/image";
-import { useAppDispatch } from '@/lib/store/hooks';
 
 interface CUDProps extends InputHTMLAttributes<HTMLInputElement> {
     idToDelete?: string;
@@ -57,7 +56,11 @@ export const CUDModal = ({
                     </div>
                     <hr />
                     {as !== 'delete'
-                        ?   children
+                        ?   React.isValidElement(children)
+                                ? React.cloneElement(children as React.ReactElement<{ onClose: () => void }>, {
+                                        onClose: () => setOpenModal(false)
+                                    })
+                                : children
                         :   <>
                             <Paragraph size="md">{children}</Paragraph>
                             <Button

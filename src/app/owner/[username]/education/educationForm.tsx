@@ -12,17 +12,16 @@ import { List } from "@/components/ui/List";
 import { FormCheckbox } from "@/components/ui/FormCheckbox";
 import { addEditEducation } from "@/lib/apis/owner/addEditEducation";
 import { educationListQuery } from "@/lib/apis/owner/educationListQuery";
-import { useParams } from "next/navigation";
 import { useEffect } from "react";
 
 type props = {
     educationId?: string;
+    onClose?: () => void;
 }
 
-export default function EducationForm({educationId} : props) {
+export default function EducationForm({educationId, onClose} : props) {
 
     const dispatch = useAppDispatch();
-    const { username } = useParams<{username: string}>();
     const { loading, error } = useAppSelector((state) => state.auth);
     const { educationList } = useAppSelector((state) => state.education);
     const educationToHandle = educationList.find(ed => ed.id === educationId);
@@ -49,7 +48,8 @@ export default function EducationForm({educationId} : props) {
     const onSubmit = async (data: EducationFormData) => {
         try {
             await dispatch(addEditEducation(data)).unwrap();
-            await dispatch(educationListQuery({ username }));
+            await dispatch(educationListQuery());
+            onClose?.();
         } catch (error) {
             // console.log('Error creating education: ', error);
         }

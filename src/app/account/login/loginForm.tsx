@@ -11,6 +11,7 @@ import { FormInput } from "@/components/ui/FormInput";
 import { login } from "@/lib/apis/account/login";
 import { List } from "@/components/ui/List";
 import { FormCheckbox } from "@/components/ui/FormCheckbox";
+import { Header } from "@/components/shared/Header";
 
 export default function LoginForm() {
 
@@ -31,7 +32,7 @@ export default function LoginForm() {
     const onSubmit = (data: LoginFormData) => {
         dispatch(login(data));
     };
-      
+
     return(
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <Paragraph size="xl" className="py-3">

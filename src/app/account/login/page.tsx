@@ -16,23 +16,23 @@ export default function LoginPage() {
 
     const router = useRouter();
     const getUsername = useCheckAndGetUsername();
-    const user = useAppSelector(state => state.auth);
+    const { username, isConfirmed, loading } = useAppSelector(state => state.auth);
 
     useEffect(() => {
         const run = async () => {
-            if(user.isConfirmed == false){
+            if(isConfirmed == false){
                 router.push(`/account/register/confirm-email`);
                 return;
             }
 
-            const u = user.username || await getUsername();
+            const u = username || await getUsername();
             if (u) {
                 router.push(`/owner/${u}/dashboard`);
             }
         };
         run();
-    }, [user.username, user.isConfirmed]);
-  
+    }, [username, isConfirmed]);
+
     return (
         <Container>
             <Header>

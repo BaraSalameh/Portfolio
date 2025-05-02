@@ -3,7 +3,6 @@
 import { Card } from "@/components/ui/Card";
 import { CUDModal } from "@/components/ui/CUDModal";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import { useParams } from "next/navigation";
 import EducationForm from "./educationForm";
 import { useEffect } from "react";
 import { educationListQuery } from "@/lib/apis/owner/educationListQuery";
@@ -15,16 +14,15 @@ export default function OwnerEducationPage() {
 
     const dispatch = useAppDispatch();
     const { educationList } = useAppSelector(state => state.education);
-    const { username } = useParams<{username: string}>();
 
     useEffect(() => {
-        educationList.length === 0 && dispatch(educationListQuery({username}));
+        educationList.length === 0 && dispatch(educationListQuery());
     }, []);
 
     const handleDelete = async (id: string) => {
         try {
             await dispatch(deleteEducation(id)).unwrap();
-            await dispatch(educationListQuery({ username }));
+            await dispatch(educationListQuery());
         } catch (err) {
             console.error('Failed to delete:', err);
         }

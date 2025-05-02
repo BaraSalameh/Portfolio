@@ -2,9 +2,9 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 
 export const educationListQuery = createAsyncThunk(
     'education/educationListQuery',
-    async ({username, query} : {username: string, query?: string}, thunkAPI)  => {
+    async (_, thunkAPI)  => {
         try {
-            const res = await fetch(`https://localhost:7206/api/Owner/EducationList?Username=${username}&Search=${query ?? ''}`,
+            const response = await fetch(`https://localhost:7206/api/Owner/EducationList`,
                 {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' },
@@ -12,13 +12,18 @@ export const educationListQuery = createAsyncThunk(
                 }
             );
         
-            if (!res.ok) {
-                const error = await res.json();
-                return thunkAPI.rejectWithValue(error?.message || 'Failed to fetch education list');
+            if (!response.ok) {
+                const error = await response.json();
+                return thunkAPI.rejectWithValue(error);
             }
-        
-            const data = await res.json();
-            return data;
+
+            if (response.status === 204){
+                return [];
+            }
+
+            const data = await response.json();
+            return [...data.items];
+
         } catch (error) {
             return thunkAPI.rejectWithValue((error as Error).message);
         }

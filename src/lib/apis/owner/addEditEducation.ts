@@ -7,7 +7,7 @@ export const addEditEducation = createAsyncThunk(
     async (payload: EducationFormData, thunkAPI) => {
         try {
             const request = transformPayload(payload);
-
+            
             const response = await fetch('https://localhost:7206/api/Owner/AddEditEducation', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -15,18 +15,13 @@ export const addEditEducation = createAsyncThunk(
                 credentials: 'include'
             });
 
-            const data = await response.json();
-
-            if(!data.status){
-                return thunkAPI.rejectWithValue({
-                    error: data.lstError
-                });
+            if (!response.ok){
+                const error = await response.json();
+                return thunkAPI.rejectWithValue(error)
             }
-    
-            return data;
 
         } catch (error) {
-            return thunkAPI.rejectWithValue('Network error');
+            return thunkAPI.rejectWithValue(['Unexpected error occurred']);
         }
     }
 );

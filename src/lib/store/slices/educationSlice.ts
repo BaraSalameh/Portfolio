@@ -6,14 +6,12 @@ import { deleteEducation } from '@/lib/apis/owner/deleteEducation';
 
 interface EducationState {
     educationList: EducationFormData[];
-    status: boolean;
     loading: boolean;
     error: string | null;
 }
 
 const initialState : EducationState = {
     educationList: [],
-    status: false,
     loading: false,
     error: null as string | null
 }
@@ -28,13 +26,12 @@ const educationSlice = createSlice({
             state.loading = true;
             state.error = null;
         })
-        .addCase(addEditEducation.fulfilled, (state, action) => {
+        .addCase(addEditEducation.fulfilled, (state) => {
             state.loading = false;
-            state.status = action.payload.status;
         })
         .addCase(addEditEducation.rejected, (state, action) => {
             state.loading = false;
-            state.error = (action.payload as any)?.error || 'Education fetch failed';
+            state.error = action.payload as string;
         })
 
         .addCase(deleteEducation.pending, (state) => {
@@ -43,11 +40,10 @@ const educationSlice = createSlice({
         })
         .addCase(deleteEducation.fulfilled, (state, action) => {
             state.loading = false;
-            state.status = action.payload.status;
         })
         .addCase(deleteEducation.rejected, (state, action) => {
             state.loading = false;
-            state.error = (action.payload as any)?.error || 'Education fetch failed';
+            state.error = action.payload as string;
         })
         
         .addCase(educationListQuery.pending, (state) => {
@@ -56,11 +52,11 @@ const educationSlice = createSlice({
         })
         .addCase(educationListQuery.fulfilled, (state, action) => {
             state.loading = false;
-            state.educationList = action.payload.items;
+            state.educationList = action.payload;
         })
         .addCase(educationListQuery.rejected, (state, action) => {
             state.loading = false;
-            state.error = (action.payload as any)?.error || 'get Education failed';
+            state.error = action.payload as string;
         });
     },
 });
