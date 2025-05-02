@@ -23,7 +23,7 @@ namespace Application.Common.Entities
                     ResultType.Unauthorized => new UnauthorizedObjectResult(res.lstError), //401
                     ResultType.Forbidden => new ObjectResult(res.lstError) { StatusCode = StatusCodes.Status403Forbidden },
                     ResultType.NotFound => new NotFoundObjectResult(res.lstError), //404
-                    ResultType.ValidationError => new BadRequestObjectResult(res.lstError),
+                    ResultType.ValidationError => new BadRequestObjectResult(res.lstError), //400
                     ResultType.ServerError => new ObjectResult(res.lstError) { StatusCode = StatusCodes.Status500InternalServerError },
                     ResultType.Conflict => new ConflictObjectResult(res.lstError),
                     _ => res.lstError.Count == 0
