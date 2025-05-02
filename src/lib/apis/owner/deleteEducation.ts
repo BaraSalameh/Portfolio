@@ -1,24 +1,23 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import { dynamicApi } from "../apiClient";
 
 export const deleteEducation = createAsyncThunk(
     'education/deleteEducation',
     async (id: string, thunkAPI) => {
         try {
-
-            const response = await fetch('https://localhost:7206/api/Owner/DeleteEducation', {
+            const response = await dynamicApi({
                 method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({id: id}),
-                credentials: 'include'
+                url: '/Owner/DeleteEducation',
+                data: {id},
+                withCredentials: true
             });
 
-            if(!response.ok){
-                const error = await response.json();
-                return thunkAPI.rejectWithValue(error);
-            }
+            if(response.status === 400) return thunkAPI.rejectWithValue(response.data);
 
-        } catch (error) {
-            return thunkAPI.rejectWithValue(['Unexpected error occurred']);
+            return;
+
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue(error.message);
         }
     }
 );

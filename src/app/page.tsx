@@ -55,7 +55,7 @@ export default function Home() {
                     />
                 </Header>
                 <Main className='sm:items-start items-center'>
-                    <Paragraph size="md">
+                    <Paragraph size="md" text='justify'>
                         {abstractParagraph}
                     </Paragraph>
                     <List size="sm">

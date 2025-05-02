@@ -1,7 +1,7 @@
 'use client';
 
 import LoginForm from "@/app/account/login/loginForm";
-import {  useAppSelector } from "@/lib/store/hooks";
+import {  useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { useEffect } from "react";
 import Image from "next/image";
 import { Anchor } from "@/components/ui/Anchor";
@@ -10,28 +10,31 @@ import { Header } from "@/components/shared/Header";
 import { Main } from "@/components/shared/Main";
 import { SubFooter } from "@/components/shared/SubFooter";
 import { useRouter } from "next/navigation";
-import { useCheckAndGetUsername } from "@/lib/utils/appFunctions";
+import { validateToken } from "@/lib/apis/account/validateToken";
 
 export default function LoginPage() {
 
     const router = useRouter();
-    const getUsername = useCheckAndGetUsername();
-    const { username, isConfirmed } = useAppSelector(state => state.auth);
+    const { isConfirmed } = useAppSelector(state => state.auth);
+    const dispatch = useAppDispatch();
+    const { username } = useAppSelector(state => state.auth);
 
     useEffect(() => {
-        const run = async () => {
-            if(isConfirmed == false){
-                router.push(`/account/register/confirm-email`);
-                return;
+        const checkSession = async () => {
+            !username && await dispatch(validateToken());
+            if (username){
+                router.push(`/owner/${username}/dashboard`);
             }
+        }
+        checkSession();
+    }, [username]);
 
-            const u = username || await getUsername();
-            if (u) {
-                router.push(`/owner/${u}/dashboard`);
-            }
-        };
-        run();
-    }, [username, isConfirmed]); 
+    useEffect(() => {
+        if(isConfirmed === false){
+            router.push(`/account/register/confirm-email`);
+            return;
+        }
+    }, [isConfirmed]);
 
     return (
         <Container>

@@ -28,7 +28,6 @@ interface DynamicApiOptions extends AxiosRequestConfig {
     method: HTTPMethod;
     url: string;
     data?: any;
-    
 }
 
 export const dynamicApi = async <T = any>(
@@ -53,6 +52,6 @@ export const dynamicApi = async <T = any>(
                 window.location.href = '/';
             }
         }
-        throw error;
+        return error;
     }
 };

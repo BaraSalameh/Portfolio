@@ -1,7 +1,7 @@
 import { cva, VariantProps } from 'class-variance-authority';
 
 export const paragraph = cva(
-    'text-justify font-[family-name:var(--font-geist-mono)]',
+    'font-[family-name:var(--font-geist-mono)]',
     {
         variants: {
             intent: {
@@ -15,16 +15,20 @@ export const paragraph = cva(
                     '',
             },
             size: {
-                xs: 'text-xs/6',
-                sm: 'text-sm/6',
-                md: 'text-md/6',
-                lg: 'text-lg/6',
-                xl: 'text-2xl/6'
+                sm: 'text-xs sm:text-xs',
+                md: 'text-xs sm:text-md',
+                lg: 'text-sm sm:text-lg',
+                xl: 'text-lg sm:text-xl'
+            },
+            text: {
+                standard: '',
+                justify: 'text-justify',
             }
         },
         defaultVariants: {
             intent: 'standard',
-            size: 'md'
+            size: 'md',
+            text: 'standard'
         },
     }
 );

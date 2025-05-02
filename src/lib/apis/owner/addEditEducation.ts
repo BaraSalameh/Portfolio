@@ -9,7 +9,6 @@ export const addEditEducation = createAsyncThunk(
         try {
             const request = transformPayload(payload);
 
-
             const response = await dynamicApi({
                 method: 'POST',
                 url: '/Owner/AddEditEducation',
@@ -17,13 +16,12 @@ export const addEditEducation = createAsyncThunk(
                 withCredentials: true
             });
 
+            if (response.status === 400) return thunkAPI.rejectWithValue(response.data);
+
             return;
 
         } catch (error: any) {
-            if (error.response?.data) {
-                return thunkAPI.rejectWithValue(error.response.data);
-            }
-            return thunkAPI.rejectWithValue(['Unexpected error occurred']);
+            return thunkAPI.rejectWithValue(error.message);
         }
     }
 );

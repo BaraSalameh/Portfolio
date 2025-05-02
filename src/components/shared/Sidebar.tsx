@@ -8,6 +8,7 @@ import {
     Languages, PenSquare, MessageSquare, Settings, LogOut
 } from 'lucide-react';
 import { Paragraph } from '../ui/Paragraph';
+import ResponsiveIcon from '../ui/ResponsiveIcon';
 
 type SidebarProps = { role?: 'Admin' | 'Owner' | null };
 
@@ -63,18 +64,18 @@ export default function Sidebar({ role }: SidebarProps) {
                 initial={{ x: 0 }}
                 animate={{ x: 0 }}
                 transition={{ type: 'tween', duration: 0.3 }}
-                className={`flex flex-col p-6 duration-100 sticky top-0`}
+                className={`flex flex-col p-2 duration-100 sticky top-0 min-h-screen`}
             >
                 {/* Burger Button INSIDE sidebar */}
                 <button
                     onClick={() => setIsCollapsed(!isCollapsed)}
-                    className="absolute -right-6 top-3 bg-green-900 p-2 rounded-full cursor-pointer duration-300"
+                    className="absolute -right-6 top-3 bg-green-900 px-2 py-1 rounded-md cursor-pointer duration-300"
                 >
-                    <Menu  />
+                    <ResponsiveIcon icon={Menu} />
                 </button>
 
                 {/* Navigation */}
-                <nav className="flex flex-col space-y-3 py-5">
+                <nav className="flex flex-col space-y-3 py-10">
                     {navLinks.map(({ href, label, icon: Icon }) => {
                         const isActive = pathname === href;
                         return (
@@ -82,13 +83,13 @@ export default function Sidebar({ role }: SidebarProps) {
                                 key={href}
                                 onClick={() => !isActive && router.push(href)}
                                
-                                className={`flex items-center gap-3 py-2 cursor-pointer ${
+                                className={`flex items-center gap-3 py-1 cursor-pointer ${
                                     isActive
                                         ? 'text-gray-300 cursor-not-allowed opacity-50'
                                         : 'hover:text-gray-900'
                                 }`}
                             >
-                                <Icon />
+                                <ResponsiveIcon icon={Icon} />
                                 {!isCollapsed && <Paragraph size="sm">{label}</Paragraph>}
                             </button>
                         );

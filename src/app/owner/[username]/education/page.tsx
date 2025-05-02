@@ -21,7 +21,7 @@ export default function OwnerEducationPage() {
 
     const handleDelete = async (id: string) => {
         try {
-            await dispatch(deleteEducation(id)).unwrap();
+            await dispatch(deleteEducation(id));
             await dispatch(educationListQuery());
         } catch (err) {
             console.error('Failed to delete:', err);
@@ -31,13 +31,13 @@ export default function OwnerEducationPage() {
     return (
         <>
         <Header itemsX='center'>
-            <div className="p-4 dark:bg-green-900 rounded-2xl">
+            <div className="flex items-center justify-center p-2 sm:p-4 dark:bg-green-900 rounded-2xl h-fit">
                 <CUDModal as='create' title="Add Education">
                     <EducationForm />
                 </CUDModal>
             </div>
         </Header>
-        <Main direction='row' itemsY='start' className='flex-wrap'>
+        <Main direction='row' itemsY='start' className='flex-wrap h-fit'>
             {educationList?.map(edu => 
                 <Card
                     key={edu.id}

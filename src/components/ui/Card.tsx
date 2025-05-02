@@ -38,17 +38,17 @@ export const Card: React.FC<CardProps> = ({
     return (
         <>
         <div
-            className={cn(card({ intent, size, rounded }), className)}
+            className={`${cn(card({ intent, size, rounded }), className)}`}
             onClick={() => setOpenModal(true)}
         >
-          <div className='flex flex-col gap-2 w-5xs sm:w-3xs'>
-                <Paragraph size='sm'>{institution}</Paragraph>
-                <Paragraph size="xs">{degree} - {fieldOfStudy}</Paragraph>
+          <div className='flex flex-col gap-2'>
+                <Paragraph size='lg'>{institution}</Paragraph>
+                <Paragraph size="md">{degree} - {fieldOfStudy}</Paragraph>
           </div>
         </div>
   
         {openModal && (
-            <BlurBackGround>
+            <BlurBackGround intent='sm'>
                 <div className="flex flex-col bg-green-900 rounded-2xl gap-6 p-8">
                     <div className={headerStyle}>
                         <div className='flex gap-5'>
@@ -58,10 +58,10 @@ export const Card: React.FC<CardProps> = ({
                     </div>
                     <hr />
                     <div className='flex flex-col gap-4'>
-                        <Paragraph size="md">{institution}</Paragraph>
-                        <Paragraph size="sm">{degree} - {fieldOfStudy}</Paragraph>
-                        <Paragraph size="xs"> {startDate} - {endDate}</Paragraph>
-                        <Paragraph size="xs" > {description}</Paragraph>
+                        <Paragraph size="lg">{institution}</Paragraph>
+                        <Paragraph size="md">{degree} - {fieldOfStudy}</Paragraph>
+                        <Paragraph size="sm"> {startDate} - {endDate ?? 'Now'}</Paragraph>
+                        <Paragraph size="sm"> {description}</Paragraph>
                     </div>
                 </div>
             </BlurBackGround>

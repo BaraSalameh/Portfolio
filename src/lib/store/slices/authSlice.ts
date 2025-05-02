@@ -56,7 +56,7 @@ const authSlice = createSlice({
             state.loading = false;
             Object.assign(state, action.payload)
         })
-        .addCase(validateToken.rejected, (state) => {
+        .addCase(validateToken.rejected, (state, action) => {
             state.loading = false;
         })
 

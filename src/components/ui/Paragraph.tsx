@@ -13,10 +13,11 @@ export const Paragraph: React.FC<ParagraphProps> = ({
     children,
     intent,
     size,
+    text,
     className
 }) => {
     return (
-        <p className={cn(paragraph({ intent, size }), className)}>
+        <p className={cn(paragraph({ intent, size, text }), className)}>
             {children}
         </p>
     );
