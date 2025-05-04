@@ -28,7 +28,7 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
                         {children}
                     </ReduxProvider>
                 </main>
-                <Footer />
+                {/* <Footer /> */}
             </body>
         </html>
     );
