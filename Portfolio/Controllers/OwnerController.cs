@@ -10,6 +10,7 @@ using Application.Owner.Commands.SocialLinkCommands;
 using Application.Owner.Commands.UserLanguageCommands;
 using Application.Owner.Queries.EducationQueries;
 using Application.Owner.Queries.LKP_LanguageQuieries;
+using Application.Owner.Queries.UserQueries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,6 +19,10 @@ namespace Portfolio.Controllers
     [Authorize(Policy = "RequireOwnerRole")]
     public class OwnerController : ApiController
     {
+        [HttpGet]
+        public async Task<IActionResult> UserFullInfo([FromQuery] UserQuery request)
+            => Result.HandleResult(await Mediator.Send(request));
+
         [HttpGet]
         public async Task<IActionResult> LKP_LanguageList([FromQuery] LKP_LanguageListQuery request)
             => Result.HandleResult(await Mediator.Send(request));
