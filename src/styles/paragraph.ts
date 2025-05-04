@@ -1,7 +1,7 @@
 import { cva, VariantProps } from 'class-variance-authority';
 
 export const paragraph = cva(
-    'font-[family-name:var(--font-geist-mono)]',
+    'flex items-center font-[family-name:var(--font-geist-mono)]',
     {
         variants: {
             intent: {
@@ -23,12 +23,17 @@ export const paragraph = cva(
             text: {
                 standard: '',
                 justify: 'text-justify',
+            },
+            position: {
+                start: null,
+                center: 'justify-center'
             }
         },
         defaultVariants: {
             intent: 'standard',
             size: 'md',
-            text: 'standard'
+            text: 'standard',
+            position: 'start'
         },
     }
 );

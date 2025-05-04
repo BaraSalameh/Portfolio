@@ -9,7 +9,7 @@ import { useEffect } from "react";
 export default function ClientLayout({children}: Readonly<{children: React.ReactNode;}>) {
 
     const router = useRouter();
-    const { error } = useAppSelector(state => state.user);
+    const { error } = useAppSelector(state => state.client);
 
     useEffect(() => {
         if(error) {

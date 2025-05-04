@@ -1,8 +1,8 @@
-import { userByUsernameQuery } from '@/lib/apis/client/userBuUsernameQuery';
+import { userQuery } from '@/lib/apis/owner/userQuery';
 import { createSlice } from '@reduxjs/toolkit';
 
-const userSlice = createSlice({
-    name: 'user',
+const ownerSlice = createSlice({
+    name: 'owner',
     initialState: {
         user: null,
         loading: false,
@@ -11,18 +11,18 @@ const userSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-        .addCase(userByUsernameQuery.pending, (state) => {
+        .addCase(userQuery.pending, (state) => {
             state.loading = true;
             state.error = null;
         })
-        .addCase(userByUsernameQuery.fulfilled, (state, action) => {
+        .addCase(userQuery.fulfilled, (state, action) => {
             state.loading = false;
-            state.user = action.payload;
+            state.user = action.payload.user;
         })
-        .addCase(userByUsernameQuery.rejected, (state, action) => {
+        .addCase(userQuery.rejected, (state, action) => {
             state.loading = false;
             state.error = (action.payload as string);
         });
     },
 });
-export default userSlice.reducer;
+export default ownerSlice.reducer;

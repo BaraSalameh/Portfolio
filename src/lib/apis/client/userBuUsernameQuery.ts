@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
 export const userByUsernameQuery = createAsyncThunk(
-    'user/userByUsernameQuery',
+    'client/userByUsernameQuery',
     async (username: string, thunkAPI) => {
         try {
             const res = await fetch(`https://localhost:7206/api/Client/UserByUsername?Username=${username}`);

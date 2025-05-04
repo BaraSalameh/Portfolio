@@ -13,6 +13,7 @@
     "@reduxjs/toolkit": "^2.7.0",
     "axios": "^1.8.4",
     "class-variance-authority": "^0.7.1",
+    "dayjs": "^1.11.13",
     "framer-motion": "^12.7.4",
     "jwt-decode": "^4.0.0",
     "lodash.debounce": "^4.0.8",
@@ -22,6 +23,7 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.56.0",
     "react-redux": "^9.2.0",
+    "recharts": "^2.15.3",
     "zod": "^3.24.3"
   },
   "devDependencies": {

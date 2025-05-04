@@ -23,8 +23,8 @@ export default function EducationForm({educationId, onClose} : props) {
 
     const dispatch = useAppDispatch();
     const { loading, error } = useAppSelector((state) => state.auth);
-    const { educationList } = useAppSelector((state) => state.education);
-    const educationToHandle = educationList.find(ed => ed.id === educationId);
+    const { lstEducations } = useAppSelector((state) => state.education);
+    const educationToHandle = lstEducations.find(ed => ed.id === educationId);
 
     const {
         register,

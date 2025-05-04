@@ -1,7 +1,7 @@
 import { cva, VariantProps } from 'class-variance-authority';
 
 export const list = cva(
-    'list-inside list-decimal flex flex-col gap-2 font-[family-name:var(--font-geist-mono)]',
+    'list-inside  flex flex-col gap-2 font-[family-name:var(--font-geist-mono)]',
     {
         variants: {
             intent: {
@@ -20,8 +20,9 @@ export const list = cva(
                 lg: 'text-lg/6'
             },
             as: {
-                ol: 'list-decimal',
-                ul: 'list-disc'
+                ol: 'list-decimal list-decimal',
+                ul: 'list-decimal list-disc',
+                none: null
             }
         },
         defaultVariants: {

@@ -12,7 +12,7 @@ export default function ClientHomePage() {
 
     const dispatch = useAppDispatch();
     const { username } = useParams<{username: string}>();
-    const { loading } = useAppSelector(state => state.user);
+    const { loading } = useAppSelector(state => state.client);
     
     useEffect(() => {
         username && dispatch(userByUsernameQuery(username));

@@ -3,15 +3,17 @@ import { addEditEducation } from '@/lib/apis/owner/addEditEducation';
 import { educationListQuery } from '@/lib/apis/owner/educationListQuery';
 import { EducationFormData } from '@/lib/schemas/educationSchema';
 import { deleteEducation } from '@/lib/apis/owner/deleteEducation';
+import { userQuery } from '@/lib/apis/owner/userQuery';
+import { userByUsernameQuery } from '@/lib/apis/client/userBuUsernameQuery';
 
 interface EducationState {
-    educationList: EducationFormData[];
+    lstEducations: EducationFormData[];
     loading: boolean;
     error: string | null;
 }
 
 const initialState : EducationState = {
-    educationList: [],
+    lstEducations: [],
     loading: false,
     error: null as string | null
 }
@@ -22,6 +24,23 @@ const educationSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
+        .addCase(userQuery.fulfilled, (state, action) => {
+            state.lstEducations = action.payload.lstEducations;
+        })
+
+        .addCase(educationListQuery.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(educationListQuery.fulfilled, (state, action) => {
+            state.loading = false;
+            state.lstEducations = action.payload;
+        })
+        .addCase(educationListQuery.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
+        })
+
         .addCase(addEditEducation.pending, (state) => {
             state.loading = true;
             state.error = null;
@@ -42,19 +61,6 @@ const educationSlice = createSlice({
             state.loading = false;
         })
         .addCase(deleteEducation.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.payload as string;
-        })
-        
-        .addCase(educationListQuery.pending, (state) => {
-            state.loading = true;
-            state.error = null;
-        })
-        .addCase(educationListQuery.fulfilled, (state, action) => {
-            state.loading = false;
-            state.educationList = action.payload;
-        })
-        .addCase(educationListQuery.rejected, (state, action) => {
             state.loading = false;
             state.error = action.payload as string;
         });

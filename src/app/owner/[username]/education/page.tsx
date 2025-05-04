@@ -13,10 +13,10 @@ import { deleteEducation } from "@/lib/apis/owner/deleteEducation";
 export default function OwnerEducationPage() {
 
     const dispatch = useAppDispatch();
-    const { educationList } = useAppSelector(state => state.education);
+    const { lstEducations } = useAppSelector(state => state.education);
 
     useEffect(() => {
-        educationList.length === 0 && dispatch(educationListQuery());
+        lstEducations.length === 0 && dispatch(educationListQuery());
     }, []);
 
     const handleDelete = async (id: string) => {
@@ -38,7 +38,7 @@ export default function OwnerEducationPage() {
             </div>
         </Header>
         <Main direction='row' itemsY='start' className='flex-wrap h-fit'>
-            {educationList?.map(edu => 
+            {lstEducations?.map(edu => 
                 <Card
                     key={edu.id}
                     institution={edu.institution}
