@@ -1,6 +1,7 @@
 ﻿using Application.Client.Queries;
 using Application.Common.Entities;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using DataAccess.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -26,14 +27,7 @@ namespace Application.Client.Handlers
             {
                 var existingEntity = await _context.User
                     .Where(u => u.Username == request.Username)
-                    .Include(u => u.LstProjects).ThenInclude(p => p.LstProjectTechnologies).ThenInclude(pt => pt.LKP_Technology)
-                    .Include(u => u.LstSkills)
-                    .Include(u => u.LstEducations)
-                    .Include(u => u.LstExperiences)
-                    .Include(u => u.LstBlogPosts)
-                    .Include(u => u.LstSocialLinks)
-                    .Include(u => u.LstUserLanguages).ThenInclude(ul => ul.LKP_Language)
-                    .Include(u => u.LstUserLanguages).ThenInclude(ul => ul.LKP_LanguageProficiency)
+                    .ProjectTo<UBUQ_Response>(_mapper.ConfigurationProvider)
                     .FirstOrDefaultAsync(cancellationToken);
 
                 if(existingEntity == null)
@@ -42,7 +36,7 @@ namespace Application.Client.Handlers
                     return response;
                 }
 
-                response.Data = _mapper.Map<UBUQ_Response>(existingEntity);
+                response.Data = existingEntity;
             }
             catch
             {
