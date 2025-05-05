@@ -26,10 +26,10 @@ export default function OwnerDashboardPage() {
         </Header>
         <Main paddingX='md'>
             <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-3">
-                <div className="break-inside-avoid ">
+                <div className="break-inside-avoid">
                     <EducationCard lstEducations={lstEducations} />
                 </div>
-                <div className="break-inside-avoid ">
+                <div className="break-inside-avoid">
                     <ExperienceCard lstExperiences={lstExperiences} />
                 </div>
             </div>
