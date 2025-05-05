@@ -9,8 +9,10 @@ import { BarChartWidget } from './BarChart';
 import { List } from '../List';
 import ResponsiveIcon from '../ResponsiveIcon';
 import dayjs from 'dayjs';
+import { widgetCard, WidgetCardVariantProps } from '@/styles/widgetCard';
+import { cn } from '@/components/utils/cn';
 
-type WidgetCardProps = {
+interface WidgetCardProps extends WidgetCardVariantProps {
     header?: {
         title?: string;
         icon?: any;
@@ -36,9 +38,17 @@ type WidgetCardProps = {
             end?: string;
         };
     };
+    className?: string;
 };
 
-export const WidgetCard: React.FC<WidgetCardProps> = ({ header, items, list, pie, bar }) => {
+export const WidgetCard: React.FC<WidgetCardProps> = ({
+    header,
+    items,
+    list,
+    pie,
+    bar,
+    className
+}) => {
     if (!Array.isArray(items) || items.length === 0) return null;
     if (!header && !list && !pie && !bar) return null;
 
@@ -55,7 +65,7 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({ header, items, list, pie
     const colorMap = generateColorMap(pieData ?? durationData);
 
     const renderListItem = (item: Record<string, any>, idx: number) => (
-            <li key={item.id ?? idx} className="bg-green-700 p-4 rounded-xl shadow-sm space-y-2">
+            <li key={item.id ?? idx}  className={`${cn(widgetCard({ intent: 'list' }), className)}`}>
                 {list!.map((cfg, index) => {
                     const leftVal = cfg.isTime ? dayjs(item[cfg.leftKey]).format('MMM YYYY') : item[cfg.leftKey];
                     const rightVal = cfg.isTime
@@ -77,7 +87,7 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({ header, items, list, pie
     );
 
     return (
-        <section className="bg-green-900 p-4 rounded-2xl space-y-4">
+        <section  className={`${cn(widgetCard({}), className)}`}>
             {/* Header */}
             {header && (header.icon || header.title) && (
                 <Header paddingX="xs" paddingY="xs" space="sm">
