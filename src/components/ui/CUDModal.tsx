@@ -1,6 +1,6 @@
 'use client';
 
-import { Edit, LucideTrash2, X, PlusIcon } from 'lucide-react';
+import { Edit, LucideTrash2, X } from 'lucide-react';
 import React, { InputHTMLAttributes, useState } from 'react';
 import { Paragraph } from './Paragraph';
 import { Button } from './Button';

@@ -2,11 +2,11 @@
 
 import { Header } from "@/components/shared/Header";
 import { Main } from "@/components/shared/Main";
-import { EducationCard } from "@/components/ui/EducationCard";
-import { ExperienceCard } from "@/components/ui/ExperienceCard";
 import { Paragraph } from "@/components/ui/Paragraph";
+import { WidgetCard } from "@/components/ui/widget/WidgetCard";
 import { userQuery } from "@/lib/apis/owner/userQuery";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { Briefcase, Clock, GraduationCap, MapPin } from "lucide-react";
 import { useEffect } from "react";
 
 export default function OwnerDashboardPage() {
@@ -27,10 +27,30 @@ export default function OwnerDashboardPage() {
         <Main paddingX='md'>
             <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-3">
                 <div className="break-inside-avoid">
-                    <EducationCard lstEducations={lstEducations} />
+                    <WidgetCard
+                        items={lstExperiences}
+                        header={{title: 'Experience', icon: Briefcase}}
+                        bar={{groupBy: 'jobTitle'}}
+                        pie={{title:'Job Titles Overview', groupBy: 'jobTitle'}}
+                        list={[
+                            {leftKey: 'jobTitle', between: 'in', rightKey:'companyName', size: 'lg'},
+                            {leftKey: 'location', icon: MapPin},
+                            {leftKey: 'startDate', between: '-', rightKey: 'endDate', icon: Clock, isTime: true},
+                        ]}
+                    />
                 </div>
                 <div className="break-inside-avoid">
-                    <ExperienceCard lstExperiences={lstExperiences} />
+                    <WidgetCard
+                        items={lstEducations}
+                        header={{title: 'Education', icon: GraduationCap}}
+                        bar={{groupBy: 'degree'}}
+                        pie={{title:'Degrees Overview', groupBy: 'degree'}}
+                        list={[
+                            {leftKey: 'degree', between: 'in', rightKey:'fieldOfStudy', size: 'lg'},
+                            {leftKey: 'institution', icon: GraduationCap},
+                            {leftKey: 'startDate', between: '-', rightKey: 'endDate', icon: Clock, isTime: true},
+                        ]}
+                    />
                 </div>
             </div>
         </Main>
