@@ -69,10 +69,10 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({
     if (!Array.isArray(items) || items.length === 0 || (!header && !list && !pie && !bar)) return null;
 
     const [openModal, setOpenModal] = useState(false);
-    const [itemId, setItemId] = useState<string | undefined>();
-    const handleModal = (id: string) => {
+    const [item, setItem] = useState<Record<string, any> | undefined>();
+    const handleModal = (item: Record<string, any>) => {
         setOpenModal(true);
-        setItemId(id);
+        setItem(item);
     };
 
     const clickable = (update || del || details) ? handleModal : undefined;
@@ -119,7 +119,7 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({
             <WidgetModal
                 isOpen={openModal}
                 onClose={() => setOpenModal(false)}
-                itemId={itemId}
+                item={item}
                 update={update}
                 del={del}
                 details={details}

@@ -70,6 +70,7 @@ export default function OwnerDashboardPage() {
                             {leftKey: 'degree', between: 'at', rightKey: 'institution', size:'lg'},
                             {leftKey: 'fieldOfStudy', icon: GraduationCap},
                             {leftKey: 'startDate', between: '-', rightKey: 'endDate', icon: Clock, isTime: true},
+                            {leftKey: 'description', size: 'sm'}
                         ]}
                     />
                 </div>

@@ -8,13 +8,12 @@ import { Header } from '@/components/shared/Header';
 import ResponsiveIcon from '../ResponsiveIcon';
 import { ListItemConfig, WidgetList } from './WidgetList';
 import { Main } from '@/components/shared/Main';
-import { details } from 'framer-motion/client';
 import { List } from '../List';
 
 interface WidgetModalProps {
     isOpen: boolean;
     onClose: () => void;
-    itemId?: string;
+    item?: Record<string, any>;
     update?: {
         title?: string;
         subTitle?: string;
@@ -30,7 +29,7 @@ interface WidgetModalProps {
     className?: string;
 }
 
-export const WidgetModal: React.FC<WidgetModalProps> = ({ isOpen, onClose, itemId, update, del, details, className }) => {
+export const WidgetModal: React.FC<WidgetModalProps> = ({ isOpen, onClose, item, update, del, details, className }) => {
     if (!isOpen) return null;
 
     return (
@@ -43,14 +42,14 @@ export const WidgetModal: React.FC<WidgetModalProps> = ({ isOpen, onClose, itemI
                                 {React.isValidElement(update.form)
                                     ?   React.cloneElement(update.form as React.ReactElement<{ onClose: () => void; id: string }>, {
                                             onClose,
-                                            id: itemId,
+                                            id: item?.id,
                                         })
                                     :   update.form
                                 }
                             </CUDModal>
                         )}
                         {del && (
-                            <CUDModal as='delete' title={del.title} subTitle={del.subTitle} CBRedux={del.CBDelete} idToDelete={itemId}>
+                            <CUDModal as='delete' title={del.title} subTitle={del.subTitle} CBRedux={del.CBDelete} idToDelete={item?.id}>
                                 {del.message}
                             </CUDModal>
                         )}
@@ -60,7 +59,7 @@ export const WidgetModal: React.FC<WidgetModalProps> = ({ isOpen, onClose, itemI
                 {details &&
                     <Main paddingX="none" paddingY="none">
                         <List size="md" as="none" className="w-full">
-                            <WidgetList items={[{}]} list={details}  />
+                            <WidgetList items={[item ?? {}]} list={details}  />
                         </List>
                     </Main>
                 }

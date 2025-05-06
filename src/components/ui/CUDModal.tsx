@@ -7,6 +7,10 @@ import { Button } from './Button';
 import Image from "next/image";
 import ResponsiveIcon from './ResponsiveIcon';
 import { BlurBackGround } from './BlurBackGround';
+import { Header } from '../shared/Header';
+import { cn } from '../utils/cn';
+import { widgetCard } from '@/styles/widget';
+import { Main } from '../shared/Main';
 
 interface CUDProps extends InputHTMLAttributes<HTMLInputElement> {
     idToDelete?: string;
@@ -15,6 +19,7 @@ interface CUDProps extends InputHTMLAttributes<HTMLInputElement> {
     title?: string;
     subTitle?: string;
     children?: React.ReactNode;
+    className?: string;
 }
 
 export const CUDModal = ({
@@ -23,7 +28,8 @@ export const CUDModal = ({
     as = 'create',
     title,
     subTitle = title,
-    children
+    children,
+    className
 }: CUDProps) => {
 
     const [openModal, setOpenModal] = useState(false);
@@ -44,45 +50,48 @@ export const CUDModal = ({
             {title && <Paragraph size='md'>{title}</Paragraph>}
         </div>
   
+  
         {openModal && (
             <BlurBackGround intent='sm'>
-                <div className="flex flex-col bg-green-900 rounded-2xl gap-4 p-6 max-h-[85vh] overflow-auto scrollbar-hide">
-                    <div className={headerStyle}>
+                <div className={ cn(widgetCard({}), className) }>
+                    <Header itemsX="between" paddingX="xs" paddingY="xs">
                         {subTitle && <Paragraph size="md">{subTitle}</Paragraph>}
-                        <X className='cursor-pointer' onClick={() => setOpenModal(false)} />
-                    </div>
+                        <ResponsiveIcon icon={X} onClick={() => setOpenModal(false)} className='cursor-pointer' />
+                    </Header>
                     <hr />
-                    {as !== 'delete'
-                        ?   React.isValidElement(children)
-                                ? React.cloneElement(children as React.ReactElement<{ onClose: () => void }>, {
-                                        onClose: () => setOpenModal(false)
-                                    })
-                                : children
-                        :   <>
-                            <Paragraph size="md">{children}</Paragraph>
-                            <Button
-                                onClick={async () => {
-                                    if (CBRedux && idToDelete) {
-                                        await CBRedux(idToDelete);
-                                        setOpenModal(false);
-                                    }
-                                }}
-                                intent="standard"
-                                rounded="full"
-                                size="lg"
-                                type="submit"
-                            >
-                                <Image
-                                    className="dark:invert"
-                                    src="/vercel.svg"
-                                    alt="Vercel logomark"
-                                    width={20}
-                                    height={20}
-                                />
-                                    Delete
-                            </Button>
-                            </>
-                        }
+                    <Main paddingX='sm' paddingY='sm' space='sm'>
+                        {as !== 'delete'
+                            ?   React.isValidElement(children)
+                                    ? React.cloneElement(children as React.ReactElement<{ onClose: () => void }>, {
+                                            onClose: () => setOpenModal(false)
+                                        })
+                                    : children
+                            :   <>
+                                <Paragraph size="md">{children}</Paragraph>
+                                <Button
+                                    onClick={async () => {
+                                        if (CBRedux && idToDelete) {
+                                            await CBRedux(idToDelete);
+                                            setOpenModal(false);
+                                        }
+                                    }}
+                                    intent="standard"
+                                    rounded="full"
+                                    size="lg"
+                                    type="submit"
+                                >
+                                    <Image
+                                        className="dark:invert"
+                                        src="/vercel.svg"
+                                        alt="Vercel logomark"
+                                        width={20}
+                                        height={20}
+                                    />
+                                        Delete
+                                </Button>
+                                </>
+                            }
+                    </Main>
                 </div>
             </BlurBackGround>
         )}

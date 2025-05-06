@@ -17,7 +17,7 @@ export interface ListItemConfig {
 export interface WidgetListProps extends WidgetListVariantProps {
     items: Record<string, any>[];
     list: ListItemConfig[];
-    onItemClick?: (id: string) => void;
+    onItemClick?: (item: any) => void;
     className?: string;
 }
 
@@ -25,7 +25,7 @@ export const WidgetList: React.FC<WidgetListProps> = ({ items, list, onItemClick
     return (
         <React.Fragment>
             {items.map((item, idx) => (
-                <li key={item.id ?? idx} className={cn(widgetList({}), className)} onClick={onItemClick ? () => onItemClick(item.id) : undefined}>
+                <li key={item.id ?? idx} className={cn(widgetList({ clickable: onItemClick ? true : false}), className)} onClick={onItemClick ? () => onItemClick(item) : undefined}>
                     {list.map((cfg, index) => {
                         const leftVal = cfg.isTime ? dayjs(item[cfg.leftKey]).format('MMM YYYY') : item[cfg.leftKey];
                         const rightVal = cfg.isTime
