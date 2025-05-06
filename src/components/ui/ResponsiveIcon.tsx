@@ -4,9 +4,10 @@ import { PlusIcon } from 'lucide-react'; // or wherever your icon is from
 interface ResponsiveIconProps {
     icon?: React.ElementType;
     className?: string;
+    onClick?: () => void;
 }
 
-const ResponsiveIcon: React.FC<ResponsiveIconProps> = ({ icon: Icon = PlusIcon, className }) => {
+const ResponsiveIcon: React.FC<ResponsiveIconProps> = ({ icon: Icon = PlusIcon, className, onClick }) => {
     const [size, setSize] = useState<number | null>(null);
 
     useEffect(() => {
@@ -28,7 +29,7 @@ const ResponsiveIcon: React.FC<ResponsiveIconProps> = ({ icon: Icon = PlusIcon, 
 
     if (size === null) return null; // Prevent hydration mismatch
 
-    return <Icon size={size} className={className} />;
+    return <Icon size={size} className={className} onClick={onClick} />;
 };
 
 export default ResponsiveIcon;

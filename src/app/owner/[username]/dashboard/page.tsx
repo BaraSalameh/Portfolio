@@ -9,7 +9,6 @@ import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { Briefcase, Clock, GraduationCap, MapPin } from "lucide-react";
 import { useEffect } from "react";
 import EducationForm from "../education/educationForm";
-import { CUDModal } from "@/components/ui/CUDModal";
 import { deleteEducation } from "@/lib/apis/owner/deleteEducation";
 import { educationListQuery } from "@/lib/apis/owner/educationListQuery";
 
@@ -67,6 +66,11 @@ export default function OwnerDashboardPage() {
                         create={{subTitle: 'Add Education', form: <EducationForm />}}
                         update={{subTitle: 'Update Education', form: <EducationForm />}}
                         del={{subTitle: 'Delete education', message: 'Are you sure?', CBDelete: handleDelete }}
+                        details={[
+                            {leftKey: 'degree', between: 'at', rightKey: 'institution', size:'lg'},
+                            {leftKey: 'fieldOfStudy', icon: GraduationCap},
+                            {leftKey: 'startDate', between: '-', rightKey: 'endDate', icon: Clock, isTime: true},
+                        ]}
                     />
                 </div>
             </div>
