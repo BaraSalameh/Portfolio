@@ -9,7 +9,8 @@ export const header = cva(
             },
             itemsX: {
                 center: 'justify-center',
-                start: 'justify-start'
+                start: 'justify-start',
+                between: 'justify-between'
             },
             space: {
                 none: 'gap-0',

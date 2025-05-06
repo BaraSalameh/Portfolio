@@ -8,6 +8,10 @@ import { userQuery } from "@/lib/apis/owner/userQuery";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { Briefcase, Clock, GraduationCap, MapPin } from "lucide-react";
 import { useEffect } from "react";
+import EducationForm from "../education/educationForm";
+import { CUDModal } from "@/components/ui/CUDModal";
+import { deleteEducation } from "@/lib/apis/owner/deleteEducation";
+import { educationListQuery } from "@/lib/apis/owner/educationListQuery";
 
 export default function OwnerDashboardPage() {
 
@@ -16,9 +20,19 @@ export default function OwnerDashboardPage() {
     const { lstEducations } = useAppSelector(state => state.education);
     const { lstExperiences } = useAppSelector(state => state.experience);
 
+    const handleDelete = async (id: string) => {
+        try {
+            await dispatch(deleteEducation(id));
+            await dispatch(educationListQuery());
+        } catch (err) {
+            console.error('Failed to delete:', err);
+        }
+    };
+
     useEffect(() => {
         !user && dispatch(userQuery());
     }, []);
+
     return (
         <>
         <Header itemsX='center'>
@@ -46,10 +60,13 @@ export default function OwnerDashboardPage() {
                         bar={{groupBy: 'degree'}}
                         pie={{title:'Degrees Overview', groupBy: 'degree'}}
                         list={[
-                            {leftKey: 'degree', between: 'in', rightKey:'fieldOfStudy', size: 'lg'},
-                            {leftKey: 'institution', icon: GraduationCap},
+                            {leftKey: 'degree', between: 'at', rightKey: 'institution', size:'lg'},
+                            {leftKey: 'fieldOfStudy', icon: GraduationCap},
                             {leftKey: 'startDate', between: '-', rightKey: 'endDate', icon: Clock, isTime: true},
                         ]}
+                        create={{subTitle: 'Add Education', form: <EducationForm />}}
+                        update={{subTitle: 'Update Education', form: <EducationForm />}}
+                        del={{subTitle: 'Delete education', message: 'Are you sure?', CBDelete: handleDelete }}
                     />
                 </div>
             </div>

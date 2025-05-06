@@ -11,6 +11,13 @@ import ResponsiveIcon from '../ResponsiveIcon';
 import dayjs from 'dayjs';
 import { widgetCard, WidgetCardVariantProps } from '@/styles/widgetCard';
 import { cn } from '@/components/utils/cn';
+import { CUDModal } from '../CUDModal';
+import { useState } from 'react';
+import { BlurBackGround } from '../BlurBackGround';
+import { X } from 'lucide-react';
+import React from 'react';
+import { Button } from '../Button';
+import Image from "next/image";
 
 interface WidgetCardProps extends WidgetCardVariantProps {
     header?: {
@@ -38,6 +45,22 @@ interface WidgetCardProps extends WidgetCardVariantProps {
             end?: string;
         };
     };
+    create?: {
+        title?: string;
+        subTitle?: string;
+        form?: React.ReactNode
+    };
+    update?: {
+        title?: string;
+        subTitle?: string;
+        form?: React.ReactNode
+    };
+    del?: {
+        title?: string;
+        subTitle?: string;
+        message?: string;
+        CBDelete: (id: string) => any;
+    };
     className?: string;
 };
 
@@ -47,10 +70,21 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({
     list,
     pie,
     bar,
+    create,
+    update,
+    del,
     className
 }) => {
     if (!Array.isArray(items) || items.length === 0) return null;
     if (!header && !list && !pie && !bar) return null;
+
+    const [openModal, setOpenModal] = useState(false);
+    const [itemId, setItemId] = useState<string | undefined>();
+    const handleModal = (id: string) => {
+        setOpenModal(true);
+        setItemId(id);
+    }
+    const clickable = update ? handleModal : () => {};
 
     // Chart data generation
     const pieData = pie ? generatePieData(items, pie.groupBy) : null;
@@ -65,11 +99,11 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({
     const colorMap = generateColorMap(pieData ?? durationData);
 
     const renderListItem = (item: Record<string, any>, idx: number) => (
-            <li key={item.id ?? idx}  className={`${cn(widgetCard({ intent: 'list' }), className)}`}>
+            <li key={item.id ?? idx}  className={`${cn(widgetCard({ intent: 'list' }), className)}`} onClick={() => clickable(item.id)}>
                 {list!.map((cfg, index) => {
                     const leftVal = cfg.isTime ? dayjs(item[cfg.leftKey]).format('MMM YYYY') : item[cfg.leftKey];
                     const rightVal = cfg.isTime
-                        ? cfg.rightKey
+                        ? cfg.rightKey && item[cfg.rightKey]
                             ? dayjs(item[cfg.rightKey]).format('MMM YYYY')
                             : 'Present'
                         : cfg.rightKey
@@ -87,12 +121,20 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({
     );
 
     return (
+        <>
         <section  className={`${cn(widgetCard({}), className)}`}>
             {/* Header */}
             {header && (header.icon || header.title) && (
-                <Header paddingX="xs" paddingY="xs" space="sm">
-                    {header.icon && <ResponsiveIcon icon={header.icon} />}
-                    {header.title && <Paragraph size="lg">{header.title}</Paragraph>}
+                <Header itemsX='between' paddingX="xs" paddingY="xs">
+                    <Paragraph size='lg' space='xs'>
+                        {header.icon && <ResponsiveIcon icon={header.icon} />}
+                        {header.title && header.title}
+                    </Paragraph>
+                    {create && 
+                        <CUDModal title={create.title} subTitle={create.subTitle}>
+                            {create.form}
+                        </CUDModal>
+                    }
                 </Header>
             )}
 
@@ -126,5 +168,36 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({
                 </Main>
             )}
         </section>
+        {openModal && (
+            <BlurBackGround intent='sm'>
+                <div className={`${cn(widgetCard({}), className)}`}>
+                    <Header itemsX='between' paddingX="xs" paddingY="xs">
+                        
+                        {(update || del) &&
+                            <>
+                                {update &&
+                                    <CUDModal as='update' title={update.title} subTitle={update.subTitle}>
+                                        {React.isValidElement(update.form)
+                                            ? React.cloneElement(update.form as React.ReactElement<{ onClose: () => void, id: string }>, {
+                                                    onClose: () => setOpenModal(false),
+                                                    id: itemId
+                                                })
+                                            : update.form
+                                        }
+                                    </CUDModal>
+                                }
+                                {del &&
+                                    <CUDModal as='delete' title={del.title} subTitle={del.subTitle} CBRedux={del.CBDelete} idToDelete={itemId}>
+                                        {del.message}
+                                    </CUDModal>
+                                }
+                                </>
+                        }
+                        <X className='cursor-pointer' onClick={() => setOpenModal(false)} />
+                    </Header>
+                </div>
+            </BlurBackGround>
+        )}
+        </>
     );
 };

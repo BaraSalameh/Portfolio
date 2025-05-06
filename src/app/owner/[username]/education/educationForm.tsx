@@ -15,16 +15,16 @@ import { educationListQuery } from "@/lib/apis/owner/educationListQuery";
 import { useEffect } from "react";
 
 type props = {
-    educationId?: string;
+    id?: string;
     onClose?: () => void;
 }
 
-export default function EducationForm({educationId, onClose} : props) {
+export default function EducationForm({id, onClose} : props) {
 
     const dispatch = useAppDispatch();
     const { loading, error } = useAppSelector((state) => state.auth);
     const { lstEducations } = useAppSelector((state) => state.education);
-    const educationToHandle = lstEducations.find(ed => ed.id === educationId);
+    const educationToHandle = lstEducations.find(ed => ed.id === id);
 
     const {
         register,
@@ -47,7 +47,7 @@ export default function EducationForm({educationId, onClose} : props) {
 
     const onSubmit = async (data: EducationFormData) => {
         try {
-            await dispatch(addEditEducation(data)).unwrap();
+            await dispatch(addEditEducation(data));
             await dispatch(educationListQuery());
             onClose?.();
         } catch (error) {
@@ -63,7 +63,7 @@ export default function EducationForm({educationId, onClose} : props) {
                 endDate: educationToHandle.endDate?.slice(0, 10),
             });
         }
-    }, [educationId]);
+    }, [id]);
       
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

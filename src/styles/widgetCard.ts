@@ -6,7 +6,7 @@ export const widgetCard = cva(
         variants: {
             intent: {
                 primary: 'dark:bg-green-900 space-y-4',
-                list: 'dark:bg-green-700 space-y-2 dark:hover:bg-gray-600'
+                list: 'dark:bg-green-700 space-y-2 dark:hover:bg-gray-600 cursor-pointer'
             },
         },
         defaultVariants: {

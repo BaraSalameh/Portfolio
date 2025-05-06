@@ -49,7 +49,7 @@ export default function OwnerEducationPage() {
                     description={edu.description}
                 >
                     <CUDModal as='update' subTitle="Update Education">
-                        <EducationForm educationId={edu.id} />
+                        <EducationForm id={edu.id} />
                     </CUDModal>
                     <CUDModal as='delete' subTitle="Delete Education" idToDelete={edu.id} CBRedux={handleDelete}>
                         Are you sure?

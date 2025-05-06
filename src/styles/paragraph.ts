@@ -15,10 +15,11 @@ export const paragraph = cva(
                     '',
             },
             size: {
-                sm: 'text-xs sm:text-xs',
-                md: 'text-xs sm:text-md',
-                lg: 'text-sm sm:text-lg',
-                xl: 'text-lg sm:text-xl'
+                xs: 'text-xs',
+                sm: 'text-xs sm:text-xs md: text-sm',
+                md: 'text-sm sm:text-md md:text-md',
+                lg: 'text-sm sm:text-md md:text-lg',
+                xl: 'text-md sm:text-lg md:text-xl'
             },
             text: {
                 standard: '',
@@ -27,13 +28,21 @@ export const paragraph = cva(
             position: {
                 start: null,
                 center: 'justify-center'
-            }
+            },
+            space: {
+                none: 'gap-0',
+                xs: 'gap-3',
+                sm: 'gap-5',
+                md: 'gap-10',
+                lg: 'gap-15'
+            },
         },
         defaultVariants: {
             intent: 'standard',
             size: 'md',
             text: 'standard',
-            position: 'start'
+            position: 'start',
+            space: 'sm'
         },
     }
 );

@@ -14,8 +14,6 @@ interface CUDProps extends InputHTMLAttributes<HTMLInputElement> {
     as?: 'create' | 'update' | 'delete';
     title?: string;
     subTitle?: string;
-    description?: string;
-    label?: string;
     children?: React.ReactNode;
 }
 
@@ -25,10 +23,7 @@ export const CUDModal = ({
     as = 'create',
     title,
     subTitle = title,
-    description,
-    label,
-    children,
-    ...rest
+    children
 }: CUDProps) => {
 
     const [openModal, setOpenModal] = useState(false);
