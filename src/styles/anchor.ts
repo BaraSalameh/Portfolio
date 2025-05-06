@@ -1,7 +1,7 @@
 import { cva, VariantProps } from 'class-variance-authority';
 
 export const anchor = cva(
-    'flex items-center gap-2 hover:underline hover:underline-offset-4',
+    'flex items-center gap-2 hover:underline hover:underline-offset-4 cursor-pointer',
     {
         variants: {
             size: {

@@ -10,8 +10,14 @@ import RegisterForm from "./RegisterForm";
 import { useAppSelector } from "@/lib/store/hooks";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { cn } from "@/components/utils/cn";
+import { widgetCard } from "@/styles/widget";
 
-export default function RegisterPage() {
+interface RegisterProps {
+    className?: string;
+}
+
+const RegisterPage: React.FC<RegisterProps> = ({ className }) => {
 
     var router = useRouter();
     const { username } = useAppSelector((state) => state.auth);
@@ -31,10 +37,10 @@ export default function RegisterPage() {
                     priority
                 />
             </Header>
-            <Main>
-                <div className="bg-green-950 rounded-2xl shadow-xl p-6 my-10">
+            <Main paddingY='none'>
+                <section className={cn(widgetCard(), className)}>
                     <RegisterForm />
-                </div>
+                </section>
             </Main>
             <SubFooter>
                 <Anchor size="xs" url="/">
@@ -49,3 +55,5 @@ export default function RegisterPage() {
         </Container>
     );
 }
+
+export default RegisterPage;

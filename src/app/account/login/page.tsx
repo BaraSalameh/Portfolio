@@ -11,8 +11,14 @@ import { Main } from "@/components/shared/Main";
 import { SubFooter } from "@/components/shared/SubFooter";
 import { useRouter } from "next/navigation";
 import { validateToken } from "@/lib/apis/account/validateToken";
+import { cn } from "@/components/utils/cn";
+import { widgetCard } from "@/styles/widget";
 
-export default function LoginPage() {
+interface LoginProps {
+    className?: string;
+}
+
+const LoginPage: React.FC<LoginProps> = ({ className }) => {
 
     const router = useRouter();
     const { isConfirmed } = useAppSelector(state => state.auth);
@@ -38,7 +44,7 @@ export default function LoginPage() {
 
     return (
         <Container>
-            <Header>
+            <Header >
                 <Image
                     src='/portfolio-logo.svg'
                     alt="portfolio logo"
@@ -48,9 +54,9 @@ export default function LoginPage() {
                 />
             </Header>
             <Main>
-                <div className="bg-green-950 rounded-2xl shadow-xl p-6 my-10">
+                <section className={cn(widgetCard(), className)}>
                     <LoginForm />
-                </div>
+                </section>
             </Main>
             <SubFooter>
                 <Anchor size="xs" url="/">
@@ -65,3 +71,5 @@ export default function LoginPage() {
         </Container>
     );
 }
+
+export default LoginPage;

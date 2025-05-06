@@ -1,7 +1,7 @@
 import { cva, VariantProps } from 'class-variance-authority';
 
 export const widgetCard = cva(
-    'dark:bg-green-900 space-y-4 p-4 rounded-2xl max-h-[85vh] overflow-auto scrollbar-hide'
+    'dark:bg-green-900 p-4 rounded-2xl max-h-[70vh] overflow-auto scrollbar-hide'
     
 );
 
