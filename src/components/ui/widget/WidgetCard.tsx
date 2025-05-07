@@ -48,7 +48,7 @@ interface WidgetCardProps extends WidgetCardVariantProps {
         title?: string;
         subTitle?: string;
         message?: string;
-        CBDelete: (id: string) => any;
+        onDelete: (id: string) => any;
     };
     details?: ListItemConfig[];
     className?: string;

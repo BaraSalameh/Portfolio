@@ -65,7 +65,7 @@ export default function OwnerDashboardPage() {
                         ]}
                         create={{subTitle: 'Add Education', form: <EducationForm />}}
                         update={{subTitle: 'Update Education', form: <EducationForm />}}
-                        del={{subTitle: 'Delete education', message: 'Are you sure?', CBDelete: handleDelete }}
+                        del={{subTitle: 'Delete education', message: 'Are you sure?', onDelete: handleDelete }}
                         details={[
                             {leftKey: 'degree', between: 'at', rightKey: 'institution', size:'lg'},
                             {leftKey: 'fieldOfStudy', icon: GraduationCap},

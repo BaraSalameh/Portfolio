@@ -14,7 +14,8 @@ import { Main } from '../shared/Main';
 
 interface CUDProps extends InputHTMLAttributes<HTMLInputElement> {
     idToDelete?: string;
-    CBRedux?: (id: string) => any;
+    onAction?: (id: string) => any;
+    onClose?: () => void;
     as?: 'create' | 'update' | 'delete';
     title?: string;
     subTitle?: string;
@@ -24,7 +25,8 @@ interface CUDProps extends InputHTMLAttributes<HTMLInputElement> {
 
 export const CUDModal = ({
     idToDelete,
-    CBRedux,
+    onAction,
+    onClose,
     as = 'create',
     title,
     subTitle = title,
@@ -33,7 +35,6 @@ export const CUDModal = ({
 }: CUDProps) => {
 
     const [openModal, setOpenModal] = useState(false);
-    const headerStyle = `flex justify-${subTitle ? 'between' : 'end'}`;
     
     return (
         <>
@@ -62,17 +63,18 @@ export const CUDModal = ({
                     <Main paddingX='sm' paddingY='sm' space='sm'>
                         {as !== 'delete'
                             ?   React.isValidElement(children)
-                                    ? React.cloneElement(children as React.ReactElement<{ onClose: () => void }>, {
-                                            onClose: () => setOpenModal(false)
+                                    ?   React.cloneElement(children as React.ReactElement<{ onClose: () => void }>, {
+                                            onClose: (children as any).props.onClose ?? (() => setOpenModal(false))
                                         })
-                                    : children
+                                    :   children
                             :   <>
                                 <Paragraph size="md">{children}</Paragraph>
                                 <Button
                                     onClick={async () => {
-                                        if (CBRedux && idToDelete) {
-                                            await CBRedux(idToDelete);
-                                            setOpenModal(false);
+                                        if (onAction && idToDelete) {
+                                            await onAction(idToDelete);
+                                            onClose ? onClose() : setOpenModal(false);
+                                            
                                         }
                                     }}
                                     intent="standard"

@@ -23,7 +23,7 @@ interface WidgetModalProps {
         title?: string;
         subTitle?: string;
         message?: string;
-        CBDelete: (id: string) => any;
+        onDelete: (id: string) => any;
     };
     details?: ListItemConfig[];
     className?: string;
@@ -49,7 +49,7 @@ export const WidgetModal: React.FC<WidgetModalProps> = ({ isOpen, onClose, item,
                             </CUDModal>
                         )}
                         {del && (
-                            <CUDModal as='delete' title={del.title} subTitle={del.subTitle} CBRedux={del.CBDelete} idToDelete={item?.id}>
+                            <CUDModal as='delete' title={del.title} subTitle={del.subTitle} onAction={del.onDelete} onClose={onClose} idToDelete={item?.id}>
                                 {del.message}
                             </CUDModal>
                         )}
