@@ -38,7 +38,7 @@ namespace Application.Owner.Handlers.EducationHandlers
                 {
                     var id = request.EducationIdsInOrder[i];
                     var edu = educations.First(e => e.ID == id);
-                    edu.Order = i;
+                    edu.Order = i + 1;
                 }
 
                 await _context.SaveChangesAsync();
