@@ -9,6 +9,7 @@
         public DateOnly StartDate { get; set; }
         public DateOnly? EndDate { get; set; }
         public string? Description { get; set; }
+        public int Order { get; set; }
         public Guid UserID { get; set; }
         public User User { get; set; }
     }

@@ -25,11 +25,11 @@ namespace Application.Owner.Handlers.EducationHandlers
         {
             var response = new ListQueryResponse<ELQ_Educations>();
 
-            var existingEntity = _context.User
+            var existingEntity = _context.Education
                 .AsNoTracking()
-                .Where(u => u.ID == _currentUserService.UserID)
-                .SelectMany(u => u.LstEducations)
-                .Where(ed => ed.IsDeleted == false);
+                .Where(e => e.UserID == _currentUserService.UserID && e.IsDeleted == false)
+                .OrderBy(e => e.Order);
+
 
             response.Items = await _mapper.ProjectTo<ELQ_Educations>(existingEntity).ToListAsync(cancellationToken);
             response.RowCount = response.Items.Count();
