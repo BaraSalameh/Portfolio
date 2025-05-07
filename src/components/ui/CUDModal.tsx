@@ -1,6 +1,6 @@
 'use client';
 
-import { Edit, LucideTrash2, X } from 'lucide-react';
+import { Edit, LucideIcon, LucideTrash2, X } from 'lucide-react';
 import React, { InputHTMLAttributes, useState } from 'react';
 import { Paragraph } from './Paragraph';
 import { Button } from './Button';
@@ -16,10 +16,11 @@ interface CUDProps extends InputHTMLAttributes<HTMLInputElement> {
     idToDelete?: string;
     onAction?: (id: string) => any;
     onClose?: () => void;
-    as?: 'create' | 'update' | 'delete';
+    as?: 'create' | 'update' | 'delete' | 'none';
     title?: string;
     subTitle?: string;
     children?: React.ReactNode;
+    icon?: LucideIcon;
     className?: string;
 }
 
@@ -31,6 +32,7 @@ export const CUDModal = ({
     title,
     subTitle = title,
     children,
+    icon,
     className
 }: CUDProps) => {
 
@@ -46,7 +48,7 @@ export const CUDModal = ({
             ?   <ResponsiveIcon />
             :   as === 'update'
                 ?   <ResponsiveIcon icon={Edit} />
-                :   <ResponsiveIcon icon={LucideTrash2} />
+                :   as === 'none' ? <ResponsiveIcon icon={icon} /> :  <ResponsiveIcon icon={LucideTrash2} />
             }
             {title && <Paragraph size='md'>{title}</Paragraph>}
         </div>
@@ -61,7 +63,9 @@ export const CUDModal = ({
                     </Header>
                     <hr />
                     <Main paddingX='sm' paddingY='sm' space='sm'>
-                        {as !== 'delete'
+                        {as === 'none' ? children
+                        :
+                        as !== 'delete'
                             ?   React.isValidElement(children)
                                     ?   React.cloneElement(children as React.ReactElement<{ onClose: () => void }>, {
                                             onClose: (children as any).props.onClose ?? (() => setOpenModal(false))
