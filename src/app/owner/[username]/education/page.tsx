@@ -9,6 +9,7 @@ import { educationListQuery } from "@/lib/apis/owner/educationListQuery";
 import { Header } from "@/components/shared/Header";
 import { Main } from "@/components/shared/Main";
 import { deleteEducation } from "@/lib/apis/owner/deleteEducation";
+import SortableEducationList from "@/components/ui/SortableList";
 
 export default function OwnerEducationPage() {
 
@@ -37,6 +38,11 @@ export default function OwnerEducationPage() {
                 </CUDModal>
             </div>
         </Header>
+        {lstEducations.length > 0 && 
+            <Main>
+                <SortableEducationList initialItems={lstEducations}/>
+            </Main>
+        }
         <Main direction='row' itemsY='start' className='flex-wrap h-fit'>
             {lstEducations?.map(edu => 
                 <Card
@@ -51,7 +57,7 @@ export default function OwnerEducationPage() {
                     <CUDModal as='update' subTitle="Update Education">
                         <EducationForm id={edu.id} />
                     </CUDModal>
-                    <CUDModal as='delete' subTitle="Delete Education" idToDelete={edu.id} CBRedux={handleDelete}>
+                    <CUDModal as='delete' subTitle="Delete Education" idToDelete={edu.id} onAction={handleDelete}>
                         Are you sure?
                     </CUDModal>
                 </Card>
