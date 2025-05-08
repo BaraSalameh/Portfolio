@@ -8,7 +8,7 @@ import { Paragraph } from '../Paragraph';
 import { List } from '../List';
 import ResponsiveIcon from '../ResponsiveIcon';
 import { generateColorMap, generateDurationData, generatePieData } from '@/lib/utils/appFunctions';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { ListItemConfig, WidgetList } from './WidgetList';
 import { WidgetCharts } from './WidgetCharts';
 import { WidgetModal } from './WidgetModal';
