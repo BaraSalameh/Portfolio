@@ -2,31 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Paragraph } from '../Paragraph';
 import ResponsiveIcon from '../ResponsiveIcon';
 import dayjs from 'dayjs';
-import { widgetList, WidgetListVariantProps } from '@/styles/widget';
+import { widgetList } from '@/styles/widget';
 import { cn } from '@/components/utils/cn';
 import { closestCenter, DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableItem';
-
-export interface ListItemConfig {
-    icon?: any;
-    leftKey: string;
-    between?: string;
-    rightKey?: string;
-    size?: 'lg' | 'md' | 'sm' | null;
-    isTime?: boolean;
-}
-
-export interface WidgetListProps extends WidgetListVariantProps {
-    items: Record<string, any>[];
-    list: ListItemConfig[];
-    onItemClick?: (item: any) => void;
-    className?: string;
-    sort?: {
-        sortable: boolean;
-        onSort?: (lstIds: string[]) => any;
-    }
-}
+import { WidgetListProps } from './type';
 
 export const WidgetList: React.FC<WidgetListProps> = ({ items, list, onItemClick, className, sort }) => {
 

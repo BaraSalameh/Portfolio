@@ -1,14 +1,7 @@
 import { Paragraph } from '../Paragraph';
 import { PieChartWidget } from './PieChart';
 import { BarChartWidget } from './BarChart';
-
-interface WidgetChartsProps {
-    pieData: any;
-    durationData: any;
-    pieTitle?: string;
-    barTitle?: string;
-    colorMap: Record<string, string>;
-}
+import { WidgetChartsProps } from './type';
 
 export const WidgetCharts: React.FC<WidgetChartsProps> = ({ pieData, durationData, pieTitle, barTitle, colorMap }) => (
     <div className={`w-full grid grid-cols-1 ${pieData && durationData.length > 0 ? 'sm:grid-cols-3' : ''}`}>

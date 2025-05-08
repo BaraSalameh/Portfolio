@@ -6,28 +6,11 @@ import { widgetCard } from '@/styles/widget';
 import React from 'react';
 import { Header } from '@/components/shared/Header';
 import ResponsiveIcon from '../ResponsiveIcon';
-import { ListItemConfig, WidgetList } from './WidgetList';
+import { WidgetList } from './WidgetList';
 import { Main } from '@/components/shared/Main';
 import { List } from '../List';
+import { WidgetModalProps } from './type';
 
-interface WidgetModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    item?: Record<string, any>;
-    update?: {
-        title?: string;
-        subTitle?: string;
-        form?: React.ReactNode;
-    };
-    del?: {
-        title?: string;
-        subTitle?: string;
-        message?: string;
-        onDelete: (id: string) => any;
-    };
-    details?: ListItemConfig[];
-    className?: string;
-}
 
 export const WidgetModal: React.FC<WidgetModalProps> = ({ isOpen, onClose, item, update, del, details, className }) => {
     if (!isOpen) return null;
