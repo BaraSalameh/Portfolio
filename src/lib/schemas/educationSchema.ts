@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const educationSchema = z.object({
     id: z.string().optional(),
+
     institution: z.string()
         .min(2, 'Institution name must be at least 2 characters')
         .max(100, 'Institution name is too long'),
@@ -17,34 +18,64 @@ export const educationSchema = z.object({
     startDate: z.string()
         .refine(val => !isNaN(Date.parse(val)), { message: 'Start date not valid' }),
 
-    endDate: z.string()
-        .optional(),
+    endDate: z.string().optional().nullable(),
 
     description: z.string()
         .max(1000, 'Description is too long')
-        .optional(),
+        .optional().nullable(),
 
-    isStudying: z.boolean({
-        required_error: "Please specify if you are still studying",
-    }),
+    isStudying: z.boolean().optional(),
 }).superRefine((data, ctx) => {
-    // Validate endDate format if provided
-    if (data.endDate && isNaN(Date.parse(data.endDate))) {
-            ctx.addIssue({
-            path: ['endDate'],
-            message: 'End date not valid',
+    const now = new Date();
+    const start = new Date(data.startDate);
+
+    if (isNaN(start.getTime())) {
+        ctx.addIssue({
+            path: ['startDate'],
+            message: 'Start date not valid',
+            code: z.ZodIssueCode.custom,
+        });
+    } else if (start > now) {
+        ctx.addIssue({
+            path: ['startDate'],
+            message: 'Start date cannot be in the future',
             code: z.ZodIssueCode.custom,
         });
     }
 
-    // Validate presence of endDate if not studying
-    if (!data.isStudying && !data.endDate) {
+    if (!data.isStudying) {
+        if (!data.endDate) {
             ctx.addIssue({
-            path: ['endDate'],
-            message: 'End date is required if not still studying',
-            code: z.ZodIssueCode.custom,
-        });
+                path: ['endDate'],
+                message: 'End date is required if not still studying',
+                code: z.ZodIssueCode.custom,
+            });
+        } else {
+            const end = new Date(data.endDate);
+            if (isNaN(end.getTime())) {
+                ctx.addIssue({
+                    path: ['endDate'],
+                    message: 'End date not valid',
+                    code: z.ZodIssueCode.custom,
+                });
+            } else {
+                if (end > now) {
+                    ctx.addIssue({
+                        path: ['endDate'],
+                        message: 'End date cannot be in the future',
+                        code: z.ZodIssueCode.custom,
+                    });
+                }
+                if (start > end) {
+                    ctx.addIssue({
+                        path: ['endDate'],
+                        message: 'End date must be after start date',
+                        code: z.ZodIssueCode.custom,
+                    });
+                }
+            }
+        }
+    } else {
+        data.endDate = null;
     }
 });
-
-export type EducationFormData = z.infer<typeof educationSchema>;
