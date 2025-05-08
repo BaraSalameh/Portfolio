@@ -14,7 +14,13 @@ import { WidgetCharts } from './WidgetCharts';
 import { WidgetModal } from './WidgetModal';
 import { CUDModal } from '../CUDModal';
 import React from 'react';
-import { Scroll } from 'lucide-react';
+import { ArrowUpDown, GripVertical, Scroll } from 'lucide-react';
+
+/*
+TODO:
+1- Fix Dnd when scrollong up to unseen items.
+2- Make the Widget as clean as possible (Create type.ts and helpers)
+*/
 
 interface WidgetCardProps extends WidgetCardVariantProps {
     header?: {
@@ -52,7 +58,7 @@ interface WidgetCardProps extends WidgetCardVariantProps {
         onDelete: (id: string) => any;
     };
     details?: ListItemConfig[];
-    sortable?: boolean;
+    onSort?: (lstIds: string[]) => any;
     className?: string;
 }
 
@@ -66,12 +72,12 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({
     update,
     del,
     details,
-    sortable = true,
+    onSort,
     className
 }) => {
     if (!Array.isArray(items) || items.length === 0 || (!header && !list && !pie && !bar)) return null;
 
-    const [draggable, setDraggable] = useState(sortable);
+    const [sortable, setSortable] = useState<boolean>(false);
     const [openModal, setOpenModal] = useState(false);
     const [item, setItem] = useState<Record<string, any> | undefined>();
     const handleModal = (item: Record<string, any>) => {
@@ -88,9 +94,6 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({
     );
     const colorMap = useMemo(() => generateColorMap(pieData ?? durationData), [pieData, durationData]);
 
-    useEffect(() => {
-        console.log(draggable);
-    }, [draggable]);
     return (
         <React.Fragment>
             <section className={cn(widgetCard({}), className)}>
@@ -100,13 +103,14 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({
                             {header.icon && <ResponsiveIcon icon={header.icon} />}
                             {header.title}
                         </Paragraph>
-                        {(create || sortable) &&
+                        {(create || onSort) &&
                             <div className='flex space-x-3'>
-                                {sortable && 
-                                    <CUDModal as='none' icon={Scroll} subTitle='Drag and Drop'>
-                                        <Paragraph> {`Drag and drop is ${draggable ? 'ON' : 'OFF'}`} </Paragraph>
-                                    </CUDModal>
-                                    // <button><ResponsiveIcon icon={header.icon} onClick={() => setDraggable(!draggable)}/></button>
+                                {onSort &&
+                                        <ResponsiveIcon
+                                            className='cursor-pointer'
+                                            icon={sortable ? ArrowUpDown : GripVertical}
+                                            onClick={() => setSortable(!sortable)}
+                                        />
                                 }
                                 {create && (
                                     <CUDModal title={create.title} subTitle={create.subTitle}>
@@ -127,7 +131,7 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({
                 {list && (
                     <Main paddingX="none" paddingY="none">
                         <List size="md" as="none" className="w-full">
-                            <WidgetList items={items} list={list} onItemClick={clickable} />
+                            <WidgetList items={items} list={list} onItemClick={clickable} sort={{sortable, onSort}} />
                         </List>
                     </Main>
                 )}

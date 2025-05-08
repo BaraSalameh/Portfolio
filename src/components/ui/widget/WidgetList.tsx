@@ -1,14 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Paragraph } from '../Paragraph';
 import ResponsiveIcon from '../ResponsiveIcon';
 import dayjs from 'dayjs';
 import { widgetList, WidgetListVariantProps } from '@/styles/widget';
 import { cn } from '@/components/utils/cn';
-import { useAppDispatch } from '@/lib/store/hooks';
-import { closestCenter, DndContext, MeasuringStrategy, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { closestCenter, DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { dynamicApi } from '@/lib/apis/apiClient';
-import { educationListQuery } from '@/lib/apis/owner/educationListQuery';
 import { SortableItem } from './SortableItem';
 
 export interface ListItemConfig {
@@ -25,13 +22,15 @@ export interface WidgetListProps extends WidgetListVariantProps {
     list: ListItemConfig[];
     onItemClick?: (item: any) => void;
     className?: string;
-    draggable?: boolean;
+    sort?: {
+        sortable: boolean;
+        onSort?: (lstIds: string[]) => any;
+    }
 }
 
-export const WidgetList: React.FC<WidgetListProps> = ({ items, list, onItemClick, className, draggable = true }) => {
+export const WidgetList: React.FC<WidgetListProps> = ({ items, list, onItemClick, className, sort }) => {
 
     const [rows, setRows] = useState<Record<string, any>[]>(items);
-    const dispatch = useAppDispatch();
     const sensors = useSensors(useSensor(PointerSensor));
 
     const handleDragEnd = async (event: any) => {
@@ -47,28 +46,19 @@ export const WidgetList: React.FC<WidgetListProps> = ({ items, list, onItemClick
 
         const orderedIds = newItems.map((item) => item.id);
 
-        console.log(orderedIds);
-
-        try {
-            await dynamicApi({
-                method: 'POST',
-                url: '/Owner/ReOrderEducation',
-                data: {educationIdsInOrder: orderedIds},
-                withCredentials: true
-            });
-            await dispatch(educationListQuery());
-        } catch (err) {
-            console.error('Failed to update order', err);
-        }
-        
+        sort?.onSort?.(orderedIds);
     };
+
+    useEffect(() => {
+        setRows(items);
+    }, [items]);
 
     const renderList = () =>
         rows.map((item, idx) => {
             const listItem = (
                 <li
                     key={item.id ?? idx}
-                    className={`${cn(widgetList({ clickable: onItemClick ? true : false }), className)}`}
+                    className={`${cn(widgetList({ clickable: sort?.sortable ? false : onItemClick ? true : false }), className)}`}
                     onClick={() => onItemClick?.(item)}
                 >
                     {list.map((cfg, index) => {
@@ -93,7 +83,7 @@ export const WidgetList: React.FC<WidgetListProps> = ({ items, list, onItemClick
                 </li>
             );
 
-            return draggable
+            return sort?.sortable
                 ?   (
                         <SortableItem key={item.id} id={item.id} child={listItem} />
                     )
@@ -102,7 +92,7 @@ export const WidgetList: React.FC<WidgetListProps> = ({ items, list, onItemClick
                     );
         });
 
-        return draggable ? (
+        return sort?.sortable ? (
             <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}

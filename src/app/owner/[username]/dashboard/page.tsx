@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import EducationForm from "../education/educationForm";
 import { deleteEducation } from "@/lib/apis/owner/deleteEducation";
 import { educationListQuery } from "@/lib/apis/owner/educationListQuery";
+import { sortEducation } from "@/lib/apis/owner/education/sortEducation";
 
 export default function OwnerDashboardPage() {
 
@@ -25,6 +26,15 @@ export default function OwnerDashboardPage() {
             await dispatch(educationListQuery());
         } catch (err) {
             console.error('Failed to delete:', err);
+        }
+    };
+
+    const handleEducationSort = async (lstIds: string[]) => {
+        try {
+            await dispatch(sortEducation(lstIds));
+            await dispatch(educationListQuery());
+        } catch (err) {
+            console.error("Failed to sort education");
         }
     };
 
@@ -51,7 +61,7 @@ export default function OwnerDashboardPage() {
                             {leftKey: 'startDate', between: '-', rightKey: 'endDate', icon: Clock, isTime: true},
                         ]}
                     />
-                </div>
+            </div>
                 <div className="break-inside-avoid">
                     <WidgetCard
                         items={lstEducations}
@@ -72,6 +82,7 @@ export default function OwnerDashboardPage() {
                             {leftKey: 'startDate', between: '-', rightKey: 'endDate', icon: Clock, isTime: true},
                             {leftKey: 'description', size: 'sm'}
                         ]}
+                        onSort={handleEducationSort}
                     />
                 </div>
             </div>
