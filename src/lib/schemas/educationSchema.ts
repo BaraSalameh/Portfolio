@@ -79,3 +79,5 @@ export const educationSchema = z.object({
         data.endDate = null;
     }
 });
+
+export type EducationFormData = z.infer<typeof educationSchema>;
