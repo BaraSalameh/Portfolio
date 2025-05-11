@@ -7,11 +7,12 @@ import { WidgetCard } from "@/components/ui/widget/WidgetCard";
 import { userQuery } from "@/lib/apis/owner/userQuery";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { Briefcase, Clock, GraduationCap, MapPin } from "lucide-react";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import EducationForm from "../education/educationForm";
 import { deleteEducation } from "@/lib/apis/owner/deleteEducation";
 import { educationListQuery } from "@/lib/apis/owner/educationListQuery";
 import { sortEducation } from "@/lib/apis/owner/education/sortEducation";
+import debounce from "lodash.debounce";
 
 export default function OwnerDashboardPage() {
 
@@ -29,14 +30,15 @@ export default function OwnerDashboardPage() {
         }
     };
 
-    const handleEducationSort = async (lstIds: string[]) => {
-        try {
-            await dispatch(sortEducation(lstIds));
-            await dispatch(educationListQuery());
-        } catch (err) {
-            console.error("Failed to sort education");
-        }
-    };
+    const debouncedSortEducation = useCallback(
+        debounce((lstIds: string[]) => {
+            if (lstIds.length > 0) {
+                dispatch(sortEducation(lstIds));
+                dispatch(educationListQuery());
+            }
+        
+        }, 1000), []
+    );
 
     useEffect(() => {
         !user && dispatch(userQuery());
@@ -82,7 +84,7 @@ export default function OwnerDashboardPage() {
                             {leftKey: 'startDate', between: '-', rightKey: 'endDate', icon: Clock, isTime: true},
                             {leftKey: 'description', size: 'sm'}
                         ]}
-                        onSort={handleEducationSort}
+                        onSort={debouncedSortEducation}
                     />
                 </div>
             </div>

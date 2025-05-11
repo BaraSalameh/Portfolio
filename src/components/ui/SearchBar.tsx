@@ -19,7 +19,8 @@ export const SearchBar = () => {
         if (value.trim().length > 0) {
             dispatch(userListQuery(value));
         }
-        }, 300), []);
+        }, 300), []
+    );
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
