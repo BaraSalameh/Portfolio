@@ -4,6 +4,7 @@ using DataAccess.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250512234939_Adding seed data")]
+    partial class Addingseeddata
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -252,46 +255,11 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
                     b.ToTable("LKP_Degree");
-
-                    b.HasData(
-                        new
-                        {
-                            ID = new Guid("73ff5e40-1e2c-4eec-a15e-0ed2f509d001"),
-                            Abbreviation = "BSc",
-                            Name = "Bachelor of Science"
-                        },
-                        new
-                        {
-                            ID = new Guid("73ff5e40-1e2c-4eec-a15e-0ed2f509d002"),
-                            Abbreviation = "BA",
-                            Name = "Bachelor of Arts"
-                        },
-                        new
-                        {
-                            ID = new Guid("73ff5e40-1e2c-4eec-a15e-0ed2f509d003"),
-                            Abbreviation = "MSc",
-                            Name = "Master of Science"
-                        },
-                        new
-                        {
-                            ID = new Guid("73ff5e40-1e2c-4eec-a15e-0ed2f509d004"),
-                            Abbreviation = "MBA",
-                            Name = "Master of Business Administration"
-                        },
-                        new
-                        {
-                            ID = new Guid("73ff5e40-1e2c-4eec-a15e-0ed2f509d005"),
-                            Abbreviation = "PhD",
-                            Name = "Doctor of Philosophy"
-                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.LKP_FieldOfStudy", b =>
@@ -303,46 +271,11 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
                     b.ToTable("LKP_FieldOfStudy");
-
-                    b.HasData(
-                        new
-                        {
-                            ID = new Guid("9d9f3f30-1122-4b21-8a23-76a9b1b10001"),
-                            Name = "Computer Science"
-                        },
-                        new
-                        {
-                            ID = new Guid("9d9f3f30-1122-4b21-8a23-76a9b1b10002"),
-                            Name = "Business Administration"
-                        },
-                        new
-                        {
-                            ID = new Guid("9d9f3f30-1122-4b21-8a23-76a9b1b10003"),
-                            Name = "Electrical Engineering"
-                        },
-                        new
-                        {
-                            ID = new Guid("9d9f3f30-1122-4b21-8a23-76a9b1b10004"),
-                            Name = "Mechanical Engineering"
-                        },
-                        new
-                        {
-                            ID = new Guid("9d9f3f30-1122-4b21-8a23-76a9b1b10005"),
-                            Name = "Economics"
-                        },
-                        new
-                        {
-                            ID = new Guid("9d9f3f30-1122-4b21-8a23-76a9b1b10006"),
-                            Name = "Cyber Security"
-                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.LKP_Institution", b =>
@@ -353,40 +286,16 @@ namespace DataAccess.Migrations
                         .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("Logo")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
                     b.ToTable("LKP_Institution");
-
-                    b.HasData(
-                        new
-                        {
-                            ID = new Guid("8a43b350-6f9b-4e02-b1a1-3dfc99a1c001"),
-                            Name = "Arab American University"
-                        },
-                        new
-                        {
-                            ID = new Guid("8a43b350-6f9b-4e02-b1a1-3dfc99a1c002"),
-                            Name = "Bir Zeit University"
-                        },
-                        new
-                        {
-                            ID = new Guid("8a43b350-6f9b-4e02-b1a1-3dfc99a1c003"),
-                            Name = "University of Oxford"
-                        },
-                        new
-                        {
-                            ID = new Guid("8a43b350-6f9b-4e02-b1a1-3dfc99a1c004"),
-                            Name = "Üsküdar Üniversitesi"
-                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.LKP_Language", b =>

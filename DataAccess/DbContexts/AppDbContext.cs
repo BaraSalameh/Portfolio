@@ -109,12 +109,12 @@ namespace DataAccess.DbContexts
             modelBuilder.Entity<User>().Property(x => x.IsConfirmed).HasDefaultValue(false);
             modelBuilder.Entity<LKP_Language>().HasIndex(x => x.Name).IsUnique();
             modelBuilder.Entity<LKP_Technology>().HasIndex(x => x.Name).IsUnique();
-            modelBuilder.Entity<LKP_Institution>().HasIndex(x => x.Name).IsUnique();
-            modelBuilder.Entity<LKP_Degree>().HasIndex(x => x.Name).IsUnique();
-            modelBuilder.Entity<LKP_FieldOfStudy>().HasIndex(x => x.Name).IsUnique();
             modelBuilder.Entity<LKP_LanguageProficiency>().HasIndex(x => x.Level).IsUnique();
 
             modelBuilder.ApplyConfiguration(new RoleSeedConfiguration());
+            modelBuilder.ApplyConfiguration(new InstitutionSeedConfiguration());
+            modelBuilder.ApplyConfiguration(new DegreeSeedConfiguration());
+            modelBuilder.ApplyConfiguration(new FieldOfStudySeedConfiguration());
 
 
             return modelBuilder;
