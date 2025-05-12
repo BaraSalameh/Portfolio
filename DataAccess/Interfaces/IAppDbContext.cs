@@ -11,6 +11,9 @@ namespace DataAccess.Interfaces
         public DbSet<User> User { get; set; }
         public DbSet<Skill> Skill { get; set; }
         public DbSet<Education> Education { get; set; }
+        public DbSet<LKP_Institution> LKP_Institution { get; set; }
+        public DbSet<LKP_Degree> LKP_Degree { get; set; }
+        public DbSet<LKP_FieldOfStudy> LKP_FieldOfStudy { get; set; }
         public DbSet<Experience> Experience { get; set; }
         public DbSet<BlogPost> BlogPost { get; set; }
         public DbSet<SocialLink> SocialLink { get; set; }

@@ -3,9 +3,12 @@
     public class Education : AbstractEntity
     {
         public Guid ID { get; set; }
-        public string Institution { get; set; }
-        public string Degree { get; set; }
-        public string FieldOfStudy { get; set; }
+        public Guid LKP_InstitutionID { get; set; }
+        public LKP_Institution LKP_Institution { get; set; }
+        public Guid LKP_DegreeID { get; set; }
+        public LKP_Degree LKP_Degree { get; set; }
+        public Guid LKP_FieldOfStudyID { get; set; }
+        public LKP_FieldOfStudy LKP_FieldOfStudy { get; set; }
         public DateOnly StartDate { get; set; }
         public DateOnly? EndDate { get; set; }
         public string? Description { get; set; }

@@ -19,6 +19,9 @@ namespace DataAccess.DbContexts
         public DbSet<User> User { get; set; }
         public DbSet<Skill> Skill { get; set; }
         public DbSet<Education> Education { get; set; }
+        public DbSet<LKP_Institution> LKP_Institution { get; set; }
+        public DbSet<LKP_Degree> LKP_Degree { get; set; }
+        public DbSet<LKP_FieldOfStudy> LKP_FieldOfStudy { get; set; }
         public DbSet<Experience> Experience { get; set; }
         public DbSet<BlogPost> BlogPost { get; set; }
         public DbSet<SocialLink> SocialLink { get; set; }
@@ -106,6 +109,9 @@ namespace DataAccess.DbContexts
             modelBuilder.Entity<User>().Property(x => x.IsConfirmed).HasDefaultValue(false);
             modelBuilder.Entity<LKP_Language>().HasIndex(x => x.Name).IsUnique();
             modelBuilder.Entity<LKP_Technology>().HasIndex(x => x.Name).IsUnique();
+            modelBuilder.Entity<LKP_Institution>().HasIndex(x => x.Name).IsUnique();
+            modelBuilder.Entity<LKP_Degree>().HasIndex(x => x.Name).IsUnique();
+            modelBuilder.Entity<LKP_FieldOfStudy>().HasIndex(x => x.Name).IsUnique();
             modelBuilder.Entity<LKP_LanguageProficiency>().HasIndex(x => x.Level).IsUnique();
 
             modelBuilder.ApplyConfiguration(new RoleSeedConfiguration());
@@ -145,6 +151,18 @@ namespace DataAccess.DbContexts
                 .HasOne(e => e.User)
                 .WithMany(u => u.LstEducations)
                 .HasForeignKey(e => e.UserID);
+            modelBuilder.Entity<Education>()
+                .HasOne(e => e.LKP_Institution)
+                .WithMany(u => u.LstEducations)
+                .HasForeignKey(e => e.LKP_InstitutionID);
+            modelBuilder.Entity<Education>()
+                .HasOne(e => e.LKP_Degree)
+                .WithMany(u => u.LstEducations)
+                .HasForeignKey(e => e.LKP_DegreeID);
+            modelBuilder.Entity<Education>()
+                .HasOne(e => e.LKP_FieldOfStudy)
+                .WithMany(u => u.LstEducations)
+                .HasForeignKey(e => e.LKP_FieldOfStudyID);
 
             modelBuilder.Entity<Experience>()
                 .HasOne(e => e.User)
