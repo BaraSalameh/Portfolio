@@ -11,6 +11,9 @@ namespace Application.Owner.MappingProfiles
         {
             CreateMap<AddEditEducationCommand, Education>();
             CreateMap<Education, ELQ_Educations>();
+            CreateMap<LKP_Institution, LKP_ILQ_Response>();
+            CreateMap<LKP_Degree, LKP_DLQ_Response>();
+            CreateMap<LKP_FieldOfStudy, LKP_FOSLQ_Response>();
         }
     }
 }

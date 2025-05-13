@@ -67,6 +67,18 @@ namespace Portfolio.Controllers
         public async Task<IActionResult> EducationList([FromQuery] EducationListQuery request)
             => Result.HandleResult(await Mediator.Send(request));
 
+        [HttpGet]
+        public async Task<IActionResult> LKP_InstitutionList([FromQuery] LKP_InstitutionListQuery request)
+            => Result.HandleResult(await Mediator.Send(request));
+
+        [HttpGet]
+        public async Task<IActionResult> LKP_DegreeList([FromQuery] LKP_DegreeListQuery request)
+            => Result.HandleResult(await Mediator.Send(request));
+
+        [HttpGet]
+        public async Task<IActionResult> LKP_FieldOfStudyList([FromQuery] LKP_FieldOfStudyListQuery request)
+            => Result.HandleResult(await Mediator.Send(request));
+
         [HttpPost]
         public async Task<IActionResult> AddEditEducation(AddEditEducationCommand request)
             => Result.HandleResult(await Mediator.Send(request));
