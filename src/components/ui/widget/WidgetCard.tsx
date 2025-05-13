@@ -18,7 +18,12 @@ import { ArrowUpDown, GripVertical, Scroll } from 'lucide-react';
 import { WidgetCardProps } from './type';
 
 export const WidgetCard: React.FC<WidgetCardProps> = ({ header, items, list, pie, bar, create, update, del, details, onSort, className }) => {
-    if (!Array.isArray(items) || items.length === 0 || (!header && !list && !pie && !bar)) return null;
+
+    var isInitialWidgetCard: boolean = false;
+
+    if ((!Array.isArray(items) || items.length === 0 || (!header && !list && !pie && !bar)) && create) {
+        isInitialWidgetCard = true;
+    } else if (!Array.isArray(items) || items.length === 0 || (!header && !list && !pie && !bar)) return null;
 
     const [sortable, setSortable] = useState<boolean>(false);
     const [openModal, setOpenModal] = useState(false);
@@ -37,7 +42,24 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({ header, items, list, pie
     );
     const colorMap = useMemo(() => generateColorMap(pieData ?? durationData), [pieData, durationData]);
 
-    return (
+     return (
+        isInitialWidgetCard
+        ?  
+        <React.Fragment>
+            <section className={cn(widgetCard(), className)}>
+                <Header itemsX="between" paddingX="xs" paddingY="xs">
+                    <Paragraph size="lg" space="xs">
+                        {header?.icon && <ResponsiveIcon icon={header.icon} />}
+                        {header?.title}
+                    </Paragraph>
+                        <CUDModal title={create?.title} subTitle={create?.subTitle}>
+                            {create?.form}
+                        </CUDModal>
+                            
+                </Header>
+            </section>
+        </React.Fragment>
+        :
         <React.Fragment>
             <section className={cn(widgetCard(), className)}>
                 {header && (header.icon || header.title) && (
@@ -90,5 +112,5 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({ header, items, list, pie
                 className={className}
             />
         </React.Fragment>
-    );
+    )
 };

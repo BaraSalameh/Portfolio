@@ -12,7 +12,9 @@ import { List } from "@/components/ui/List";
 import { FormCheckbox } from "@/components/ui/FormCheckbox";
 import { addEditEducation } from "@/lib/apis/owner/addEditEducation";
 import { educationListQuery } from "@/lib/apis/owner/educationListQuery";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { institutionListQuery } from "@/lib/apis/owner/education/institutionListQuery";
+import { FormDropdown } from "@/components/ui/FormDropdown";
 
 type props = {
     id?: string;
@@ -26,10 +28,13 @@ export default function EducationForm({id, onClose} : props) {
     const { lstEducations } = useAppSelector((state) => state.education);
     const educationToHandle = lstEducations.find(ed => ed.id === id);
 
+    const [options, setOptions] = useState<any>();
+
     const {
         register,
         handleSubmit, 
         control,
+        setValue,
         reset,
         formState: { errors },
     } = useForm<EducationFormData>({
@@ -64,14 +69,27 @@ export default function EducationForm({id, onClose} : props) {
             });
         }
     }, [id]);
+
+    useEffect(() => {
+        const res = dispatch(institutionListQuery()).unwrap();
+        setOptions(res as any);
+
+    }, []);
       
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <FormInput
+            {/* <FormInput
                 label="Institution"
                 type="text"
                 placeholder="Harvard University"
                 registration={register('institution')}
+                error={errors.institution}
+            /> */}
+            <FormDropdown
+                label="Institution"
+                options={options?.items }
+                // value={selectedInstitution}
+                // onChange={(option) => setValue('institution', option?.value)}
                 error={errors.institution}
             />
             <FormInput
