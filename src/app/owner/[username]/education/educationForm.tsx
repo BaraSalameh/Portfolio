@@ -17,6 +17,7 @@ import { institutionListQuery } from "@/lib/apis/owner/education/institutionList
 import { FormDropdown } from "@/components/ui/FormDropdown";
 import { degreeListQuery } from "@/lib/apis/owner/education/degreeListQuery";
 import { fieldOfStudyListQuery } from "@/lib/apis/owner/education/fieldOfStudyListQuery";
+import { mapEducationToForm } from "@/lib/utils/appFunctions";
 
 type props = {
     id?: string;
@@ -78,11 +79,7 @@ export default function EducationForm({id, onClose} : props) {
 
     useEffect(() => {
         if (educationToHandle) {
-            reset({
-                ...educationToHandle,
-                startDate: educationToHandle.startDate?.slice(0, 10),
-                endDate: educationToHandle.endDate?.slice(0, 10),
-            });
+            reset(mapEducationToForm(educationToHandle));
         }
     }, [id]);
 
@@ -90,6 +87,7 @@ export default function EducationForm({id, onClose} : props) {
         lstInstitutions.length === 0 && dispatch(institutionListQuery());
         lstDegrees.length === 0 && dispatch(degreeListQuery());
         lstFields.length === 0 && dispatch(fieldOfStudyListQuery());
+        console.log(watch('LKP_InstitutionID'));
     }, []);
       
     return (

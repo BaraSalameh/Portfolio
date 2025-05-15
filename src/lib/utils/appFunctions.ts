@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { EducationFormData } from '../schemas/educationSchema';
 
 export function transformPayload<T extends object>(obj: T): T {
     return Object.fromEntries(
@@ -76,3 +77,12 @@ export const extractValue = (
 
     return undefined;
 };
+
+export const mapEducationToForm = (educationFromDb: any): EducationFormData => ({
+    ...educationFromDb,
+    startDate: educationFromDb.startDate?.slice(0, 10),
+    endDate: educationFromDb.endDate?.slice(0, 10),
+    LKP_InstitutionID: educationFromDb.institution?.id ?? '',
+    LKP_DegreeID: educationFromDb.degree?.id ?? '',
+    LKP_FieldOfStudyID: educationFromDb.fieldOfStudy?.id ?? '',
+});
