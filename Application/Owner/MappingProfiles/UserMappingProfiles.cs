@@ -27,7 +27,13 @@ namespace Application.Owner.MappingProfiles
             CreateMap<ProjectTechnology, UQ_ProjectTechnology>();
             CreateMap<LKP_Technology, UQ_LKP_Technology>();
             CreateMap<Skill, UQ_Skill>();
-            CreateMap<Education, UQ_Education>();
+            CreateMap<Education, UQ_Education>()
+                .ForMember(dest => dest.Institution, opt => opt.MapFrom(src => src.LKP_Institution))
+                .ForMember(dest => dest.Degree, opt => opt.MapFrom(src => src.LKP_Degree))
+                .ForMember(dest => dest.FieldOfStudy, opt => opt.MapFrom(src => src.LKP_FieldOfStudy));
+            CreateMap<LKP_Institution, UQ_LKP_Institution>();
+            CreateMap<LKP_Degree, UQ_LKP_Degree>();
+            CreateMap<LKP_FieldOfStudy, UQ_LKP_FieldOfStudy>();
             CreateMap<Experience, UQ_Experience>();
             CreateMap<BlogPost, UQ_BlogPost>();
             CreateMap<SocialLink, UQ_SocialLink>();

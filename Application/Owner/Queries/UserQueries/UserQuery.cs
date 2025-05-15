@@ -66,12 +66,32 @@ namespace Application.Owner.Queries.UserQueries
     public class UQ_Education
     {
         public Guid ID { get; set; }
-        public string Institution { get; set; }
-        public string Degree { get; set; }
-        public string FieldOfStudy { get; set; }
+        public UQ_LKP_Institution Institution { get; set; }
+        public UQ_LKP_Degree Degree { get; set; }
+        public UQ_LKP_FieldOfStudy FieldOfStudy { get; set; }
         public DateOnly StartDate { get; set; }
         public DateOnly? EndDate { get; set; }
         public string Description { get; set; }
+    }
+
+    public class UQ_LKP_Institution
+    {
+        public Guid ID { get; set; }
+        public string Name { get; set; }
+        public string? Logo { get; set; }
+    }
+
+    public class UQ_LKP_Degree
+    {
+        public Guid ID { get; set; }
+        public string Name { get; set; }
+        public string? Abbreviation { get; set; }
+    }
+
+    public class UQ_LKP_FieldOfStudy
+    {
+        public Guid ID { get; set; }
+        public string Name { get; set; }
     }
 
     public class UQ_Experience
