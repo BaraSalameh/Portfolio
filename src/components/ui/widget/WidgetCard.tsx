@@ -14,7 +14,7 @@ import { WidgetCharts } from './WidgetCharts';
 import { WidgetModal } from './WidgetModal';
 import { CUDModal } from '../CUDModal';
 import React from 'react';
-import { ArrowUpDown, GripVertical, Scroll } from 'lucide-react';
+import { ArrowUpDown, GripVertical } from 'lucide-react';
 import { WidgetCardProps } from './type';
 
 export const WidgetCard: React.FC<WidgetCardProps> = ({ header, items, list, pie, bar, create, update, del, details, onSort, className }) => {

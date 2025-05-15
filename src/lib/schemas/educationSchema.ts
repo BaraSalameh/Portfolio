@@ -1,19 +1,18 @@
 import { z } from 'zod';
 
+const guidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/;
+
 export const educationSchema = z.object({
     id: z.string().optional(),
 
-    institution: z.string()
-        .min(2, 'Institution name must be at least 2 characters')
-        .max(100, 'Institution name is too long'),
+    LKP_InstitutionID: z.string()
+        .regex(guidRegex, 'Institution ID must be a valid GUID'),
 
-    degree: z.string()
-        .min(2, 'Degree must be at least 2 characters')
-        .max(100, 'Degree is too long'),
+    LKP_DegreeID: z.string()
+        .regex(guidRegex, 'Degree ID must be a valid GUID'),
 
-    fieldOfStudy: z.string()
-        .min(2, 'Field of study must be at least 2 characters')
-        .max(100, 'Field of study is too long'),
+    LKP_FieldOfStudyID: z.string()
+        .regex(guidRegex, 'Field ID must be a valid GUID'),
 
     startDate: z.string()
         .refine(val => !isNaN(Date.parse(val)), { message: 'Start date not valid' }),

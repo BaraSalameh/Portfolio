@@ -71,16 +71,16 @@ export default function OwnerDashboardPage() {
                         bar={{groupBy: 'degree'}}
                         pie={{title:'Degrees Overview', groupBy: 'degree'}}
                         list={[
-                            {leftKey: 'degree', between: 'at', rightKey: 'institution', size:'lg'},
-                            {leftKey: 'fieldOfStudy', icon: GraduationCap},
+                            {leftKey: {degree: 'abbreviation'}, between: 'at', rightKey: {institution: 'name'}, size:'lg'},
+                            {leftKey: {fieldOfStudy: 'name'}, icon: GraduationCap},
                             {leftKey: 'startDate', between: '-', rightKey: 'endDate', icon: Clock, isTime: true},
                         ]}
                         create={{subTitle: 'Add Education', form: <EducationForm />}}
                         update={{subTitle: 'Update Education', form: <EducationForm />}}
                         del={{subTitle: 'Delete education', message: 'Are you sure?', onDelete: handleDelete }}
                         details={[
-                            {leftKey: 'degree', between: 'at', rightKey: 'institution', size:'lg'},
-                            {leftKey: 'fieldOfStudy', icon: GraduationCap},
+                            {leftKey: {degree: 'name'}, between: 'at', rightKey: {institution: 'name'}, size:'lg'},
+                            {leftKey: {fieldOfStudy: 'name'}, icon: GraduationCap},
                             {leftKey: 'startDate', between: '-', rightKey: 'endDate', icon: Clock, isTime: true},
                             {leftKey: 'description', size: 'sm'}
                         ]}

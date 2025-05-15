@@ -47,3 +47,32 @@ export const generateColorMap = (
         return acc;
     }, {} as Record<string, string>);
 };
+
+export const extractValue = (
+    item: any,
+    key: string | Record<string, string | string[]>
+): any => {
+    if (typeof key === 'string') {
+        return item[key];
+    }
+
+    if (typeof key === 'object') {
+        const [parentKey, nestedKeys] = Object.entries(key)[0];
+        const parent = item[parentKey];
+
+        if (!parent) return undefined;
+
+        if (typeof nestedKeys === 'string') {
+            return parent[nestedKeys];
+        }
+
+        if (Array.isArray(nestedKeys)) {
+            return nestedKeys
+                .map(k => parent?.[k])
+                .filter(Boolean) // remove undefined/null
+                .join(' '); // or customize this!
+        }
+    }
+
+    return undefined;
+};

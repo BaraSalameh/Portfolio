@@ -8,6 +8,7 @@ import { closestCenter, DndContext, PointerSensor, useSensor, useSensors } from 
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableItem';
 import { WidgetListProps } from './type';
+import { extractValue } from '@/lib/utils/appFunctions';
 
 export const WidgetList: React.FC<WidgetListProps> = ({ items, list, onItemClick, className, sort }) => {
 
@@ -43,16 +44,20 @@ export const WidgetList: React.FC<WidgetListProps> = ({ items, list, onItemClick
                     onClick={() => onItemClick?.(item)}
                 >
                     {list.map((cfg, index) => {
+                        const leftRaw = extractValue(item, cfg.leftKey);
+                        const rightRaw = cfg.rightKey ? extractValue(item, cfg.rightKey) : undefined;
+
                         const leftVal = cfg.isTime
-                            ? dayjs(item[cfg.leftKey]).format('MMM YYYY')
-                            : item[cfg.leftKey];
+                            ? dayjs(leftRaw).format('MMM YYYY')
+                            : leftRaw;
+
                         const rightVal = cfg.isTime
-                            ? cfg.rightKey && item[cfg.rightKey]
-                                ? dayjs(item[cfg.rightKey]).format('MMM YYYY')
-                                : 'Present'
+                            ?   rightRaw
+                                    ? dayjs(rightRaw).format('MMM YYYY')
+                                    : 'Present'
                             : cfg.rightKey
-                                ? item[cfg.rightKey]
-                                : '';
+                                ?   rightRaw
+                                :   '';
 
                         return (
                             <Paragraph key={index} size={cfg.size}>

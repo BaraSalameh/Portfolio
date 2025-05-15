@@ -5,15 +5,24 @@ import { EducationFormData } from '@/lib/schemas/educationSchema';
 import { deleteEducation } from '@/lib/apis/owner/deleteEducation';
 import { userQuery } from '@/lib/apis/owner/userQuery';
 import { userByUsernameQuery } from '@/lib/apis/client/userBuUsernameQuery';
+import { institutionListQuery } from '@/lib/apis/owner/education/institutionListQuery';
+import { degreeListQuery } from '@/lib/apis/owner/education/degreeListQuery';
+import { fieldOfStudyListQuery } from '@/lib/apis/owner/education/fieldOfStudyListQuery';
 
 interface EducationState {
     lstEducations: EducationFormData[];
+    lstInstitutions: Record<string, any>[];
+    lstDegrees: Record<string, any>[];
+    lstFields: Record<string, any>[];
     loading: boolean;
     error: string | null;
 }
 
 const initialState : EducationState = {
     lstEducations: [],
+    lstInstitutions: [],
+    lstDegrees: [],
+    lstFields: [],
     loading: false,
     error: null as string | null
 }
@@ -37,6 +46,45 @@ const educationSlice = createSlice({
             state.lstEducations = action.payload;
         })
         .addCase(educationListQuery.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
+        })
+
+        .addCase(institutionListQuery.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(institutionListQuery.fulfilled, (state, action) => {
+            state.loading = false;
+            state.lstInstitutions = action.payload;
+        })
+        .addCase(institutionListQuery.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
+        })
+
+        .addCase(degreeListQuery.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(degreeListQuery.fulfilled, (state, action) => {
+            state.loading = false;
+            state.lstDegrees = action.payload;
+        })
+        .addCase(degreeListQuery.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
+        })
+
+        .addCase(fieldOfStudyListQuery.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(fieldOfStudyListQuery.fulfilled, (state, action) => {
+            state.loading = false;
+            state.lstFields = action.payload;
+        })
+        .addCase(fieldOfStudyListQuery.rejected, (state, action) => {
             state.loading = false;
             state.error = action.payload as string;
         })

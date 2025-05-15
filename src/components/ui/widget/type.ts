@@ -50,9 +50,9 @@ export interface WidgetChartsProps {
 
 export interface ListItemConfig {
     icon?: any;
-    leftKey: string;
+    leftKey: string | Record<string, string | string[]>;
     between?: string;
-    rightKey?: string;
+    rightKey?: string | Record<string, string | string[]>;
     size?: 'lg' | 'md' | 'sm' | null;
     isTime?: boolean;
 }

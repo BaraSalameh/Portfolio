@@ -15,6 +15,8 @@ import { educationListQuery } from "@/lib/apis/owner/educationListQuery";
 import { useEffect, useState } from "react";
 import { institutionListQuery } from "@/lib/apis/owner/education/institutionListQuery";
 import { FormDropdown } from "@/components/ui/FormDropdown";
+import { degreeListQuery } from "@/lib/apis/owner/education/degreeListQuery";
+import { fieldOfStudyListQuery } from "@/lib/apis/owner/education/fieldOfStudyListQuery";
 
 type props = {
     id?: string;
@@ -25,16 +27,30 @@ export default function EducationForm({id, onClose} : props) {
 
     const dispatch = useAppDispatch();
     const { loading, error } = useAppSelector((state) => state.auth);
-    const { lstEducations } = useAppSelector((state) => state.education);
+    const { lstEducations, lstInstitutions, lstDegrees, lstFields } = useAppSelector((state) => state.education);
     const educationToHandle = lstEducations.find(ed => ed.id === id);
 
-    const [options, setOptions] = useState<any>();
+    const institutionOptions = lstInstitutions.map(i => ({
+        label: i.name,
+        value: i.id
+    }));
+
+    const degreeOptions = lstDegrees.map(i => ({
+        label: i.name,
+        value: i.id
+    }));
+
+    const fieldOptions = lstFields.map(i => ({
+        label: i.name,
+        value: i.id
+    }));
 
     const {
         register,
         handleSubmit, 
         control,
         setValue,
+        watch,
         reset,
         formState: { errors },
     } = useForm<EducationFormData>({
@@ -71,41 +87,37 @@ export default function EducationForm({id, onClose} : props) {
     }, [id]);
 
     useEffect(() => {
-        const res = dispatch(institutionListQuery()).unwrap();
-        setOptions(res as any);
-
+        lstInstitutions.length === 0 && dispatch(institutionListQuery());
+        lstDegrees.length === 0 && dispatch(degreeListQuery());
+        lstFields.length === 0 && dispatch(fieldOfStudyListQuery());
     }, []);
       
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {/* <FormInput
-                label="Institution"
-                type="text"
-                placeholder="Harvard University"
-                registration={register('institution')}
-                error={errors.institution}
-            /> */}
             <FormDropdown
                 label="Institution"
-                options={options?.items }
-                // value={selectedInstitution}
-                // onChange={(option) => setValue('institution', option?.value)}
-                error={errors.institution}
+                options={institutionOptions}
+                value={institutionOptions.find(opt => opt.value === watch('LKP_InstitutionID'))}
+                onChange={(option) => setValue('LKP_InstitutionID', option?.value as string)}
+                error={errors.LKP_InstitutionID}
             />
-            <FormInput
+            
+            <FormDropdown
                 label="Degree"
-                type="text"
-                placeholder="Bachelor"
-                registration={register('degree')}
-                error={errors.degree}
+                options={degreeOptions}
+                value={degreeOptions.find(opt => opt.value === watch('LKP_DegreeID'))}
+                onChange={(option) => setValue('LKP_DegreeID', option?.value as string)}
+                error={errors.LKP_DegreeID}
             />
-            <FormInput
+
+            <FormDropdown
                 label="Field of study"
-                type="text"
-                placeholder="Computer Science"
-                registration={register('fieldOfStudy')}
-                error={errors.fieldOfStudy}
+                options={fieldOptions}
+                value={fieldOptions.find(opt => opt.value === watch('LKP_FieldOfStudyID'))}
+                onChange={(option) => setValue('LKP_FieldOfStudyID', option?.value as string)}
+                error={errors.LKP_FieldOfStudyID}
             />
+
             <FormInput
                 label="Start date"
                 type="date"
@@ -113,7 +125,6 @@ export default function EducationForm({id, onClose} : props) {
                 error={errors.startDate}
             />
 
-            {/* Only show endDate if not studying */}
             {!isStudying && (
                 <FormInput
                     label="End date"
