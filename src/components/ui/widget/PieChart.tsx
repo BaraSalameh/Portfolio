@@ -1,5 +1,5 @@
 import { CustomTooltip } from "@/components/utils/customTooltip";
-import { generateColorMap, generatePieData } from "@/lib/utils/appFunctions";
+import { generateColorMap } from "@/lib/utils/appFunctions";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 type PieEntry = {

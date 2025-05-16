@@ -16,6 +16,7 @@ interface FormDropdownProps {
     isSearchable?: boolean;
     isClearable?: boolean;
     placeholder?: string;
+    isLoading?: boolean;
 }
 
 export const FormDropdown = ({
@@ -28,6 +29,7 @@ export const FormDropdown = ({
     isSearchable = true,
     isClearable = true,
     placeholder = 'Select...',
+    isLoading
 }: FormDropdownProps) => {
     const customStyles = {
         control: (provided: any, state: any) => ({
@@ -96,6 +98,7 @@ export const FormDropdown = ({
                 isClearable={isClearable}
                 placeholder={placeholder}
                 onBlur={onBlur}
+                isLoading={isLoading}
             />
             {error && <Paragraph intent="danger" size="sm">{error.message}</Paragraph>}
         </div>

@@ -17,7 +17,7 @@ import debounce from "lodash.debounce";
 export default function OwnerDashboardPage() {
 
     const dispatch = useAppDispatch();
-    const { user } = useAppSelector(state => state.owner) as any;
+    const { user } = useAppSelector(state => state.owner);
     const { lstEducations } = useAppSelector(state => state.education);
     const { lstExperiences } = useAppSelector(state => state.experience);
 
@@ -31,10 +31,10 @@ export default function OwnerDashboardPage() {
     };
 
     const debouncedSortEducation = useCallback(
-        debounce((lstIds: string[]) => {
+        debounce( async (lstIds: string[]) => {
             if (lstIds.length > 0) {
-                dispatch(sortEducation(lstIds));
-                dispatch(educationListQuery());
+                await dispatch(sortEducation(lstIds));
+                await dispatch(educationListQuery());
             }
         
         }, 1000), []
@@ -42,7 +42,7 @@ export default function OwnerDashboardPage() {
 
     useEffect(() => {
         !user && dispatch(userQuery());
-    }, []);
+    }, [user, dispatch]);
 
     return (
         <>

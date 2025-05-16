@@ -23,8 +23,7 @@ import { EducationProps } from "../../types";
 export default function EducationForm({id, onClose} : EducationProps) {
 
     const dispatch = useAppDispatch();
-    const { loading, error } = useAppSelector((state) => state.auth);
-    const { lstEducations, lstInstitutions, lstDegrees, lstFields } = useAppSelector((state) => state.education);
+    const { loading, error, lstEducations, lstInstitutions, lstDegrees, lstFields } = useAppSelector((state) => state.education);
     const educationToHandle = lstEducations.find(ed => ed.id === id);
 
     const institutionOptions = useMemo(() =>
@@ -66,7 +65,7 @@ export default function EducationForm({id, onClose} : EducationProps) {
 
     useEffect(() => {
         if (educationToHandle) {
-            reset(mapEducationToForm(educationToHandle));
+            reset(mapEducationToForm(educationToHandle) ?? {});
         }
     }, [id]);
 
@@ -75,84 +74,71 @@ export default function EducationForm({id, onClose} : EducationProps) {
         lstDegrees.length === 0 && dispatch(degreeListQuery());
         lstFields.length === 0 && dispatch(fieldOfStudyListQuery());
     }, []);
-      
+
+    const ControlledDropdown = ({
+        name,
+        label,
+        options,
+    }: {
+        name: keyof EducationFormData;
+        label: string;
+        options: { label: string; value: string }[];
+    }) => (
+        <Controller
+            name={name}
+            control={control}
+            render={({ field }) => (
+            <FormDropdown
+                label={label}
+                options={options}
+                value={getSelectedOption(options, field.value as string)}
+                onChange={(option) => field.onChange(option?.value ?? '')}
+                onBlur={field.onBlur}
+                error={errors[name]}
+                isLoading={options.length === 0}
+            />
+            )}
+        />
+    );
+
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <fieldset disabled={loading} className="space-y-4">
+                <ControlledDropdown name="LKP_InstitutionID" label="Institution" options={institutionOptions} />
+                <ControlledDropdown name="LKP_DegreeID" label="Degree" options={degreeOptions} />
+                <ControlledDropdown name="LKP_FieldOfStudyID" label="Field of study" options={fieldOptions} />
 
-            <Controller
-                name="LKP_InstitutionID"
-                control={control}
-                render={({ field }) => (
-                    <FormDropdown
-                        label="Institution"
-                        options={institutionOptions}
-                        value={getSelectedOption(institutionOptions, field.value)}
-                        onChange={(option) => field.onChange(option?.value ?? '')}
-                        onBlur={field.onBlur}
-                        error={errors.LKP_InstitutionID}
-                    />
-                )}
-            />
-
-            <Controller
-                name="LKP_DegreeID"
-                control={control}
-                render={({ field }) => (
-                    <FormDropdown
-                        label="Degree"
-                        options={degreeOptions}
-                        value={getSelectedOption(degreeOptions, field.value)}
-                        onChange={(option) => field.onChange(option?.value ?? '')}
-                        onBlur={field.onBlur}
-                        error={errors.LKP_DegreeID}
-                    />
-                )}
-            />
-
-            <Controller
-                name="LKP_FieldOfStudyID"
-                control={control}
-                render={({ field }) => (
-                    <FormDropdown
-                        label="Field of study"
-                        options={fieldOptions}
-                        value={getSelectedOption(fieldOptions, field.value)}
-                        onChange={(option) => field.onChange(option?.value ?? '')}
-                        onBlur={field.onBlur}
-                        error={errors.LKP_FieldOfStudyID}
-                    />
-                )}
-            />
-
-            <FormInput
-                label="Start date"
-                type="date"
-                registration={register('startDate')}
-                error={errors.startDate}
-            />
-
-            {!isStudying && (
                 <FormInput
-                    label="End date"
+                    label="Start date"
                     type="date"
-                    registration={register('endDate')}
-                    error={errors.endDate}
+                    registration={register('startDate')}
+                    error={errors.startDate}
                 />
-            )}
 
-            <FormCheckbox
-                label="Still studying"
-                registration={register('isStudying')}
-                error={errors.isStudying}
-            />
+                {!isStudying && (
+                    <FormInput
+                        label="End date"
+                        type="date"
+                        registration={register('endDate')}
+                        error={errors.endDate}
+                    />
+                )}
 
-            <FormInput
-                label="Description"
-                type="text"
-                placeholder="Desciption"
-                registration={register('description')}
-                error={errors.description}
-            />
+                <FormCheckbox
+                    label="Still studying"
+                    registration={register('isStudying')}
+                    error={errors.isStudying}
+                />
+
+                <FormInput
+                    label="Description"
+                    type="text"
+                    placeholder="Desciption"
+                    registration={register('description')}
+                    error={errors.description}
+                />
+            </fieldset>
+            
 
             {Array.isArray(error) && error.length > 1 ? (
                 <List intent="danger" size="sm">
