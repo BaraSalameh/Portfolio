@@ -16,8 +16,9 @@ import { CUDModal } from '../CUDModal';
 import React from 'react';
 import { ArrowUpDown, GripVertical } from 'lucide-react';
 import { WidgetCardProps } from './type';
+import Loading from '@/components/shared/Loading';
 
-export const WidgetCard: React.FC<WidgetCardProps> = ({ header, items, list, pie, bar, create, update, del, details, onSort, className }) => {
+export const WidgetCard: React.FC<WidgetCardProps> = ({ isLoading, header, items, list, pie, bar, create, update, del, details, onSort, className }) => {
 
     var isInitialWidgetCard: boolean = false;
 
@@ -47,6 +48,7 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({ header, items, list, pie
         ?  
         <React.Fragment>
             <section className={cn(widgetCard(), className)}>
+                <Loading isLoading={isLoading} fullScreen={false} />
                 <Header itemsX="between" paddingX="xs" paddingY="xs">
                     <Paragraph size="lg" space="xs">
                         {header?.icon && <ResponsiveIcon icon={header.icon} />}
@@ -62,6 +64,7 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({ header, items, list, pie
         :
         <React.Fragment>
             <section className={cn(widgetCard(), className)}>
+                <Loading isLoading={isLoading} fullScreen={false} />
                 {header && (header.icon || header.title) && (
                     <Header itemsX="between" paddingX="xs" paddingY="xs">
                         <Paragraph size="lg" space="xs">
@@ -78,7 +81,7 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({ header, items, list, pie
                                         />
                                 }
                                 {create && (
-                                    <CUDModal title={create.title} subTitle={create.subTitle}>
+                                    <CUDModal isLoading={isLoading} title={create.title} subTitle={create.subTitle}>
                                         {create.form}
                                     </CUDModal>
                                 )}
@@ -103,6 +106,7 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({ header, items, list, pie
             </section>
 
             <WidgetModal
+                isLoading={isLoading}
                 isOpen={openModal}
                 onClose={() => setOpenModal(false)}
                 item={item}

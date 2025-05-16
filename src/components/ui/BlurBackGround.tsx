@@ -12,12 +12,13 @@ interface BlurBackGroundProps extends BlurBackGroundVariantProps {
 
 export const BlurBackGround: React.FC<BlurBackGroundProps> = ({
     children,
+    fullScreen,
     intent,
     className,
-    onClick
+    onClick,
 }) => {
     return (
-        <div className={cn(blurBackGround({ intent }), className)} onClick={onClick}>
+        <div className={cn(blurBackGround({ intent, fullScreen }), className)} onClick={onClick}>
             {children}
         </div>
     );

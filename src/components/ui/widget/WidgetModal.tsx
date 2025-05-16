@@ -12,7 +12,7 @@ import { List } from '../List';
 import { WidgetModalProps } from './type';
 
 
-export const WidgetModal: React.FC<WidgetModalProps> = ({ isOpen, onClose, item, update, del, details, className }) => {
+export const WidgetModal: React.FC<WidgetModalProps> = ({ isLoading, isOpen, onClose, item, update, del, details, className }) => {
     if (!isOpen) return null;
 
     return (
@@ -21,7 +21,7 @@ export const WidgetModal: React.FC<WidgetModalProps> = ({ isOpen, onClose, item,
                 <Header itemsX='between' paddingX="xs" paddingY="xs">
                     <div className='flex gap-3'>
                         {update && (
-                            <CUDModal as='update' title={update.title} subTitle={update.subTitle}>
+                            <CUDModal isLoading={isLoading} as='update' title={update.title} subTitle={update.subTitle}>
                                 {React.isValidElement(update.form)
                                     ?   React.cloneElement(update.form as React.ReactElement<{ onClose: () => void; id: string }>, {
                                             onClose,
@@ -32,7 +32,7 @@ export const WidgetModal: React.FC<WidgetModalProps> = ({ isOpen, onClose, item,
                             </CUDModal>
                         )}
                         {del && (
-                            <CUDModal as='delete' title={del.title} subTitle={del.subTitle} onAction={del.onDelete} onClose={onClose} idToDelete={item?.id}>
+                            <CUDModal isLoading={isLoading} as='delete' title={del.title} subTitle={del.subTitle} onAction={del.onDelete} onClose={onClose} idToDelete={item?.id}>
                                 {del.message}
                             </CUDModal>
                         )}

@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { validateToken } from "@/lib/apis/account/validateToken";
 import { cn } from "@/components/utils/cn";
 import { widgetCard } from "@/styles/widget";
+import Loading from "@/components/shared/Loading";
 
 interface LoginProps {
     className?: string;
@@ -21,9 +22,8 @@ interface LoginProps {
 const LoginPage: React.FC<LoginProps> = ({ className }) => {
 
     const router = useRouter();
-    const { isConfirmed } = useAppSelector(state => state.auth);
+    const { loading, isConfirmed, username } = useAppSelector(state => state.auth);
     const dispatch = useAppDispatch();
-    const { username } = useAppSelector(state => state.auth);
 
     useEffect(() => {
         const checkSession = async () => {
@@ -44,6 +44,7 @@ const LoginPage: React.FC<LoginProps> = ({ className }) => {
 
     return (
         <Container>
+            <Loading isLoading={loading} />
             <Header >
                 <Image
                     src='/portfolio-logo.svg'

@@ -102,7 +102,7 @@ export default function EducationForm({id, onClose} : EducationProps) {
     );
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="relative space-y-4">
             <fieldset disabled={loading} className="space-y-4">
                 <ControlledDropdown name="LKP_InstitutionID" label="Institution" options={institutionOptions} />
                 <ControlledDropdown name="LKP_DegreeID" label="Degree" options={degreeOptions} />

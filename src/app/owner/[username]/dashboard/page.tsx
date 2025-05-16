@@ -13,13 +13,14 @@ import { deleteEducation } from "@/lib/apis/owner/deleteEducation";
 import { educationListQuery } from "@/lib/apis/owner/educationListQuery";
 import { sortEducation } from "@/lib/apis/owner/education/sortEducation";
 import debounce from "lodash.debounce";
+import Loading from "@/components/shared/Loading";
 
 export default function OwnerDashboardPage() {
 
     const dispatch = useAppDispatch();
-    const { user } = useAppSelector(state => state.owner);
-    const { lstEducations } = useAppSelector(state => state.education);
-    const { lstExperiences } = useAppSelector(state => state.experience);
+    const { loading: userInfoLoading, user } = useAppSelector(state => state.owner);
+    const { loading: educationLoading, lstEducations } = useAppSelector(state => state.education);
+    const { loading: experienceLoading, lstExperiences } = useAppSelector(state => state.experience);
 
     const handleDelete = async (id: string) => {
         try {
@@ -46,6 +47,7 @@ export default function OwnerDashboardPage() {
 
     return (
         <>
+        <Loading isLoading={userInfoLoading} />
         <Header itemsX='center'>
             <Paragraph size='xl' className="font-bold">Dashboard</Paragraph>
         </Header>
@@ -53,6 +55,7 @@ export default function OwnerDashboardPage() {
             <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-3">
                 <div className="break-inside-avoid">
                     <WidgetCard
+                        isLoading={experienceLoading}
                         items={lstExperiences}
                         header={{title: 'Experience', icon: Briefcase}}
                         bar={{groupBy: 'jobTitle'}}
@@ -66,6 +69,7 @@ export default function OwnerDashboardPage() {
             </div>
                 <div className="break-inside-avoid">
                     <WidgetCard
+                        isLoading={educationLoading}
                         items={lstEducations}
                         header={{title: 'Education', icon: GraduationCap}}
                         bar={{groupBy: {degree: 'abbreviation'}}}

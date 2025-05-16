@@ -1,9 +1,13 @@
 import { cva, VariantProps } from 'class-variance-authority';
 
 export const blurBackGround = cva(
-    'fixed inset-0 flex items-center justify-center z-50',
+    'flex items-center justify-center inset-0 z-50',
     {
         variants: {
+            fullScreen: {
+                true: 'fixed ',
+                false: 'absolute'
+            },
             intent: {
                 sm: 'bg-black/25 backdrop-blur-sm bg-opacity-25',
                 md: 'bg-black/50 backdrop-blur-md bg-opacity-50',
@@ -11,6 +15,7 @@ export const blurBackGround = cva(
             }
         },
         defaultVariants: {
+            fullScreen: true,
             intent: 'md'
         },
     }

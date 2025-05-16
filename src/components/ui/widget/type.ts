@@ -1,6 +1,7 @@
 import { WidgetCardVariantProps, WidgetListVariantProps } from "@/styles/widget";
 
 export interface WidgetCardProps extends WidgetCardVariantProps {
+    isLoading?: boolean;
     header?: {
         title?: string;
         icon?: any;
@@ -69,6 +70,7 @@ export interface WidgetListProps extends WidgetListVariantProps {
 }
 
 export interface WidgetModalProps {
+    isLoading?: boolean;
     isOpen: boolean;
     onClose: () => void;
     item?: Record<string, any>;

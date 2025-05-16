@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/components/utils/cn";
 import { widgetCard } from "@/styles/widget";
+import Loading from "@/components/shared/Loading";
 
 interface RegisterProps {
     className?: string;
@@ -20,14 +21,15 @@ interface RegisterProps {
 const RegisterPage: React.FC<RegisterProps> = ({ className }) => {
 
     var router = useRouter();
-    const { username } = useAppSelector((state) => state.auth);
+    const { loading, username, isConfirmed } = useAppSelector((state) => state.auth);
 
     useEffect(() => {
-        username && router.push(`/account/register/confirm-email`);
+        username && isConfirmed === false && router.push(`/account/register/confirm-email`);
     }, [username])
 
     return (
         <Container>
+            <Loading isLoading={loading} />
             <Header>
                 <Image
                     src='/portfolio-logo.svg'
