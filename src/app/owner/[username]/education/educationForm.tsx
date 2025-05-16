@@ -4,7 +4,7 @@ import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { Paragraph } from "@/components/ui/Paragraph";
 import { Button } from "@/components/ui/Button";
 import Image from "next/image";
-import { useForm, useWatch } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { EducationFormData, educationSchema } from "@/lib/schemas/educationSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormInput } from "@/components/ui/FormInput";
@@ -12,46 +12,37 @@ import { List } from "@/components/ui/List";
 import { FormCheckbox } from "@/components/ui/FormCheckbox";
 import { addEditEducation } from "@/lib/apis/owner/addEditEducation";
 import { educationListQuery } from "@/lib/apis/owner/educationListQuery";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { institutionListQuery } from "@/lib/apis/owner/education/institutionListQuery";
 import { FormDropdown } from "@/components/ui/FormDropdown";
 import { degreeListQuery } from "@/lib/apis/owner/education/degreeListQuery";
 import { fieldOfStudyListQuery } from "@/lib/apis/owner/education/fieldOfStudyListQuery";
-import { mapEducationToForm } from "@/lib/utils/appFunctions";
+import { getSelectedOption, mapEducationToForm } from "@/lib/utils/appFunctions";
+import { EducationProps } from "../../types";
 
-type props = {
-    id?: string;
-    onClose?: () => void;
-}
-
-export default function EducationForm({id, onClose} : props) {
+export default function EducationForm({id, onClose} : EducationProps) {
 
     const dispatch = useAppDispatch();
     const { loading, error } = useAppSelector((state) => state.auth);
     const { lstEducations, lstInstitutions, lstDegrees, lstFields } = useAppSelector((state) => state.education);
     const educationToHandle = lstEducations.find(ed => ed.id === id);
 
-    const institutionOptions = lstInstitutions.map(i => ({
-        label: i.name,
-        value: i.id
-    }));
+    const institutionOptions = useMemo(() =>
+        lstInstitutions.map(i => ({ label: i.name, value: i.id }))
+    , [lstInstitutions]);
 
-    const degreeOptions = lstDegrees.map(i => ({
-        label: i.name,
-        value: i.id
-    }));
+    const degreeOptions = useMemo(() =>
+        lstDegrees.map(i => ({ label: i.name, value: i.id }))
+    , [lstDegrees]);
 
-    const fieldOptions = lstFields.map(i => ({
-        label: i.name,
-        value: i.id
-    }));
+    const fieldOptions = useMemo(() =>
+        lstFields.map(i => ({ label: i.name, value: i.id }))
+    , [lstFields]);
 
     const {
         register,
         handleSubmit, 
         control,
-        setValue,
-        watch,
         reset,
         formState: { errors },
     } = useForm<EducationFormData>({
@@ -70,6 +61,7 @@ export default function EducationForm({id, onClose} : props) {
     const onSubmit = async (data: EducationFormData) => {
         await dispatch(addEditEducation(data));
         await dispatch(educationListQuery());
+        onClose?.();
     };
 
     useEffect(() => {
@@ -86,28 +78,50 @@ export default function EducationForm({id, onClose} : props) {
       
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <FormDropdown
-                label="Institution"
-                options={institutionOptions}
-                value={institutionOptions.find(opt => opt.value === watch('LKP_InstitutionID'))}
-                onChange={(option) => setValue('LKP_InstitutionID', option?.value as string, {shouldValidate: true})}
-                error={errors.LKP_InstitutionID}
-            />
-            
-            <FormDropdown
-                label="Degree"
-                options={degreeOptions}
-                value={degreeOptions.find(opt => opt.value === watch('LKP_DegreeID'))}
-                onChange={(option) => setValue('LKP_DegreeID', option?.value as string, {shouldValidate: true})}
-                error={errors.LKP_DegreeID}
+
+            <Controller
+                name="LKP_InstitutionID"
+                control={control}
+                render={({ field }) => (
+                    <FormDropdown
+                        label="Institution"
+                        options={institutionOptions}
+                        value={getSelectedOption(institutionOptions, field.value)}
+                        onChange={(option) => field.onChange(option?.value ?? '')}
+                        onBlur={field.onBlur}
+                        error={errors.LKP_InstitutionID}
+                    />
+                )}
             />
 
-            <FormDropdown
-                label="Field of study"
-                options={fieldOptions}
-                value={fieldOptions.find(opt => opt.value === watch('LKP_FieldOfStudyID'))}
-                onChange={(option) => setValue('LKP_FieldOfStudyID', option?.value as string, {shouldValidate: true})}
-                error={errors.LKP_FieldOfStudyID}
+            <Controller
+                name="LKP_DegreeID"
+                control={control}
+                render={({ field }) => (
+                    <FormDropdown
+                        label="Degree"
+                        options={degreeOptions}
+                        value={getSelectedOption(degreeOptions, field.value)}
+                        onChange={(option) => field.onChange(option?.value ?? '')}
+                        onBlur={field.onBlur}
+                        error={errors.LKP_DegreeID}
+                    />
+                )}
+            />
+
+            <Controller
+                name="LKP_FieldOfStudyID"
+                control={control}
+                render={({ field }) => (
+                    <FormDropdown
+                        label="Field of study"
+                        options={fieldOptions}
+                        value={getSelectedOption(fieldOptions, field.value)}
+                        onChange={(option) => field.onChange(option?.value ?? '')}
+                        onBlur={field.onBlur}
+                        error={errors.LKP_FieldOfStudyID}
+                    />
+                )}
             />
 
             <FormInput

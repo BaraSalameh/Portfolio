@@ -1,21 +1,17 @@
 'use client';
 
 import Select from 'react-select';
-import { FieldError, UseFormRegisterReturn } from 'react-hook-form';
+import { FieldError } from 'react-hook-form';
 import { Paragraph } from './Paragraph';
-import { BlurBackGround } from './BlurBackGround';
-import { color } from 'framer-motion';
+import { Option } from '../types';
 
-interface Option {
-    label: string;
-    value: string;
-}
 
 interface FormDropdownProps {
     label?: string;
     options: Option[];
     value?: Option;
     onChange?: (option: Option | null) => void;
+    onBlur?: () => void;
     error?: FieldError;
     isSearchable?: boolean;
     isClearable?: boolean;
@@ -27,6 +23,7 @@ export const FormDropdown = ({
     options,
     value,
     onChange,
+    onBlur,
     error,
     isSearchable = true,
     isClearable = true,
@@ -98,6 +95,7 @@ export const FormDropdown = ({
                 isSearchable={isSearchable}
                 isClearable={isClearable}
                 placeholder={placeholder}
+                onBlur={onBlur}
             />
             {error && <Paragraph intent="danger" size="sm">{error.message}</Paragraph>}
         </div>

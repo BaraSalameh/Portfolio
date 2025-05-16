@@ -6,15 +6,18 @@ export const educationSchema = z.object({
     id: z.string().optional(),
 
     LKP_InstitutionID: z
-        .string({ required_error: 'Institution is required' })
+        .string()
+        .min(1, 'Institution is required')
         .regex(guidRegex, 'Institution ID must be a valid GUID'),
 
     LKP_DegreeID: z
-        .string({ required_error: 'Degree is required' })
+        .string()
+        .min(1, 'Degree is required')
         .regex(guidRegex, 'Degree ID must be a valid GUID'),
 
     LKP_FieldOfStudyID: z
-        .string({ required_error: 'Field is required' })
+        .string()
+        .min(1, 'Field is required')
         .regex(guidRegex, 'Field ID must be a valid GUID'),
 
     startDate: z.string()

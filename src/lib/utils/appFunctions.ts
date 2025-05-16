@@ -89,3 +89,6 @@ export const mapEducationToForm = (educationFromDb: any): EducationFormData => (
     LKP_DegreeID: educationFromDb.degree?.id ?? '',
     LKP_FieldOfStudyID: educationFromDb.fieldOfStudy?.id ?? '',
 });
+
+export const getSelectedOption = (options: {label: string; value: string}[], value: string | undefined) =>
+    options.find(opt => opt.value === value);
