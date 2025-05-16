@@ -87,7 +87,7 @@ export const FormDropdown = ({
         <div className="space-y-1">
             {label && (
                 <label className="block text-sm font-medium text-white-700">
-                <Paragraph>{label}</Paragraph>
+                    <Paragraph>{label}</Paragraph>
                 </label>
             )}
             <Select

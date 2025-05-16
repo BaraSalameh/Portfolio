@@ -11,10 +11,12 @@ export function transformPayload<T extends object>(obj: T): T {
 
 export const generatePieData = <T extends Record<string, any>>(
     list: T[],
-    key: keyof T
+    key: string | Record<string, string | string[]>
 ) => {
     const counts = list.reduce((acc: Record<string, number>, item) => {
-        const field = item[key] as string;
+        const field = extractValue(item, key) as string;
+        if (!field) return acc;
+
         acc[field] = (acc[field] || 0) + 1;
         return acc;
     }, {});
@@ -24,7 +26,7 @@ export const generatePieData = <T extends Record<string, any>>(
 
 export const generateDurationData = <T extends Record<string, any>>(
     list: T[],
-    nameKey: keyof T,
+    nameKey:  string | Record<string, string | string[]>,
     startDateKey: keyof T = 'startDate',
     endDateKey: keyof T = 'endDate',
     unit: dayjs.ManipulateType = 'month'
@@ -32,8 +34,9 @@ export const generateDurationData = <T extends Record<string, any>>(
     return list.map(item => {
         const start = dayjs(item[startDateKey]);
         const end = item[endDateKey] ? dayjs(item[endDateKey]) : dayjs();
+        const name = extractValue(item, nameKey);
         return {
-            name: item[nameKey] as string,
+            name: name ?? 'Unknown',
             duration: end.diff(start, unit),
         };
     });

@@ -12,7 +12,7 @@ import { List } from "@/components/ui/List";
 import { FormCheckbox } from "@/components/ui/FormCheckbox";
 import { addEditEducation } from "@/lib/apis/owner/addEditEducation";
 import { educationListQuery } from "@/lib/apis/owner/educationListQuery";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { institutionListQuery } from "@/lib/apis/owner/education/institutionListQuery";
 import { FormDropdown } from "@/components/ui/FormDropdown";
 import { degreeListQuery } from "@/lib/apis/owner/education/degreeListQuery";
@@ -57,7 +57,7 @@ export default function EducationForm({id, onClose} : props) {
     } = useForm<EducationFormData>({
         resolver: zodResolver(educationSchema),
         defaultValues: {
-            isStudying: false, // Important: set default
+            isStudying: false,
         }
     });
 
@@ -68,13 +68,8 @@ export default function EducationForm({id, onClose} : props) {
     });
 
     const onSubmit = async (data: EducationFormData) => {
-        try {
-            await dispatch(addEditEducation(data));
-            await dispatch(educationListQuery());
-            onClose?.();
-        } catch (error) {
-            // console.log('Error creating education: ', error);
-        }
+        await dispatch(addEditEducation(data));
+        await dispatch(educationListQuery());
     };
 
     useEffect(() => {
@@ -87,7 +82,6 @@ export default function EducationForm({id, onClose} : props) {
         lstInstitutions.length === 0 && dispatch(institutionListQuery());
         lstDegrees.length === 0 && dispatch(degreeListQuery());
         lstFields.length === 0 && dispatch(fieldOfStudyListQuery());
-        console.log(watch('LKP_InstitutionID'));
     }, []);
       
     return (
@@ -96,7 +90,7 @@ export default function EducationForm({id, onClose} : props) {
                 label="Institution"
                 options={institutionOptions}
                 value={institutionOptions.find(opt => opt.value === watch('LKP_InstitutionID'))}
-                onChange={(option) => setValue('LKP_InstitutionID', option?.value as string)}
+                onChange={(option) => setValue('LKP_InstitutionID', option?.value as string, {shouldValidate: true})}
                 error={errors.LKP_InstitutionID}
             />
             
@@ -104,7 +98,7 @@ export default function EducationForm({id, onClose} : props) {
                 label="Degree"
                 options={degreeOptions}
                 value={degreeOptions.find(opt => opt.value === watch('LKP_DegreeID'))}
-                onChange={(option) => setValue('LKP_DegreeID', option?.value as string)}
+                onChange={(option) => setValue('LKP_DegreeID', option?.value as string, {shouldValidate: true})}
                 error={errors.LKP_DegreeID}
             />
 
@@ -112,7 +106,7 @@ export default function EducationForm({id, onClose} : props) {
                 label="Field of study"
                 options={fieldOptions}
                 value={fieldOptions.find(opt => opt.value === watch('LKP_FieldOfStudyID'))}
-                onChange={(option) => setValue('LKP_FieldOfStudyID', option?.value as string)}
+                onChange={(option) => setValue('LKP_FieldOfStudyID', option?.value as string, {shouldValidate: true})}
                 error={errors.LKP_FieldOfStudyID}
             />
 

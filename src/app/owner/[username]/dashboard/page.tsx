@@ -68,8 +68,8 @@ export default function OwnerDashboardPage() {
                     <WidgetCard
                         items={lstEducations}
                         header={{title: 'Education', icon: GraduationCap}}
-                        bar={{groupBy: 'degree'}}
-                        pie={{title:'Degrees Overview', groupBy: 'degree'}}
+                        bar={{groupBy: {degree: 'abbreviation'}}}
+                        pie={{title:'Degrees Overview', groupBy: {degree: 'abbreviation'}}}
                         list={[
                             {leftKey: {degree: 'abbreviation'}, between: 'at', rightKey: {institution: 'name'}, size:'lg'},
                             {leftKey: {fieldOfStudy: 'name'}, icon: GraduationCap},

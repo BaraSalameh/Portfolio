@@ -5,13 +5,16 @@ const guidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0
 export const educationSchema = z.object({
     id: z.string().optional(),
 
-    LKP_InstitutionID: z.string()
+    LKP_InstitutionID: z
+        .string({ required_error: 'Institution is required' })
         .regex(guidRegex, 'Institution ID must be a valid GUID'),
 
-    LKP_DegreeID: z.string()
+    LKP_DegreeID: z
+        .string({ required_error: 'Degree is required' })
         .regex(guidRegex, 'Degree ID must be a valid GUID'),
 
-    LKP_FieldOfStudyID: z.string()
+    LKP_FieldOfStudyID: z
+        .string({ required_error: 'Field is required' })
         .regex(guidRegex, 'Field ID must be a valid GUID'),
 
     startDate: z.string()

@@ -9,11 +9,11 @@ export interface WidgetCardProps extends WidgetCardVariantProps {
     list?: ListItemConfig[];
     pie?: {
         title?: string;
-        groupBy: string;
+        groupBy: string | Record<string, string | string[]>;
     };
     bar?: {
         title?: string;
-        groupBy: string;
+        groupBy: string | Record<string, string | string[]>;
         durationKeys?: {
         start?: string;
         end?: string;
