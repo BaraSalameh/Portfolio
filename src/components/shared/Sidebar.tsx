@@ -35,19 +35,19 @@ export const Sidebar = ({ role }: SidebarProps) => {
                     initial={{ x: 0 }}
                     animate={{ x: 0 }}
                     transition={{ type: 'tween', duration: 0.3 }}
-                    className={`sticky inset-0 flex flex-col bg-green-900 p-2 duration-100 min-h-screen`}
+                    className={`sticky inset-0 flex flex-col justify-center bg-green-900 p-2 duration-100 min-h-screen`}
                 >
                     {/* Burger Button INSIDE sidebar */}
                     <button
                         onClick={() => setIsCollapsed(!isCollapsed)}
-                        className={`absolute top-3 right-[-1.5rem] bg-inherit px-2 py-1 rounded-md cursor-pointer duration-300`}
+                        className={`absolute top-6 right-[-1.5rem] bg-inherit px-2 py-1 rounded-md hover:text-gray-900 cursor-pointer duration-300`}
                         aria-label='Toggle sidebar'
                     >
                         <ResponsiveIcon icon={Menu} />
                     </button>
                     
                     {/* Navigation */}
-                    <nav className="flex flex-col space-y-5 py-10">
+                    <nav className="flex flex-col space-y-5">
                         {navLinks.map(({ href, label, icon: Icon }) => {
                             const isActive = pathname === href;
                             return (
@@ -58,7 +58,7 @@ export const Sidebar = ({ role }: SidebarProps) => {
                                     className={`flex items-center gap-3  ${
                                         isActive
                                             ? 'text-gray-300 cursor-not-allowed opacity-50'
-                                            : 'hover:text-gray-900 cursor-pointer'
+                                            : 'hover:text-gray-900 cursor-pointer duration-300'
                                     }`}
                                 >
                                     <ResponsiveIcon icon={Icon} />

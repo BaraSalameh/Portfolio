@@ -1,8 +1,6 @@
 'use client';
 
-import { Header } from "@/components/shared/Header";
 import { Main } from "@/components/shared/Main";
-import { Paragraph } from "@/components/ui/Paragraph";
 import { WidgetCard } from "@/components/ui/widget/WidgetCard";
 import { userQuery } from "@/lib/apis/owner/userQuery";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
@@ -14,6 +12,7 @@ import { educationListQuery } from "@/lib/apis/owner/educationListQuery";
 import { sortEducation } from "@/lib/apis/owner/education/sortEducation";
 import debounce from "lodash.debounce";
 import Loading from "@/components/shared/Loading";
+import Profile from "@/components/ui/profile/Profile";
 
 export default function OwnerDashboardPage() {
 
@@ -48,10 +47,8 @@ export default function OwnerDashboardPage() {
     return (
         <>
         <Loading isLoading={userInfoLoading} />
-        <Header itemsX='center'>
-            <Paragraph size='xl' className="font-bold">Dashboard</Paragraph>
-        </Header>
-        <Main paddingX='md'>
+        <Profile user={user as any} />
+        <Main>
             <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-3">
                 <div className="break-inside-avoid">
                     <WidgetCard

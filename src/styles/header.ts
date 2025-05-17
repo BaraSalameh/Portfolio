@@ -5,7 +5,8 @@ export const header = cva(
     {
         variants: {
             itemsY: {
-                center: 'sm:items-center'
+                center: 'sm:items-center',
+                start: 'sm:items-start'
             },
             itemsX: {
                 center: 'justify-center',
@@ -16,7 +17,7 @@ export const header = cva(
                 none: 'gap-0',
                 sm: 'gap-5',
                 md: 'gap-10',
-                lg: 'gap-15'
+                lg: 'gap-10 sm:gap-12 lg:gap-15'
             },
             paddingX: {
                 none: 'px-0',
