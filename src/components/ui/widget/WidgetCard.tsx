@@ -54,7 +54,7 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({ isLoading, header, items
                         {header?.icon && <ResponsiveIcon icon={header.icon} />}
                         {header?.title}
                     </Paragraph>
-                        <CUDModal title={create?.title} subTitle={create?.subTitle}>
+                        <CUDModal isLoading={isLoading} title={create?.title} subTitle={create?.subTitle}>
                             {create?.form}
                         </CUDModal>
                             
