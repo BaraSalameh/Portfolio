@@ -3,99 +3,73 @@
 import { useEffect, useState } from 'react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import {
-    Menu, X, Home, Info, LayoutDashboard, Book, Briefcase, Folder, BadgePercent,
-    Languages, PenSquare, MessageSquare, Settings, LogOut
-} from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { Paragraph } from '../ui/Paragraph';
 import ResponsiveIcon from '../ui/ResponsiveIcon';
+import { getNavLinks } from '@/lib/utils/appFunctions';
+import React from 'react';
 
 type SidebarProps = { role?: 'Admin' | 'Owner' | null };
 
-export default function Sidebar({ role }: SidebarProps) {
+export const Sidebar = ({ role }: SidebarProps) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const pathname = usePathname();
     const { username } = useParams<{ username: string }>();
     const router = useRouter();
     
-    // Define nav links with icons
-    const navLinks = [
-        { href: '/', label: 'Home', icon: Home },
-        ...(username && !role
-            ?   [
-                    { href: `/client/${username}/about`, label: 'About', icon: Info }
-                ]
-            : username && role === 'Owner'
-                ?   [
-                        { href: `/owner/${username}/dashboard`, label: 'Dashboard', icon: LayoutDashboard },
-                        { href: `/owner/${username}/education`, label: 'Education', icon: Book },
-                        { href: `/owner/${username}/experience`, label: 'Experience', icon: Briefcase },
-                        { href: `/owner/${username}/project`, label: 'Projects', icon: Folder },
-                        { href: `/owner/${username}/skill`, label: 'Skills', icon: BadgePercent },
-                        { href: `/owner/${username}/language`, label: 'Languages', icon: Languages },
-                        { href: `/owner/${username}/blog-post`, label: 'Blog Post', icon: PenSquare },
-                        { href: `/owner/${username}/message`, label: 'Messages', icon: MessageSquare },
-                        { href: `/owner/${username}/setting`, label: 'Settings', icon: Settings },
-                        { href: `/owner/${username}/logout`, label: 'Logout', icon: LogOut },
-                    ]
-                :   []),
-    ];
+    const navLinks = getNavLinks(username, role);
 
     // Handle outside click for mobile
     useEffect(() => {
-        const handleResize = () => {
-            if (window.innerWidth < 640) { // 640px = sm breakpoint in Tailwind
-                setIsCollapsed(true);
-            } else {
-                setIsCollapsed(false);
-            }
-        };
+        const smBreakpoint = 640;
+        const handleResize = () => setIsCollapsed(window.innerWidth < smBreakpoint);
 
-        handleResize(); // Set on first render
+        handleResize();
         window.addEventListener('resize', handleResize);
-
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     return (
-        <div className="bg-green-900">
-            {/* Sidebar */}
-            <motion.aside
-                initial={{ x: 0 }}
-                animate={{ x: 0 }}
-                transition={{ type: 'tween', duration: 0.3 }}
-                className={`flex flex-col p-2 duration-100 sticky top-0 min-h-screen`}
-            >
-                {/* Burger Button INSIDE sidebar */}
-                <button
-                    onClick={() => setIsCollapsed(!isCollapsed)}
-                    className="absolute -right-6 top-3 bg-green-900 px-2 py-1 rounded-md cursor-pointer duration-300"
+            <div>
+                <motion.aside
+                    initial={{ x: 0 }}
+                    animate={{ x: 0 }}
+                    transition={{ type: 'tween', duration: 0.3 }}
+                    className={`sticky inset-0 flex flex-col bg-green-900 p-2 duration-100 min-h-screen`}
                 >
-                    <ResponsiveIcon icon={Menu} />
-                </button>
-
-                {/* Navigation */}
-                <nav className="flex flex-col space-y-3 py-10">
-                    {navLinks.map(({ href, label, icon: Icon }) => {
-                        const isActive = pathname === href;
-                        return (
-                            <button
-                                key={href}
-                                onClick={() => !isActive && router.push(href)}
-                               
-                                className={`flex items-center gap-3 py-1 cursor-pointer ${
-                                    isActive
-                                        ? 'text-gray-300 cursor-not-allowed opacity-50'
-                                        : 'hover:text-gray-900'
-                                }`}
-                            >
-                                <ResponsiveIcon icon={Icon} />
-                                {!isCollapsed && <Paragraph size="sm">{label}</Paragraph>}
-                            </button>
-                        );
-                    })}
-                </nav>
-            </motion.aside>
-        </div>
+                    {/* Burger Button INSIDE sidebar */}
+                    <button
+                        onClick={() => setIsCollapsed(!isCollapsed)}
+                        className={`absolute top-3 right-[-1.5rem] bg-inherit px-2 py-1 rounded-md cursor-pointer duration-300`}
+                        aria-label='Toggle sidebar'
+                    >
+                        <ResponsiveIcon icon={Menu} />
+                    </button>
+                    
+                    {/* Navigation */}
+                    <nav className="flex flex-col space-y-5 py-10">
+                        {navLinks.map(({ href, label, icon: Icon }) => {
+                            const isActive = pathname === href;
+                            return (
+                                <button
+                                    key={href}
+                                    onClick={() => !isActive && router.push(href)}
+                                
+                                    className={`flex items-center gap-3  ${
+                                        isActive
+                                            ? 'text-gray-300 cursor-not-allowed opacity-50'
+                                            : 'hover:text-gray-900 cursor-pointer'
+                                    }`}
+                                >
+                                    <ResponsiveIcon icon={Icon} />
+                                    {!isCollapsed && <Paragraph size="sm">{label}</Paragraph>}
+                                </button>
+                            );
+                        })}
+                    </nav>
+                </motion.aside>
+            </div>
     );
 }
+
+export default Sidebar;

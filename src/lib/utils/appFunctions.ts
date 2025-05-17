@@ -1,5 +1,9 @@
 import dayjs from 'dayjs';
 import { EducationFormData } from '../schemas/educationSchema';
+import {
+    Menu, Home, Info, LayoutDashboard, Book, Briefcase, Folder, BadgePercent,
+    Languages, PenSquare, MessageSquare, Settings, LogOut
+} from 'lucide-react';
 
 export function transformPayload<T extends object>(obj: T): T {
     return Object.fromEntries(
@@ -92,3 +96,28 @@ export const mapEducationToForm = (educationFromDb: any): EducationFormData => (
 
 export const getSelectedOption = (options: {label: string; value: string}[], value: string | undefined) =>
     options.find(opt => opt.value === value);
+
+export const getNavLinks = (username?: string | undefined, role?: 'Admin' | 'Owner' | null ) => {
+    if (!username) return [{ href: '/', label: 'Home', icon: Home }];
+
+    if (!role) return [
+        { href: '/', label: 'Home', icon: Home },
+        { href: `/client/${username}/about`, label: 'About', icon: Info }
+    ];
+
+    if (role === 'Owner') return [
+        { href: '/', label: 'Home', icon: Home },
+        { href: `/owner/${username}/dashboard`, label: 'Dashboard', icon: LayoutDashboard },
+        { href: `/owner/${username}/education`, label: 'Education', icon: Book },
+        { href: `/owner/${username}/experience`, label: 'Experience', icon: Briefcase },
+        { href: `/owner/${username}/project`, label: 'Projects', icon: Folder },
+        { href: `/owner/${username}/skill`, label: 'Skills', icon: BadgePercent },
+        { href: `/owner/${username}/language`, label: 'Languages', icon: Languages },
+        { href: `/owner/${username}/blog-post`, label: 'Blog Post', icon: PenSquare },
+        { href: `/owner/${username}/message`, label: 'Messages', icon: MessageSquare },
+        { href: `/owner/${username}/setting`, label: 'Settings', icon: Settings },
+        { href: `/owner/${username}/logout`, label: 'Logout', icon: LogOut },
+    ];
+
+    return [{ href: '/', label: 'Home', icon: Home }];
+}
