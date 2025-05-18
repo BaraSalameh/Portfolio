@@ -8,7 +8,9 @@ namespace Application.Owner.MappingProfiles
     {
         public UserMappingProfiles()
         {
-            CreateMap<User, UQ_Response>()
+            CreateMap<User, UIQ_Response>();
+
+            CreateMap<User, UFIQ_Response>()
                 .ForMember(dest => dest.User, opt => opt.MapFrom(src => src))
                 .ForMember(dest => dest.LstEducations,
                     opt => opt.MapFrom(src => src.LstEducations.Where(e => e.IsDeleted == false).OrderBy(e => e.Order)))
@@ -22,24 +24,24 @@ namespace Application.Owner.MappingProfiles
                     opt => opt.MapFrom(src => src.LstBlogPosts.Where(p => p.IsDeleted == false)))
                 .ForMember(dest => dest.LstSocialLinks,
                     opt => opt.MapFrom(src => src.LstSocialLinks.Where(l => l.IsDeleted == false)));
-            CreateMap<User, UQ_User>();
-            CreateMap<Project, UQ_Project>();
-            CreateMap<ProjectTechnology, UQ_ProjectTechnology>();
-            CreateMap<LKP_Technology, UQ_LKP_Technology>();
-            CreateMap<Skill, UQ_Skill>();
-            CreateMap<Education, UQ_Education>()
+            CreateMap<User, UFIQ_User>();
+            CreateMap<Project, UFIQ_Project>();
+            CreateMap<ProjectTechnology, UFIQ_ProjectTechnology>();
+            CreateMap<LKP_Technology, UFIQ_LKP_Technology>();
+            CreateMap<Skill, UFIQ_Skill>();
+            CreateMap<Education, UFIQ_Education>()
                 .ForMember(dest => dest.Institution, opt => opt.MapFrom(src => src.LKP_Institution))
                 .ForMember(dest => dest.Degree, opt => opt.MapFrom(src => src.LKP_Degree))
                 .ForMember(dest => dest.FieldOfStudy, opt => opt.MapFrom(src => src.LKP_FieldOfStudy));
-            CreateMap<LKP_Institution, UQ_LKP_Institution>();
-            CreateMap<LKP_Degree, UQ_LKP_Degree>();
-            CreateMap<LKP_FieldOfStudy, UQ_LKP_FieldOfStudy>();
-            CreateMap<Experience, UQ_Experience>();
-            CreateMap<BlogPost, UQ_BlogPost>();
-            CreateMap<SocialLink, UQ_SocialLink>();
-            CreateMap<UserLanguage, UQ_UserLanguage>();
-            CreateMap<LKP_Language, UQ_LKP_Language>();
-            CreateMap<LKP_LanguageProficiency, UQ_LKP_Language_Proficiency>();
+            CreateMap<LKP_Institution, UFIQ_LKP_Institution>();
+            CreateMap<LKP_Degree, UFIQ_LKP_Degree>();
+            CreateMap<LKP_FieldOfStudy, UFIQ_LKP_FieldOfStudy>();
+            CreateMap<Experience, UFIQ_Experience>();
+            CreateMap<BlogPost, UFIQ_BlogPost>();
+            CreateMap<SocialLink, UFIQ_SocialLink>();
+            CreateMap<UserLanguage, UFIQ_UserLanguage>();
+            CreateMap<LKP_Language, UFIQ_LKP_Language>();
+            CreateMap<LKP_LanguageProficiency, UFIQ_LKP_Language_Proficiency>();
 
         }
     }

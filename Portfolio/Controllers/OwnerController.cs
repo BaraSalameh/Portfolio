@@ -20,7 +20,11 @@ namespace Portfolio.Controllers
     public class OwnerController : ApiController
     {
         [HttpGet]
-        public async Task<IActionResult> UserFullInfo([FromQuery] UserQuery request)
+        public async Task<IActionResult> UserFullInfo([FromQuery] UserFullInfoQuery request)
+            => Result.HandleResult(await Mediator.Send(request));
+
+        [HttpGet]
+        public async Task<IActionResult> UserInfo([FromQuery] UserInfoQuery request)
             => Result.HandleResult(await Mediator.Send(request));
 
         [HttpGet]

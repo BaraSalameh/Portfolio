@@ -12,6 +12,7 @@
         public string? Bio { get; set; }
         public string? Phone { get; set; }
         public string? ProfilePicture { get; set; }
+        public string? CoverPhoto { get; set; }
         public DateOnly? BirthDate { get; set; }
         public int? Gender { get; set; }
         public Guid? RoleID { get; set; }
