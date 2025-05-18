@@ -11,7 +11,6 @@ import { Header } from '../shared/Header';
 import { cn } from '../utils/cn';
 import { widgetCard } from '@/styles/widget';
 import { Main } from '../shared/Main';
-import Loading from '../shared/Loading';
 
 interface CUDProps extends InputHTMLAttributes<HTMLInputElement> {
     isLoading?: boolean;
@@ -57,8 +56,7 @@ export const CUDModal = ({
   
         {openModal && (
             <BlurBackGround intent='sm'>
-                <div className={ cn(widgetCard(), className) }>
-                    <Loading fullScreen={false} isLoading={isLoading} message={as === 'create' ? 'Creating...' : as === 'update' ? 'Updating...' : 'Deleting...'} />
+                <div className={ cn(widgetCard({ scroll: true }), className) }>
                     <Header itemsX="between" paddingX="xs" paddingY="xs">
                         {subTitle && <Paragraph size="md">{subTitle}</Paragraph>}
                         <ResponsiveIcon icon={X} onClick={() => setOpenModal(false)} className='cursor-pointer' />
@@ -85,6 +83,7 @@ export const CUDModal = ({
                                     rounded="full"
                                     size="lg"
                                     type="submit"
+                                    disabled={isLoading}
                                 >
                                     <Image
                                         className="dark:invert"
@@ -93,7 +92,7 @@ export const CUDModal = ({
                                         width={20}
                                         height={20}
                                     />
-                                        Delete
+                                        {isLoading ? 'Deleting...' : 'Delete'}
                                 </Button>
                                 </>
                             }

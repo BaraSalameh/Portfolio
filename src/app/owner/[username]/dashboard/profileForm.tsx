@@ -81,6 +81,10 @@ const ProfileForm = ({ onClose } : { onClose?: () => void }) => {
         />
     );
 
+    /*
+    TODO:
+        1- Work on profile, cover photos!
+    */
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="relative space-y-4">
             <fieldset disabled={loading} className="space-y-4">
