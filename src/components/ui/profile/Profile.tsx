@@ -3,6 +3,8 @@ import { Header } from '@/components/shared/Header';
 import Image from 'next/image';
 import React from 'react';
 import { Paragraph } from '../Paragraph';
+import { CUDModal } from '../CUDModal';
+import ProfileForm from '@/app/owner/[username]/dashboard/profileForm';
 
 interface ProfileProps {
     user: {
@@ -36,7 +38,7 @@ const Profile = ({
             
             {/* Profile and Info */}
             <div className="absolute left-7 sm:left-10 lg:left-15 bottom-[-2rem] sm:bottom-[-2.5rem] lg:bottom-[-3.5rem] flex flex-col items-center">
-                <div className="w-20 h-20 sm:w-30 sm:h-30 lg:w-40 lg:h-40 rounded-full border-4 border-white bg-black/25 backdrop-blur-sm overflow-hidden">
+                <div className="relative w-20 h-20 sm:w-30 sm:h-30 lg:w-40 lg:h-40 rounded-full border-4 border-white bg-black/25 backdrop-blur-sm overflow-hidden">
                     <Image
                         src={profilePicture}
                         alt="Profile picture"
@@ -44,6 +46,11 @@ const Profile = ({
                         className="object-cover"
                     />
                 </div>
+                    <div className='absolute right-0 bottom-0'>
+                        <CUDModal as='update' subTitle='Update profile' >
+                            <ProfileForm />
+                        </CUDModal>
+                    </div>
             </div>
         </div>
         <div className='px-7 sm:px-10 lg:px-15 pt-1'>

@@ -47,7 +47,10 @@ export default function OwnerDashboardPage() {
     return (
         <>
         <Loading isLoading={userInfoLoading} />
-        <Profile user={user as any} />
+        <Profile
+            user={user as any}
+            
+        />
         <Main>
             <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-3">
                 <div className="break-inside-avoid">

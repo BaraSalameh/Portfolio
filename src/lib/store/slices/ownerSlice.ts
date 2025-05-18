@@ -1,3 +1,4 @@
+import { userInfoQuery } from '@/lib/apis/owner/user/userInfoQuery';
 import { userQuery } from '@/lib/apis/owner/userQuery';
 import { createSlice } from '@reduxjs/toolkit';
 
@@ -20,6 +21,19 @@ const ownerSlice = createSlice({
             state.user = action.payload.user;
         })
         .addCase(userQuery.rejected, (state, action) => {
+            state.loading = false;
+            state.error = (action.payload as string);
+        })
+        
+        .addCase(userInfoQuery.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(userInfoQuery.fulfilled, (state, action) => {
+            state.loading = false;
+            state.user = action.payload;
+        })
+        .addCase(userInfoQuery.rejected, (state, action) => {
             state.loading = false;
             state.error = (action.payload as string);
         });

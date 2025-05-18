@@ -49,7 +49,7 @@ export const CUDModal = ({
             ?   <ResponsiveIcon />
             :   as === 'update'
                 ?   <ResponsiveIcon icon={Edit} />
-                :  <ResponsiveIcon icon={LucideTrash2} />
+                :   <ResponsiveIcon icon={LucideTrash2} />
             }
             {title && <Paragraph size='md'>{title}</Paragraph>}
         </div>
