@@ -11,7 +11,11 @@ interface ProfileProps {
         firstname: string;
         lastname: string;
         profilePicture?: string;
+        coverPhoto?: string;
         title?: string;
+        bio?: string
+        gender?: number;
+        birthDate?: string;
     },
     className?: string;
 }
@@ -22,7 +26,7 @@ const Profile = ({
 } : ProfileProps) => {
 
     const profilePicture = user?.profilePicture ?? '/globe.svg';
-    const coverPhoto = user?.profilePicture ?? '/cover.jpeg';
+    const coverPhoto = user?.coverPhoto ?? '/portfolio-logo.svg';
 
   return (
     <Header space='lg' paddingY='sm' itemsY='start' className={`grid grid-cols-1 ${className}`}>
@@ -53,13 +57,34 @@ const Profile = ({
                     </div>
             </div>
         </div>
-        <div className='px-7 sm:px-10 lg:px-15 pt-1'>
+        <div className='px-7 sm:px-10 lg:px-15 pt-3 space-y-1'>
             <Paragraph position='start' size='lg'>
                 {user?.firstname} {user?.lastname}
             </Paragraph>
             <Paragraph position='start' className="italic">
-                {user?.title ?? 'New userNew'}
+                {user?.title}
             </Paragraph>
+            {(user?.gender === 0 || user?.gender === 1 || user?.birthDate) && (
+                <Paragraph position="start">
+                    {user?.gender === 1
+                    ? 'Male'
+                    : user?.gender === 0
+                    ? 'Female'
+                    : ''}
+                    {user?.birthDate ? ` (${user.birthDate})` : ''}
+                </Paragraph>
+            )}
+            {(user?.bio) && 
+                <hr className='pb-3' />
+            }
+            <Paragraph  className="italic">
+                {user?.bio?.split('\n').map((line, index) => (
+                    <span key={index}>
+                        {line}
+                    </span>
+                ))}
+            </Paragraph>
+            
         </div>
     </Header>
   );

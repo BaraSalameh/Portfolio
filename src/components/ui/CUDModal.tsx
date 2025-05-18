@@ -41,7 +41,7 @@ export const CUDModal = ({
     return (
         <>
         <div
-            className="flex items-center justify-center gap-2 cursor-pointer"
+            className="flex gap-2 cursor-pointer"
             onClick={() => setOpenModal(true)}
         >
             {as === 'create'

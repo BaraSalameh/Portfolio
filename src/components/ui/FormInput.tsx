@@ -17,7 +17,7 @@ export const FormInput = ({
     ...rest
 }: FormInputProps) => {
 
-    const inputClasses = rest.className ?? `
+    const inputClasses = `
         w-full
         px-4
         py-2
@@ -27,6 +27,7 @@ export const FormInput = ({
         focus:outline-none
         focus:ring-2
         ${error ? 'border-red-500 focus:ring-red-500' : 'border-gray-500 focus:ring-gray-500'}
+        ${rest.className}
     `;
 
     return (
@@ -36,11 +37,19 @@ export const FormInput = ({
                     <Paragraph>{label}</Paragraph>
                 </label>
             }
-            <input
-                {...registration}
-                {...rest}
-                className={inputClasses}
-            />
+            {rest.type === 'textarea' ? (
+                <textarea
+                    {...(registration as any)} // casting because it can be for input or textarea
+                    {...rest}
+                    className={`${inputClasses} overflow-auto scrollbar-hide`}
+                />
+            ) : (
+                <input
+                    {...registration}
+                    {...rest}
+                    className={inputClasses}
+                />
+            )}
             {error && <Paragraph intent="danger" size="sm">{error.message}</Paragraph>}
         </div>
     );

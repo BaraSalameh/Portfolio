@@ -1,3 +1,4 @@
+import { logout } from '@/lib/apis/account/logout';
 import { userInfoQuery } from '@/lib/apis/owner/user/userInfoQuery';
 import { userQuery } from '@/lib/apis/owner/userQuery';
 import { createSlice } from '@reduxjs/toolkit';
@@ -36,7 +37,26 @@ const ownerSlice = createSlice({
         .addCase(userInfoQuery.rejected, (state, action) => {
             state.loading = false;
             state.error = (action.payload as string);
-        });
+        })
+        
+        .addCase(logout.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(logout.fulfilled, () => {
+            return{
+                loading: false,
+                error: null,
+                user: null
+            }
+        })
+        .addCase(logout.rejected, (_, action) => {
+            return {
+                user: null,
+                loading: false,
+                error: action.payload as string,
+            }
+        })
     },
 });
 export default ownerSlice.reducer;

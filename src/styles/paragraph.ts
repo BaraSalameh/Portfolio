@@ -22,7 +22,7 @@ export const paragraph = cva(
                 xl: 'text-md sm:text-lg md:text-xl'
             },
             text: {
-                standard: '',
+                standard: null,
                 justify: 'text-justify',
             },
             position: {

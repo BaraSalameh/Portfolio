@@ -9,11 +9,11 @@ export const profileSchema = z.object({
 
     lastname: z
         .string()
-        .min(2, 'Firstname is required'),
+        .min(2, 'Lastname is required'),
 
     title: z
         .string()
-        .min(2, 'Firstname is required')
+        .min(2, 'title is required')
         .optional()
         .nullable(),
 
@@ -25,10 +25,24 @@ export const profileSchema = z.object({
 
     phone: z
         .string()
-        .min(9, 'Phone is short')
-        .regex(phoneRegex, 'Phone must be valid'),
+        .optional()
+        .nullable()
+        .refine((val) => {
+            if (!val) return true;
+            return val.length >= 9;
+        }, { message: 'Phone is short' })
+        .refine((val) => {
+            if (!val) return true;
+            return phoneRegex.test(val);
+        }, { message: 'Phone must be valid' }),
 
     profilePicture: z
+        .string()
+        .max(1000, 'Image string is too long')
+        .optional()
+        .nullable(),
+
+    coverPhoto: z
         .string()
         .max(1000, 'Image string is too long')
         .optional()
@@ -39,24 +53,34 @@ export const profileSchema = z.object({
         .optional()
         .nullable(),
 
-    birthDate: z.string()
-        .refine(val => !isNaN(Date.parse(val)), { message: 'Birthdate not valid' }),
+    birthDate: z
+        .string()
+        .optional()
+        .nullable()
+        .refine(val => {
+            if (!val) return true; // allow null or undefined
+            return !isNaN(Date.parse(val));
+        }, {
+            message: 'Birthdate not valid'
+        })
 
 }).superRefine((data, ctx) => {
-    const now = new Date();
+    if (!data.birthDate) return; // Skip if null or undefined
+
     const birthDate = new Date(data.birthDate);
+    const now = new Date();
 
     if (isNaN(birthDate.getTime())) {
         ctx.addIssue({
-            path: ['birthDate'],
-            message: 'Birthdate not valid',
-            code: z.ZodIssueCode.custom,
+        path: ['birthDate'],
+        message: 'Birthdate not valid',
+        code: z.ZodIssueCode.custom,
         });
     } else if (birthDate > now) {
         ctx.addIssue({
-            path: ['birthDate'],
-            message: 'Birthdate cannot be in the future',
-            code: z.ZodIssueCode.custom,
+        path: ['birthDate'],
+        message: 'Birthdate cannot be in the future',
+        code: z.ZodIssueCode.custom,
         });
     }
 });

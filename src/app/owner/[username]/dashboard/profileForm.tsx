@@ -4,21 +4,18 @@ import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { Paragraph } from "@/components/ui/Paragraph";
 import { Button } from "@/components/ui/Button";
 import Image from "next/image";
-import { Controller, useForm, useWatch } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { ProfileFormData, profileSchema } from "@/lib/schemas/profileSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormInput } from "@/components/ui/FormInput";
 import { List } from "@/components/ui/List";
-import { FormCheckbox } from "@/components/ui/FormCheckbox";
-import { addEditEducation } from "@/lib/apis/owner/addEditEducation";
-import { educationListQuery } from "@/lib/apis/owner/educationListQuery";
-import { useEffect, useMemo } from "react";
-import { institutionListQuery } from "@/lib/apis/owner/education/institutionListQuery";
+import { useEffect } from "react";
 import { FormDropdown } from "@/components/ui/FormDropdown";
-import { getSelectedOption, mapEducationToForm } from "@/lib/utils/appFunctions";
+import { getSelectedOption } from "@/lib/utils/appFunctions";
 import { CUDModal } from "@/components/ui/CUDModal";
 import { editProfile } from "@/lib/apis/owner/user/editProfile";
 import { userInfoQuery } from "@/lib/apis/owner/user/userInfoQuery";
+import ImageUploader from "@/components/ui/ImageUploader";
 
 const ProfileForm = ({ onClose } : { onClose?: () => void }) => {
 
@@ -34,6 +31,7 @@ const ProfileForm = ({ onClose } : { onClose?: () => void }) => {
         handleSubmit, 
         control,
         reset,
+        setValue,
         formState: { errors },
     } = useForm<ProfileFormData>({
         resolver: zodResolver(profileSchema)
@@ -44,6 +42,7 @@ const ProfileForm = ({ onClose } : { onClose?: () => void }) => {
             const typedUser = user as ProfileFormData;
             reset({
                 ...typedUser,
+                gender: typedUser.gender?.toString(),
                 birthDate: typedUser.birthDate?.slice(0, 10)
             });
         }
@@ -81,10 +80,14 @@ const ProfileForm = ({ onClose } : { onClose?: () => void }) => {
         />
     );
 
-    /*
-    TODO:
-        1- Work on profile, cover photos!
-    */
+    const handleProfilePicture = (url: string) => {
+        setValue("profilePicture", url);
+    };
+
+    const handleCoverPhoto = (url: string) => {
+        setValue("coverPhoto", url);
+    };
+
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="relative space-y-4">
             <fieldset disabled={loading} className="space-y-4">
@@ -115,7 +118,7 @@ const ProfileForm = ({ onClose } : { onClose?: () => void }) => {
 
                 <FormInput
                     label="Bio"
-                    type="text"
+                    type="textarea"
                     placeholder="Describe yourself"
                     registration={register('bio')}
                     error={errors.bio}
@@ -132,11 +135,11 @@ const ProfileForm = ({ onClose } : { onClose?: () => void }) => {
                 <ControlledDropdown name="gender" label="Gender" options={genderOptions} />
 
                 <CUDModal as='update' title='Update profile picture' subTitle='Choose a new profile picture'>
-
+                    <ImageUploader onAction={handleProfilePicture} preset="Profile_Picture"/>
                 </CUDModal>
 
                 <CUDModal as='update' title='Update cover photo' subTitle='Choose a new cover photo'>
-
+                    <ImageUploader onAction={handleCoverPhoto} preset="Cover_Photo" />
                 </CUDModal>
 
                 <FormInput

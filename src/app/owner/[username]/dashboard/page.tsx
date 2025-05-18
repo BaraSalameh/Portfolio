@@ -49,7 +49,6 @@ export default function OwnerDashboardPage() {
         <Loading isLoading={userInfoLoading} />
         <Profile
             user={user as any}
-            
         />
         <Main>
             <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-3">
