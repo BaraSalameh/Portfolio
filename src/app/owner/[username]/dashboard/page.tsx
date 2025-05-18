@@ -51,21 +51,7 @@ export default function OwnerDashboardPage() {
             user={user as any}
         />
         <Main>
-            <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-3">
-                <div className="break-inside-avoid">
-                    <WidgetCard
-                        isLoading={experienceLoading}
-                        items={lstExperiences}
-                        header={{title: 'Experience', icon: Briefcase}}
-                        bar={{groupBy: 'jobTitle'}}
-                        pie={{title:'Job Titles Overview', groupBy: 'jobTitle'}}
-                        list={[
-                            {leftKey: 'jobTitle', between: 'in', rightKey:'companyName', size: 'lg'},
-                            {leftKey: 'location', icon: MapPin},
-                            {leftKey: 'startDate', between: '-', rightKey: 'endDate', icon: Clock, isTime: true},
-                        ]}
-                    />
-            </div>
+            <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-3 w-full">
                 <div className="break-inside-avoid">
                     <WidgetCard
                         isLoading={educationLoading}

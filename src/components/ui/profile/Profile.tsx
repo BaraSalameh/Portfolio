@@ -25,12 +25,14 @@ const Profile = ({
     className
 } : ProfileProps) => {
 
-    const profilePicture = user?.profilePicture ?? '/globe.svg';
-    const coverPhoto = user?.coverPhoto ?? '/portfolio-logo.svg';
+    const profilePicture =
+        user?.profilePicture ??
+        (user?.gender === 0 ? '/Default-Female.svg' : '/Default-Male.svg');
+    const coverPhoto = user?.coverPhoto ?? '/Default-CoverPhoto.svg';
 
   return (
     <Header space='lg' paddingY='sm' itemsY='start' className={`grid grid-cols-1 ${className}`}>
-        <div className="relative h-35 sm:h-50 lg:h-60 ">
+        <div className="relative h-35 sm:h-50 lg:h-60">
             {/* Cover Photo */}
             <Image
                 src={coverPhoto}
