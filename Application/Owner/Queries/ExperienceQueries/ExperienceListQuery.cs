@@ -1,6 +1,11 @@
-﻿namespace Domain.Entities
+﻿using Application.Common.Entities;
+using MediatR;
+
+namespace Application.Owner.Queries.ExperienceQueries
 {
-    public class Experience : AbstractEntity
+    public class ExperienceListQuery : IRequest<ListQueryResponse<ELQ_Response>> { }
+
+    public class ELQ_Response
     {
         public Guid ID { get; set; }
         public string JobTitle { get; set; }
@@ -9,8 +14,5 @@
         public DateOnly? EndDate { get; set; }
         public string Location { get; set; }
         public string? Description { get; set; }
-        public int Order { get; set; }
-        public Guid UserID { get; set; }
-        public User User { get; set; }
     }
 }

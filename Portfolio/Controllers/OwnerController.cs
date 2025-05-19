@@ -9,6 +9,7 @@ using Application.Owner.Commands.SkillCommands;
 using Application.Owner.Commands.SocialLinkCommands;
 using Application.Owner.Commands.UserLanguageCommands;
 using Application.Owner.Queries.EducationQueries;
+using Application.Owner.Queries.ExperienceQueries;
 using Application.Owner.Queries.LKP_LanguageQuieries;
 using Application.Owner.Queries.UserQueries;
 using Microsoft.AspNetCore.Authorization;
@@ -59,12 +60,20 @@ namespace Portfolio.Controllers
         public async Task<IActionResult> DeleteSkill(DeleteSkillCommand request)
             => Result.HandleResult(await Mediator.Send(request));
 
+        [HttpGet]
+        public async Task<IActionResult> ExperienceList([FromQuery] ExperienceListQuery request)
+            => Result.HandleResult(await Mediator.Send(request));
+
         [HttpPost]
         public async Task<IActionResult> AddEditExperience(AddEditExperienceCommand request)
             => Result.HandleResult(await Mediator.Send(request));
 
         [HttpDelete]
         public async Task<IActionResult> DeleteExperience(DeleteExperienceCommand request)
+            => Result.HandleResult(await Mediator.Send(request));
+
+        [HttpPost]
+        public async Task<IActionResult> SortExperience(SortExperienceCommand request)
             => Result.HandleResult(await Mediator.Send(request));
 
         [HttpGet]
