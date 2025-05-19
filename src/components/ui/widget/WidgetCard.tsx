@@ -8,7 +8,7 @@ import { Paragraph } from '../Paragraph';
 import { List } from '../List';
 import ResponsiveIcon from '../ResponsiveIcon';
 import { generateColorMap, generateDurationData, generatePieData } from '@/lib/utils/appFunctions';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { WidgetList } from './WidgetList';
 import { WidgetCharts } from './WidgetCharts';
 import { WidgetModal } from './WidgetModal';
@@ -43,7 +43,7 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({ isLoading, header, items
     );
     const colorMap = useMemo(() => generateColorMap(pieData ?? durationData), [pieData, durationData]);
 
-     return (
+    return (
         isInitialWidgetCard
         ?  
         <React.Fragment>

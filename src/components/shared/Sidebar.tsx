@@ -9,12 +9,10 @@ import ResponsiveIcon from '../ui/ResponsiveIcon';
 import { getNavLinks } from '@/lib/utils/appFunctions';
 import React from 'react';
 
-type SidebarProps = { role?: 'Admin' | 'Owner' | null };
-
-export const Sidebar = ({ role }: SidebarProps) => {
+export const Sidebar = () => {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const pathname = usePathname();
-    const { username } = useParams<{ username: string }>();
+    const { role, username } = useParams<{ role: 'owner' | 'client' | 'admin', username: string }>();
     const router = useRouter();
     
     const navLinks = getNavLinks(username, role);

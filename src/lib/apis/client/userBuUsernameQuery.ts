@@ -4,15 +4,13 @@ export const userByUsernameQuery = createAsyncThunk(
     'client/userByUsernameQuery',
     async (username: string, thunkAPI) => {
         try {
-            const res = await fetch(`https://localhost:7206/api/Client/UserByUsername?Username=${username}`);
+            const response = await fetch(`https://localhost:7206/api/Client/UserByUsername?Username=${username}`);
 
-            if (!res.ok) {
-                const error = await res.json();
-                return thunkAPI.rejectWithValue(error);
-            }
+            if(response.status === 204) return [];
 
-            const data = await res.json();
-        return data;
+            const data = await response.json();
+            return data;
+            
         } catch {
             return thunkAPI.rejectWithValue(['Unexpected error occurred']);
         }

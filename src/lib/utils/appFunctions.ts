@@ -97,15 +97,15 @@ export const mapEducationToForm = (educationFromDb: any): EducationFormData => (
 export const getSelectedOption = (options: {label: string; value: string}[], value: string | undefined) =>
     options.find(opt => opt.value === value);
 
-export const getNavLinks = (username?: string | undefined, role?: 'Admin' | 'Owner' | null ) => {
+export const getNavLinks = (username?: string | undefined, role?: 'owner' | 'client' | 'admin' ) => {
     if (!username) return [{ href: '/', label: 'Home', icon: Home }];
 
-    if (!role) return [
+    if (role === 'client' || !role) return [
         { href: '/', label: 'Home', icon: Home },
-        { href: `/client/${username}/about`, label: 'About', icon: Info }
+        { href: `/client/${username}/dashboard`, label: 'Dashboard', icon: Info }
     ];
 
-    if (role === 'Owner') return [
+    if (role === 'owner') return [
         { href: '/', label: 'Home', icon: Home },
         { href: `/owner/${username}/dashboard`, label: 'Dashboard', icon: LayoutDashboard },
         { href: `/owner/${username}/education`, label: 'Education', icon: Book },

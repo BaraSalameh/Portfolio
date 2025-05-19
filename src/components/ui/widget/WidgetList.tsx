@@ -74,7 +74,7 @@ export const WidgetList: React.FC<WidgetListProps> = ({ items, list, onItemClick
                         <SortableItem key={item.id} id={item.id} child={listItem} />
                     )
                 :   (
-                        <div key={item.id}>{listItem}</div>
+                        <div key={idx}>{listItem}</div>
                     );
         });
 

@@ -10,12 +10,12 @@ import { FormInput } from "@/components/ui/FormInput";
 import { List } from "@/components/ui/List";
 import { FormCheckbox } from "@/components/ui/FormCheckbox";
 import { useEffect } from "react";
-import { EducationProps } from "../../types";
 import { ExperienceFormData, experienceSchema } from "@/lib/schemas/experienceSchema";
 import { addEditExperience } from "@/lib/apis/owner/experience/addEditExperience";
 import { experienceListQuery } from "@/lib/apis/owner/experience/experienceListQuery";
+import { ExperienceProps } from "../types";
 
-const ExperienceForm = ({id, onClose} : EducationProps) => {
+const ExperienceForm = ({id, onClose} : ExperienceProps) => {
 
     const dispatch = useAppDispatch();
     const { loading, error, lstExperiences } = useAppSelector((state) => state.experience);

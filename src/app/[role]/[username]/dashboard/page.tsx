@@ -5,7 +5,6 @@ import { WidgetCard } from "@/components/ui/widget/WidgetCard";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { Briefcase, Clock, GraduationCap, LocationEdit } from "lucide-react";
 import { useCallback, useEffect } from "react";
-import EducationForm from "../education/educationForm";
 import { sortEducation } from "@/lib/apis/owner/education/sortEducation";
 import debounce from "lodash.debounce";
 import Loading from "@/components/shared/Loading";
@@ -16,15 +15,26 @@ import { educationListQuery } from "@/lib/apis/owner/education/educationListQuer
 import { sortExperience } from "@/lib/apis/owner/experience/sortExperience";
 import { experienceListQuery } from "@/lib/apis/owner/experience/experienceListQuery";
 import { userFullInfoQuery } from "@/lib/apis/owner/user/userFullInfoQuery";
-import ExperienceForm from "../form/experienceForm";
 import { deleteExperience } from "@/lib/apis/owner/experience/deleteExperience";
+import { useParams } from "next/navigation";
+import { userByUsernameQuery } from "@/lib/apis/client/userBuUsernameQuery";
+import EducationForm from "../forms/educationForm";
+import ExperienceForm from "../forms/experienceForm";
+import ControlledWidget from "@/components/ui/widget/ControlledWidget";
 
 export default function OwnerDashboardPage() {
 
     const dispatch = useAppDispatch();
-    const { loading: userInfoLoading, user } = useAppSelector(state => state.owner);
+    const { loading: ownerInfoLoading, user: owner } = useAppSelector(state => state.owner);
+    const { loading: clientInfoLoading, user: client } = useAppSelector(state => state.client);
     const { loading: educationLoading, lstEducations } = useAppSelector(state => state.education);
     const { loading: experienceLoading, lstExperiences } = useAppSelector(state => state.experience);
+
+    const { role, username } = useParams<{role: 'owner' | 'client' | 'admin', username: string }>();
+    const currentUser = {
+        user: role === 'owner' ? owner : client,
+        isLoading: role === 'owner' ? ownerInfoLoading : clientInfoLoading,
+    };
 
     const handleEducationDelete = async (id: string) => {
         try {
@@ -65,19 +75,21 @@ export default function OwnerDashboardPage() {
     );
 
     useEffect(() => {
-        !user && dispatch(userFullInfoQuery());
-    }, [user, dispatch]);
-
+        if(role === 'owner') {
+            !currentUser.user && dispatch(userFullInfoQuery());
+        } else if(role === 'client') {
+            !currentUser.user && dispatch(userByUsernameQuery(username));
+        }
+    }, [currentUser.user, dispatch]);
+    
     return (
         <>
-        <Loading isLoading={userInfoLoading} />
-        <Profile
-            user={user as ProfileFormData}
-        />
+        <Loading isLoading={currentUser.isLoading} />
+        <Profile user={currentUser.user as ProfileFormData} />
         <Main>
             <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-3 w-full">
                 <div className="break-inside-avoid">
-                    <WidgetCard
+                    <ControlledWidget
                         isLoading={educationLoading}
                         items={lstEducations}
                         header={{title: 'Education', icon: GraduationCap}}
@@ -101,7 +113,7 @@ export default function OwnerDashboardPage() {
                     />
                 </div>
                 <div className="break-inside-avoid">
-                    <WidgetCard
+                    <ControlledWidget 
                         isLoading={experienceLoading}
                         items={lstExperiences}
                         header={{title: 'Experience', icon: Briefcase}}
@@ -117,7 +129,7 @@ export default function OwnerDashboardPage() {
                         del={{subTitle: 'Delete Experience', message: 'Are you sure?', onDelete: handleExperienceDelete }}
                         details={[
                             {leftKey: 'jobTitle', between: 'at', rightKey: 'companyName', size:'lg'},
-                           {leftKey: 'location', icon: LocationEdit},
+                            {leftKey: 'location', icon: LocationEdit},
                             {leftKey: 'startDate', between: '-', rightKey: 'endDate', icon: Clock, isTime: true},
                             {leftKey: 'description', size: 'sm'}
                         ]}

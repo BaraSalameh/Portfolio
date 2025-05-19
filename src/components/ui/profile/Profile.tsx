@@ -4,8 +4,9 @@ import Image from 'next/image';
 import React from 'react';
 import { Paragraph } from '../Paragraph';
 import { CUDModal } from '../CUDModal';
-import ProfileForm from '@/app/owner/[username]/dashboard/profileForm';
 import { ProfileFormData } from '@/lib/schemas/profileSchema';
+import { useParams } from 'next/navigation';
+import ProfileForm from '@/app/[role]/[username]/forms/profileForm';
 
 interface ProfileProps {
     user: ProfileFormData,
@@ -17,6 +18,8 @@ const Profile = ({
     className
 } : ProfileProps) => {
 
+    const { role } = useParams<{role: 'owner' | 'client' | 'admin' }>();
+    
     const profilePicture =
         user?.profilePicture ??
         (user?.gender === 0 ? '/Default-Female.svg' : '/Default-Male.svg');
@@ -44,11 +47,13 @@ const Profile = ({
                         className="object-cover"
                     />
                 </div>
+                {role === 'owner' &&
                     <div className='absolute right-0 bottom-0'>
                         <CUDModal as='update' subTitle='Update profile' >
                             <ProfileForm />
                         </CUDModal>
                     </div>
+                }
             </div>
         </div>
         <div className='px-7 sm:px-10 lg:px-15 pt-3 space-y-1'>

@@ -1,3 +1,4 @@
+import { userByUsernameQuery } from '@/lib/apis/client/userBuUsernameQuery';
 import { addEditExperience } from '@/lib/apis/owner/experience/addEditExperience';
 import { deleteExperience } from '@/lib/apis/owner/experience/deleteExperience';
 import { experienceListQuery } from '@/lib/apis/owner/experience/experienceListQuery';
@@ -24,6 +25,10 @@ const ExperienceSlice = createSlice({
     extraReducers: (builder) => {
         builder
         .addCase(userFullInfoQuery.fulfilled, (state, action) => {
+            state.lstExperiences = action.payload.lstExperiences;
+        })
+
+        .addCase(userByUsernameQuery.fulfilled, (state, action) => {
             state.lstExperiences = action.payload.lstExperiences;
         })
         

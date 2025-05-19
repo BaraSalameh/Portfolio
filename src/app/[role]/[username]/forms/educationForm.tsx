@@ -16,9 +16,9 @@ import { FormDropdown } from "@/components/ui/FormDropdown";
 import { degreeListQuery } from "@/lib/apis/owner/education/degreeListQuery";
 import { fieldOfStudyListQuery } from "@/lib/apis/owner/education/fieldOfStudyListQuery";
 import { getSelectedOption, mapEducationToForm } from "@/lib/utils/appFunctions";
-import { EducationProps } from "../../types";
 import { addEditEducation } from "@/lib/apis/owner/education/addEditEducation";
 import { educationListQuery } from "@/lib/apis/owner/education/educationListQuery";
+import { EducationProps } from "../types";
 
 export default function EducationForm({id, onClose} : EducationProps) {
 

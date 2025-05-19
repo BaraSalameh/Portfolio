@@ -7,6 +7,7 @@ import { educationListQuery } from '@/lib/apis/owner/education/educationListQuer
 import { addEditEducation } from '@/lib/apis/owner/education/addEditEducation';
 import { deleteEducation } from '@/lib/apis/owner/education/deleteEducation';
 import { EducationFormData } from '@/lib/schemas/educationSchema';
+import { userByUsernameQuery } from '@/lib/apis/client/userBuUsernameQuery';
 
 interface EducationState {
     lstEducations: EducationFormData[];
@@ -33,6 +34,10 @@ const educationSlice = createSlice({
     extraReducers: (builder) => {
         builder
         .addCase(userFullInfoQuery.fulfilled, (state, action) => {
+            state.lstEducations = action.payload.lstEducations;
+        })
+
+        .addCase(userByUsernameQuery.fulfilled, (state, action) => {
             state.lstEducations = action.payload.lstEducations;
         })
 
