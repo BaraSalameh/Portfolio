@@ -13,6 +13,7 @@ import { sortEducation } from "@/lib/apis/owner/education/sortEducation";
 import debounce from "lodash.debounce";
 import Loading from "@/components/shared/Loading";
 import Profile from "@/components/ui/profile/Profile";
+import { ProfileFormData } from "@/lib/schemas/profileSchema";
 
 export default function OwnerDashboardPage() {
 
@@ -48,7 +49,7 @@ export default function OwnerDashboardPage() {
         <>
         <Loading isLoading={userInfoLoading} />
         <Profile
-            user={user as any}
+            user={user as ProfileFormData}
         />
         <Main>
             <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-3 w-full">

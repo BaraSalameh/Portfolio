@@ -2,14 +2,23 @@ import { logout } from '@/lib/apis/account/logout';
 import { userInfoQuery } from '@/lib/apis/owner/user/userInfoQuery';
 import { userQuery } from '@/lib/apis/owner/userQuery';
 import { createSlice } from '@reduxjs/toolkit';
+import { ProfileFormData } from "@/lib/schemas/profileSchema";
+
+interface ProfileState {
+    user: ProfileFormData | null;
+    loading: boolean;
+    error: string[] | string | null;
+}
+
+const initialState: ProfileState = {
+    user: null,
+    loading: false,
+    error: null,
+};
 
 const ownerSlice = createSlice({
     name: 'owner',
-    initialState: {
-        user: null,
-        loading: false,
-        error: null as string | null,
-    },
+    initialState: initialState,
     reducers: {},
     extraReducers: (builder) => {
         builder

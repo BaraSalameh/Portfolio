@@ -5,18 +5,10 @@ import React from 'react';
 import { Paragraph } from '../Paragraph';
 import { CUDModal } from '../CUDModal';
 import ProfileForm from '@/app/owner/[username]/dashboard/profileForm';
+import { ProfileFormData } from '@/lib/schemas/profileSchema';
 
 interface ProfileProps {
-    user: {
-        firstname: string;
-        lastname: string;
-        profilePicture?: string;
-        coverPhoto?: string;
-        title?: string;
-        bio?: string
-        gender?: number;
-        birthDate?: string;
-    },
+    user: ProfileFormData,
     className?: string;
 }
 

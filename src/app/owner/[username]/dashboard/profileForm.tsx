@@ -22,8 +22,8 @@ const ProfileForm = ({ onClose } : { onClose?: () => void }) => {
     const dispatch = useAppDispatch();
     const { loading, error, user } = useAppSelector((state) => state.owner);
     const genderOptions = [
-        { label: 'Female', value: '0' },
-        { label: 'Male', value: '1' }
+        { label: 'Female', value: 0 },
+        { label: 'Male', value: 1 }
     ];
 
     const {
@@ -39,11 +39,10 @@ const ProfileForm = ({ onClose } : { onClose?: () => void }) => {
 
     useEffect(() => {
         if (user) {
-            const typedUser = user as ProfileFormData;
+            
             reset({
-                ...typedUser,
-                gender: typedUser.gender?.toString(),
-                birthDate: typedUser.birthDate?.slice(0, 10)
+                ...user,
+                birthDate: user.birthDate?.slice(0, 10)
             });
         }
     }, [user]);
@@ -61,7 +60,7 @@ const ProfileForm = ({ onClose } : { onClose?: () => void }) => {
     }: {
         name: keyof ProfileFormData;
         label: string;
-        options: { label: string; value: string }[];
+        options: { label: string; value: string | number }[];
     }) => (
         <Controller
             name={name}
@@ -69,8 +68,8 @@ const ProfileForm = ({ onClose } : { onClose?: () => void }) => {
             render={({ field }) => (
             <FormDropdown
                 label={label}
-                options={options}
-                value={getSelectedOption(options, field.value as string)}
+                options={options as any}
+                value={getSelectedOption(options as any, field.value as string)}
                 onChange={(option) => field.onChange(option?.value ?? '')}
                 onBlur={field.onBlur}
                 error={errors[name]}
