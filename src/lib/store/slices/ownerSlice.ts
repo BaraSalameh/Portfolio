@@ -1,8 +1,8 @@
 import { logout } from '@/lib/apis/account/logout';
 import { userInfoQuery } from '@/lib/apis/owner/user/userInfoQuery';
-import { userQuery } from '@/lib/apis/owner/userQuery';
 import { createSlice } from '@reduxjs/toolkit';
 import { ProfileFormData } from "@/lib/schemas/profileSchema";
+import { userFullInfoQuery } from '@/lib/apis/owner/user/userFullInfoQuery';
 
 interface ProfileState {
     user: ProfileFormData | null;
@@ -22,15 +22,15 @@ const ownerSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-        .addCase(userQuery.pending, (state) => {
+        .addCase(userFullInfoQuery.pending, (state) => {
             state.loading = true;
             state.error = null;
         })
-        .addCase(userQuery.fulfilled, (state, action) => {
+        .addCase(userFullInfoQuery.fulfilled, (state, action) => {
             state.loading = false;
             state.user = action.payload.user;
         })
-        .addCase(userQuery.rejected, (state, action) => {
+        .addCase(userFullInfoQuery.rejected, (state, action) => {
             state.loading = false;
             state.error = (action.payload as string);
         })

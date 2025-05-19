@@ -10,8 +10,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FormInput } from "@/components/ui/FormInput";
 import { List } from "@/components/ui/List";
 import { FormCheckbox } from "@/components/ui/FormCheckbox";
-import { addEditEducation } from "@/lib/apis/owner/addEditEducation";
-import { educationListQuery } from "@/lib/apis/owner/educationListQuery";
 import { useEffect, useMemo } from "react";
 import { institutionListQuery } from "@/lib/apis/owner/education/institutionListQuery";
 import { FormDropdown } from "@/components/ui/FormDropdown";
@@ -19,6 +17,8 @@ import { degreeListQuery } from "@/lib/apis/owner/education/degreeListQuery";
 import { fieldOfStudyListQuery } from "@/lib/apis/owner/education/fieldOfStudyListQuery";
 import { getSelectedOption, mapEducationToForm } from "@/lib/utils/appFunctions";
 import { EducationProps } from "../../types";
+import { addEditEducation } from "@/lib/apis/owner/education/addEditEducation";
+import { educationListQuery } from "@/lib/apis/owner/education/educationListQuery";
 
 export default function EducationForm({id, onClose} : EducationProps) {
 

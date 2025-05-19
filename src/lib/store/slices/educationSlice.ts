@@ -1,13 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { addEditEducation } from '@/lib/apis/owner/addEditEducation';
-import { educationListQuery } from '@/lib/apis/owner/educationListQuery';
-import { EducationFormData } from '@/lib/schemas/educationSchema';
-import { deleteEducation } from '@/lib/apis/owner/deleteEducation';
-import { userQuery } from '@/lib/apis/owner/userQuery';
-import { userByUsernameQuery } from '@/lib/apis/client/userBuUsernameQuery';
 import { institutionListQuery } from '@/lib/apis/owner/education/institutionListQuery';
 import { degreeListQuery } from '@/lib/apis/owner/education/degreeListQuery';
 import { fieldOfStudyListQuery } from '@/lib/apis/owner/education/fieldOfStudyListQuery';
+import { userFullInfoQuery } from '@/lib/apis/owner/user/userFullInfoQuery';
+import { educationListQuery } from '@/lib/apis/owner/education/educationListQuery';
+import { addEditEducation } from '@/lib/apis/owner/education/addEditEducation';
+import { deleteEducation } from '@/lib/apis/owner/education/deleteEducation';
+import { EducationFormData } from '@/lib/schemas/educationSchema';
 
 interface EducationState {
     lstEducations: EducationFormData[];
@@ -33,7 +32,7 @@ const educationSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-        .addCase(userQuery.fulfilled, (state, action) => {
+        .addCase(userFullInfoQuery.fulfilled, (state, action) => {
             state.lstEducations = action.payload.lstEducations;
         })
 
@@ -105,7 +104,7 @@ const educationSlice = createSlice({
             state.loading = true;
             state.error = null;
         })
-        .addCase(deleteEducation.fulfilled, (state, action) => {
+        .addCase(deleteEducation.fulfilled, (state) => {
             state.loading = false;
         })
         .addCase(deleteEducation.rejected, (state, action) => {

@@ -1,13 +1,12 @@
+import { addEditExperience } from '@/lib/apis/owner/experience/addEditExperience';
+import { deleteExperience } from '@/lib/apis/owner/experience/deleteExperience';
+import { experienceListQuery } from '@/lib/apis/owner/experience/experienceListQuery';
+import { userFullInfoQuery } from '@/lib/apis/owner/user/userFullInfoQuery';
+import { ExperienceFormData } from '@/lib/schemas/experienceSchema';
 import { createSlice } from '@reduxjs/toolkit';
-import { addEditEducation } from '@/lib/apis/owner/addEditEducation';
-import { educationListQuery } from '@/lib/apis/owner/educationListQuery';
-import { EducationFormData } from '@/lib/schemas/educationSchema';
-import { deleteEducation } from '@/lib/apis/owner/deleteEducation';
-import { userQuery } from '@/lib/apis/owner/userQuery';
-import { userByUsernameQuery } from '@/lib/apis/client/userBuUsernameQuery';
 
 interface ExperienceState {
-    lstExperiences: EducationFormData[];
+    lstExperiences: ExperienceFormData[];
     loading: boolean;
     error: string | null;
 }
@@ -24,8 +23,45 @@ const ExperienceSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-        .addCase(userQuery.fulfilled, (state, action) => {
+        .addCase(userFullInfoQuery.fulfilled, (state, action) => {
             state.lstExperiences = action.payload.lstExperiences;
+        })
+        
+        .addCase(experienceListQuery.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(experienceListQuery.fulfilled, (state, action) => {
+            state.loading = false;
+            state.lstExperiences = action.payload;
+        })
+        .addCase(experienceListQuery.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
+        })
+        
+        .addCase(addEditExperience.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(addEditExperience.fulfilled, (state) => {
+            state.loading = false;
+        })
+        .addCase(addEditExperience.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
+        })
+
+        .addCase(deleteExperience.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(deleteExperience.fulfilled, (state) => {
+            state.loading = false;
+        })
+        .addCase(deleteExperience.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
         });
     },
 });

@@ -1,13 +1,13 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { dynamicApi } from "../apiClient";
+import { dynamicApi } from "../../apiClient";
 
-export const deleteEducation = createAsyncThunk(
-    'education/deleteEducation',
+export const deleteExperience = createAsyncThunk(
+    'experience/deleteExperience',
     async (id: string, thunkAPI) => {
         try {
             const response = await dynamicApi({
                 method: 'DELETE',
-                url: '/Owner/DeleteEducation',
+                url: '/Owner/DeleteExperience',
                 data: {id},
                 withCredentials: true
             });
