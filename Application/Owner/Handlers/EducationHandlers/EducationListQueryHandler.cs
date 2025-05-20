@@ -30,7 +30,6 @@ namespace Application.Owner.Handlers.EducationHandlers
                 .Where(e => e.UserID == _currentUserService.UserID && e.IsDeleted == false)
                 .OrderBy(e => e.Order);
 
-
             response.Items = await _mapper.ProjectTo<ELQ_Educations>(existingEntity).ToListAsync(cancellationToken);
             response.RowCount = response.Items.Count();
 

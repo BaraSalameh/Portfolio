@@ -10,25 +10,38 @@ namespace Application.Client.MappingProfiles
         {
             CreateMap<User, ULQ_Response>();
 
-
             CreateMap<User, UBUQ_Response>()
-            .ForMember(dest => dest.LstEducations,
-                opt => opt.MapFrom(src => src.LstEducations.Where(e => e.IsDeleted == false)))
-            .ForMember(dest => dest.LstExperiences,
-                opt => opt.MapFrom(src => src.LstExperiences.Where(e => e.IsDeleted == false)))
-            .ForMember(dest => dest.LstSkills,
-                opt => opt.MapFrom(src => src.LstSkills.Where(s => s.IsDeleted == false)))
-            .ForMember(dest => dest.LstProjects,
-                opt => opt.MapFrom(src => src.LstProjects.Where(p => p.IsDeleted == false)))
-            .ForMember(dest => dest.LstBlogPosts,
-                opt => opt.MapFrom(src => src.LstBlogPosts.Where(p => p.IsDeleted == false)))
-            .ForMember(dest => dest.LstSocialLinks,
-                opt => opt.MapFrom(src => src.LstSocialLinks.Where(l => l.IsDeleted == false)));
+                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src))
+                .ForMember(dest => dest.LstEducations,
+                    opt => opt.MapFrom(src => src.LstEducations
+                        .Where(e => e.IsDeleted == false)
+                        .OrderBy(e => e.Order)
+                    ))
+                .ForMember(dest => dest.LstExperiences,
+                    opt => opt.MapFrom(src => src.LstExperiences
+                        .Where(e => e.IsDeleted == false)
+                        .OrderBy(e => e.Order)
+                    ))
+                .ForMember(dest => dest.LstSkills,
+                    opt => opt.MapFrom(src => src.LstSkills.Where(s => s.IsDeleted == false)))
+                .ForMember(dest => dest.LstProjects,
+                    opt => opt.MapFrom(src => src.LstProjects.Where(p => p.IsDeleted == false)))
+                .ForMember(dest => dest.LstBlogPosts,
+                    opt => opt.MapFrom(src => src.LstBlogPosts.Where(p => p.IsDeleted == false)))
+                .ForMember(dest => dest.LstSocialLinks,
+                    opt => opt.MapFrom(src => src.LstSocialLinks.Where(l => l.IsDeleted == false)));
+            CreateMap<User, UBUQ_User>();
             CreateMap<Project, UBUQ_Project>();
             CreateMap<ProjectTechnology, UBUQ_ProjectTechnology>();
             CreateMap<LKP_Technology, UBUQ_LKP_Technology>();
             CreateMap<Skill, UBUQ_Skill>();
-            CreateMap<Education, UBUQ_Education>();
+            CreateMap<Education, UBUQ_Education>()
+                .ForMember(dest => dest.Institution, opt => opt.MapFrom(src => src.LKP_Institution))
+                .ForMember(dest => dest.Degree, opt => opt.MapFrom(src => src.LKP_Degree))
+                .ForMember(dest => dest.FieldOfStudy, opt => opt.MapFrom(src => src.LKP_FieldOfStudy));
+            CreateMap<LKP_Institution, UBUQ_LKP_Institution>();
+            CreateMap<LKP_Degree, UBUQ_LKP_Degree>();
+            CreateMap<LKP_FieldOfStudy, UBUQ_LKP_FieldOfStudy>();
             CreateMap<Experience, UBUQ_Experience>();
             CreateMap<BlogPost, UBUQ_BlogPost>();
             CreateMap<SocialLink, UBUQ_SocialLink>();

@@ -10,16 +10,7 @@ namespace Application.Client.Queries
 
     public class UBUQ_Response
     {
-        public string? Firstname { get; set; }
-        public string? Lastname { get; set; }
-        public string? Title { get; set; }
-        public string? Email { get; set; }
-        public string? Bio { get; set; }
-        public string? Phone { get; set; }
-        public string? ProfilePicture { get; set; }
-        public DateOnly? BirthDate { get; set; }
-        public int? Gender { get; set; }
-
+        public UBUQ_User User { get; set; }
         public List<UBUQ_Project> LstProjects { get; set; }
         public List<UBUQ_Skill> LstSkills { get; set; }
         public List<UBUQ_Education> LstEducations { get; set; }
@@ -27,6 +18,20 @@ namespace Application.Client.Queries
         public List<UBUQ_BlogPost> LstBlogPosts { get; set; }
         public List<UBUQ_SocialLink> LstSocialLinks { get; set; }
         public List<UBUQ_UserLanguage> LstUserLanguages { get; set; }
+    }
+
+    public class UBUQ_User
+    {
+        public string? Firstname { get; set; }
+        public string? Lastname { get; set; }
+        public string? Title { get; set; }
+        public string? Email { get; set; }
+        public string? Bio { get; set; }
+        public string? Phone { get; set; }
+        public string? ProfilePicture { get; set; }
+        public string? CoverPhoto { get; set; }
+        public DateOnly? BirthDate { get; set; }
+        public int? Gender { get; set; }
     }
 
     public class UBUQ_Project
@@ -61,12 +66,29 @@ namespace Application.Client.Queries
 
     public class UBUQ_Education
     {
-        public string Institution { get; set; }
-        public string Degree { get; set; }
-        public string FieldOfStudy { get; set; }
+        public UBUQ_LKP_Institution Institution { get; set; }
+        public UBUQ_LKP_Degree Degree { get; set; }
+        public UBUQ_LKP_FieldOfStudy FieldOfStudy { get; set; }
         public DateOnly StartDate { get; set; }
         public DateOnly? EndDate { get; set; }
         public string Description { get; set; }
+    }
+
+    public class UBUQ_LKP_FieldOfStudy
+    {
+        public string Name { get; set; }
+    }
+
+    public class UBUQ_LKP_Degree
+    {
+        public string Name { get; set; }
+        public string? Abbreviation { get; set; }
+    }
+
+    public class UBUQ_LKP_Institution
+    {
+        public string Name { get; set; }
+        public string? Logo { get; set; }
     }
 
     public class UBUQ_Experience

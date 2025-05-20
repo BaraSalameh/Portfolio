@@ -13,9 +13,15 @@ namespace Application.Owner.MappingProfiles
             CreateMap<User, UFIQ_Response>()
                 .ForMember(dest => dest.User, opt => opt.MapFrom(src => src))
                 .ForMember(dest => dest.LstEducations,
-                    opt => opt.MapFrom(src => src.LstEducations.Where(e => e.IsDeleted == false).OrderBy(e => e.Order)))
+                    opt => opt.MapFrom(src => src.LstEducations
+                        .Where(e => e.IsDeleted == false)
+                        .OrderBy(e => e.Order)
+                    ))
                 .ForMember(dest => dest.LstExperiences,
-                    opt => opt.MapFrom(src => src.LstExperiences.Where(e => e.IsDeleted == false)))
+                    opt => opt.MapFrom(src => src.LstExperiences
+                        .Where(e => e.IsDeleted == false)
+                        .OrderBy(e => e.Order)
+                    ))
                 .ForMember(dest => dest.LstSkills,
                     opt => opt.MapFrom(src => src.LstSkills.Where(s => s.IsDeleted == false)))
                 .ForMember(dest => dest.LstProjects,
