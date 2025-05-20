@@ -2,24 +2,14 @@
 
 import Image from "next/image";
 import { Anchor } from "@/components/ui/Anchor";
-import { Container } from "@/components/shared/Container";
-import { Header } from "@/components/shared/Header";
 import { Main } from "@/components/shared/Main";
 import { SubFooter } from "@/components/shared/SubFooter";
 import { Paragraph } from "@/components/ui/Paragraph";
+import React from "react";
 
 export default function ConfirmEmailPage() {
     return (
-        <Container>
-            <Header>
-                <Image
-                    src='/portfolio-logo.svg'
-                    alt="portfolio logo"
-                    width={180}
-                    height={38}
-                    priority
-                />
-            </Header>
+        <React.Fragment>
             <Main>
                 <div className="bg-green-950 rounded-2xl shadow-xl p-6 my-10">
                     <Paragraph size="md">
@@ -34,6 +24,6 @@ export default function ConfirmEmailPage() {
                     Go home
                 </Anchor>
             </SubFooter>
-        </Container>
+        </React.Fragment>
     );
 }

@@ -49,8 +49,8 @@ export default function Home() {
                     <Image
                         src='/portfolio-logo.svg'
                         alt="portfolio logo"
-                        width={180}
-                        height={38}
+                        width={300}
+                        height={40}
                         priority
                     />
                 </Header>

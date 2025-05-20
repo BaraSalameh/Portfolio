@@ -14,6 +14,7 @@ import { validateToken } from "@/lib/apis/account/validateToken";
 import { cn } from "@/components/utils/cn";
 import { widgetCard } from "@/styles/widget";
 import Loading from "@/components/shared/Loading";
+import React from "react";
 
 interface LoginProps {
     className?: string;
@@ -43,17 +44,8 @@ const LoginPage: React.FC<LoginProps> = ({ className }) => {
     }, [isConfirmed]);
 
     return (
-        <Container>
+        <React.Fragment>
             <Loading isLoading={loading} />
-            <Header >
-                <Image
-                    src='/portfolio-logo.svg'
-                    alt="portfolio logo"
-                    width={180}
-                    height={38}
-                    priority
-                />
-            </Header>
             <Main>
                 <section className={cn(widgetCard(), className)}>
                     <LoginForm />
@@ -69,7 +61,7 @@ const LoginPage: React.FC<LoginProps> = ({ className }) => {
                     Don't have an account? Register!
                 </Anchor>
             </SubFooter>
-        </Container>
+        </React.Fragment>
     );
 }
 

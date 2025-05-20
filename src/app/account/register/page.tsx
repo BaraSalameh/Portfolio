@@ -2,8 +2,6 @@
 
 import Image from "next/image";
 import { Anchor } from "@/components/ui/Anchor";
-import { Container } from "@/components/shared/Container";
-import { Header } from "@/components/shared/Header";
 import { Main } from "@/components/shared/Main";
 import { SubFooter } from "@/components/shared/SubFooter";
 import RegisterForm from "./RegisterForm";
@@ -13,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/components/utils/cn";
 import { widgetCard } from "@/styles/widget";
 import Loading from "@/components/shared/Loading";
+import React from "react";
 
 interface RegisterProps {
     className?: string;
@@ -28,19 +27,10 @@ const RegisterPage: React.FC<RegisterProps> = ({ className }) => {
     }, [username])
 
     return (
-        <Container>
+        <React.Fragment>
             <Loading isLoading={loading} />
-            <Header>
-                <Image
-                    src='/portfolio-logo.svg'
-                    alt="portfolio logo"
-                    width={180}
-                    height={38}
-                    priority
-                />
-            </Header>
             <Main paddingY='none'>
-                <section className={cn(widgetCard(), className)}>
+                <section className={cn(widgetCard({ scroll: true }), className)}>
                     <RegisterForm />
                 </section>
             </Main>
@@ -54,7 +44,7 @@ const RegisterPage: React.FC<RegisterProps> = ({ className }) => {
                     I Do have an account! Login.
                 </Anchor>
             </SubFooter>
-        </Container>
+        </React.Fragment>
     );
 }
 
