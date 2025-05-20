@@ -1,7 +1,6 @@
 'use client';
 
 import { Main } from "@/components/shared/Main";
-import { WidgetCard } from "@/components/ui/widget/WidgetCard";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { Briefcase, Clock, GraduationCap, LocationEdit } from "lucide-react";
 import { useCallback, useEffect } from "react";
@@ -21,6 +20,8 @@ import { userByUsernameQuery } from "@/lib/apis/client/userBuUsernameQuery";
 import EducationForm from "../forms/educationForm";
 import ExperienceForm from "../forms/experienceForm";
 import ControlledWidget from "@/components/ui/widget/ControlledWidget";
+import StaticBackground from "@/components/ui/StaticBackground";
+import WithSkeleton from "@/components/shared/WithSkeleton";
 
 export default function OwnerDashboardPage() {
 
@@ -84,60 +85,62 @@ export default function OwnerDashboardPage() {
     
     return (
         <>
-        <Loading isLoading={currentUser.isLoading} />
+        <Loading isLoading={!currentUser.user || currentUser.isLoading} />
         <Profile user={currentUser.user as ProfileFormData} />
-        <Main>
-            <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-3 w-full">
-                <div className="break-inside-avoid">
-                    <ControlledWidget
-                        isLoading={educationLoading}
-                        items={lstEducations}
-                        header={{title: 'Education', icon: GraduationCap}}
-                        bar={{groupBy: {degree: 'abbreviation'}}}
-                        pie={{title:'Degrees Overview', groupBy: {degree: 'abbreviation'}}}
-                        list={[
-                            {leftKey: {degree: 'abbreviation'}, between: 'at', rightKey: {institution: 'name'}, size:'lg'},
-                            {leftKey: {fieldOfStudy: 'name'}, icon: GraduationCap},
-                            {leftKey: 'startDate', between: '-', rightKey: 'endDate', icon: Clock, isTime: true},
-                        ]}
-                        create={{subTitle: 'Add Education', form: <EducationForm />}}
-                        update={{subTitle: 'Update Education', form: <EducationForm />}}
-                        del={{subTitle: 'Delete education', message: 'Are you sure?', onDelete: handleEducationDelete }}
-                        details={[
-                            {leftKey: {degree: 'name'}, between: 'at', rightKey: {institution: 'name'}, size:'lg'},
-                            {leftKey: {fieldOfStudy: 'name'}, icon: GraduationCap},
-                            {leftKey: 'startDate', between: '-', rightKey: 'endDate', icon: Clock, isTime: true},
-                            {leftKey: 'description', size: 'sm'}
-                        ]}
-                        onSort={debouncedSortEducation}
-                    />
+        <WithSkeleton isLoading={!currentUser.user || currentUser.isLoading} skeleton={<StaticBackground />}>
+            <Main>
+                <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-3 w-full">
+                    <div className="break-inside-avoid">
+                        <ControlledWidget
+                            isLoading={educationLoading}
+                            items={lstEducations}
+                            header={{title: 'Education', icon: GraduationCap}}
+                            bar={{groupBy: {degree: 'abbreviation'}}}
+                            pie={{title:'Degrees Overview', groupBy: {degree: 'abbreviation'}}}
+                            list={[
+                                {leftKey: {degree: 'abbreviation'}, between: 'at', rightKey: {institution: 'name'}, size:'lg'},
+                                {leftKey: {fieldOfStudy: 'name'}, icon: GraduationCap},
+                                {leftKey: 'startDate', between: '-', rightKey: 'endDate', icon: Clock, isTime: true},
+                            ]}
+                            create={{subTitle: 'Add Education', form: <EducationForm />}}
+                            update={{subTitle: 'Update Education', form: <EducationForm />}}
+                            del={{subTitle: 'Delete education', message: 'Are you sure?', onDelete: handleEducationDelete }}
+                            details={[
+                                {leftKey: {degree: 'name'}, between: 'at', rightKey: {institution: 'name'}, size:'lg'},
+                                {leftKey: {fieldOfStudy: 'name'}, icon: GraduationCap},
+                                {leftKey: 'startDate', between: '-', rightKey: 'endDate', icon: Clock, isTime: true},
+                                {leftKey: 'description', size: 'sm'}
+                            ]}
+                            onSort={debouncedSortEducation}
+                        />
+                    </div>
+                    <div className="break-inside-avoid">
+                        <ControlledWidget 
+                            isLoading={experienceLoading}
+                            items={lstExperiences}
+                            header={{title: 'Experience', icon: Briefcase}}
+                            bar={{groupBy: 'jobTitle'}}
+                            pie={{title:'Experience Overview', groupBy: 'jobTitle'}}
+                            list={[
+                                {leftKey: 'jobTitle', between: 'at', rightKey: 'companyName', size:'lg'},
+                                {leftKey: 'location', icon: LocationEdit},
+                                {leftKey: 'startDate', between: '-', rightKey: 'endDate', icon: Clock, isTime: true},
+                            ]}
+                            create={{subTitle: 'Add Experience', form: <ExperienceForm />}}
+                            update={{subTitle: 'Update Experience', form: <ExperienceForm />}}
+                            del={{subTitle: 'Delete Experience', message: 'Are you sure?', onDelete: handleExperienceDelete }}
+                            details={[
+                                {leftKey: 'jobTitle', between: 'at', rightKey: 'companyName', size:'lg'},
+                                {leftKey: 'location', icon: LocationEdit},
+                                {leftKey: 'startDate', between: '-', rightKey: 'endDate', icon: Clock, isTime: true},
+                                {leftKey: 'description', size: 'sm'}
+                            ]}
+                            onSort={debouncedSortExperience}
+                        />
+                    </div>
                 </div>
-                <div className="break-inside-avoid">
-                    <ControlledWidget 
-                        isLoading={experienceLoading}
-                        items={lstExperiences}
-                        header={{title: 'Experience', icon: Briefcase}}
-                        bar={{groupBy: 'jobTitle'}}
-                        pie={{title:'Experience Overview', groupBy: 'jobTitle'}}
-                        list={[
-                            {leftKey: 'jobTitle', between: 'at', rightKey: 'companyName', size:'lg'},
-                            {leftKey: 'location', icon: LocationEdit},
-                            {leftKey: 'startDate', between: '-', rightKey: 'endDate', icon: Clock, isTime: true},
-                        ]}
-                        create={{subTitle: 'Add Experience', form: <ExperienceForm />}}
-                        update={{subTitle: 'Update Experience', form: <ExperienceForm />}}
-                        del={{subTitle: 'Delete Experience', message: 'Are you sure?', onDelete: handleExperienceDelete }}
-                        details={[
-                            {leftKey: 'jobTitle', between: 'at', rightKey: 'companyName', size:'lg'},
-                            {leftKey: 'location', icon: LocationEdit},
-                            {leftKey: 'startDate', between: '-', rightKey: 'endDate', icon: Clock, isTime: true},
-                            {leftKey: 'description', size: 'sm'}
-                        ]}
-                        onSort={debouncedSortExperience}
-                    />
-                </div>
-            </div>
-        </Main>
+            </Main>
+        </WithSkeleton>
         </>
     );
 }

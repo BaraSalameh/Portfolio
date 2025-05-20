@@ -7,6 +7,7 @@ import { CUDModal } from '../CUDModal';
 import { ProfileFormData } from '@/lib/schemas/profileSchema';
 import { useParams } from 'next/navigation';
 import ProfileForm from '@/app/[role]/[username]/forms/profileForm';
+import StaticBackground from '../StaticBackground';
 
 interface ProfileProps {
     user: ProfileFormData,
@@ -45,6 +46,7 @@ const Profile = ({
                         alt="Profile picture"
                         fill
                         className="object-cover"
+                        priority
                     />
                 </div>
                 {role === 'owner' &&
@@ -76,13 +78,13 @@ const Profile = ({
             {(user?.bio) && 
                 <hr className='pb-3' />
             }
-            <Paragraph  className="italic">
+            
                 {user?.bio?.split('\n').map((line, index) => (
-                    <span key={index}>
+                    <Paragraph key={index} className="italic">
                         {line}
-                    </span>
+                    </Paragraph>
                 ))}
-            </Paragraph>
+            
             
         </div>
     </Header>
