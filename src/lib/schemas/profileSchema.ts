@@ -3,6 +3,10 @@ import { z } from 'zod';
 const phoneRegex = /^\+?[1-9]\d{1,14}$/;
 
 export const profileSchema = z.object({
+    username: z
+        .string()
+        .nullable(),
+
     firstname: z
         .string()
         .min(2, 'Firstname is required'),

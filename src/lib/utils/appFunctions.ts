@@ -102,7 +102,7 @@ export const getNavLinks = (username?: string | undefined, role?: 'owner' | 'cli
 
     if (role === 'client' || !role) return [
         { href: '/', label: 'Home', icon: Home },
-        { href: `/client/${username}/dashboard`, label: 'Dashboard', icon: Info }
+        { href: `/client/${username}/dashboard`, label: 'Dashboard', icon: LayoutDashboard }
     ];
 
     if (role === 'owner') return [
