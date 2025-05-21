@@ -2,7 +2,7 @@
 
 import { Main } from "@/components/shared/Main";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import { Briefcase, Clock, GraduationCap, LocationEdit } from "lucide-react";
+import { Briefcase, Clock, Folder, GraduationCap, LocationEdit } from "lucide-react";
 import { useCallback, useEffect } from "react";
 import { sortEducation } from "@/lib/apis/owner/education/sortEducation";
 import debounce from "lodash.debounce";
@@ -22,12 +22,16 @@ import ExperienceForm from "../forms/experienceForm";
 import ControlledWidget from "@/components/ui/widget/ControlledWidget";
 import StaticBackground from "@/components/ui/StaticBackground";
 import WithSkeleton from "@/components/shared/WithSkeleton";
+import { sortProject } from "@/lib/apis/owner/projectTechnology/sortProject";
+import { projectTechnologyListQuery } from "@/lib/apis/owner/projectTechnology/projectTechnologyListQuery";
+import ProjectTechnologyForm from "../forms/projectTechnologyForm";
 
 export default function OwnerDashboardPage() {
 
     const dispatch = useAppDispatch();
     const { loading: ownerInfoLoading, user: owner } = useAppSelector(state => state.owner);
     const { loading: clientInfoLoading, user: client } = useAppSelector(state => state.client);
+    const { loading: projectTechnologyLoading, lstProjectTechnologies } = useAppSelector(state => state.projectTechnology);
     const { loading: educationLoading, lstEducations } = useAppSelector(state => state.education);
     const { loading: experienceLoading, lstExperiences } = useAppSelector(state => state.experience);
 
@@ -54,6 +58,16 @@ export default function OwnerDashboardPage() {
             console.error('Failed to delete:', err);
         }
     };
+
+    const debouncedSortProject = useCallback(
+        debounce( async (lstIds: string[]) => {
+            if (lstIds.length > 0) {
+                await dispatch(sortProject(lstIds));
+                await dispatch(projectTechnologyListQuery());
+            }
+        
+        }, 1000), []
+    );
 
     const debouncedSortEducation = useCallback(
         debounce( async (lstIds: string[]) => {
@@ -90,6 +104,30 @@ export default function OwnerDashboardPage() {
         <WithSkeleton isLoading={!currentUser.user || currentUser.isLoading} skeleton={<StaticBackground />}>
             <Main>
                 <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-3 w-full">
+                    <div className="break-inside-avoid">
+                        <ControlledWidget
+                            isLoading={projectTechnologyLoading}
+                            items={lstProjectTechnologies}
+                            header={{title: 'Project', icon: Folder}}
+                            bar={{groupBy: 'title'}}
+                            pie={{title:'Project Overview', groupBy: 'title'}}
+                            list={[
+                                {leftKey: 'title', size:'lg'},
+                                {leftKey: 'isFeatured'}
+                            ]}
+                            create={{subTitle: 'Add Education', form: <ProjectTechnologyForm />}}
+                            update={{subTitle: 'Update Education', form: <ProjectTechnologyForm />}}
+                            del={{subTitle: 'Delete education', message: 'Are you sure?', onDelete: handleEducationDelete }}
+                            details={[
+                                {leftKey: 'title', size:'lg'},
+                                {leftKey: 'description'},
+                                {leftKey: 'liveLink', icon: GraduationCap},
+                                {leftKey: 'sourceCode', icon: GraduationCap},
+                                {leftKey: 'description', size: 'sm'}
+                            ]}
+                            onSort={debouncedSortProject}
+                        />
+                    </div>
                     <div className="break-inside-avoid">
                         <ControlledWidget
                             isLoading={educationLoading}
