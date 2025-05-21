@@ -9,6 +9,7 @@
         public string SourceCode { get; set; }
         public string ImageUrl { get; set; }
         public bool IsFeatured { get; set; }
+        public int Order { get; set; }
         public Guid UserID { get; set; }
         public User User { get; set; }
         public List<ProjectTechnology> LstProjectTechnologies { get; set; }

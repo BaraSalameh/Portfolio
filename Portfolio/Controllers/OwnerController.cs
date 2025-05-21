@@ -11,6 +11,7 @@ using Application.Owner.Commands.UserLanguageCommands;
 using Application.Owner.Queries.EducationQueries;
 using Application.Owner.Queries.ExperienceQueries;
 using Application.Owner.Queries.LKP_LanguageQuieries;
+using Application.Owner.Queries.ProjectTechnologyQueries;
 using Application.Owner.Queries.UserQueries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -116,12 +117,22 @@ namespace Portfolio.Controllers
         public async Task<IActionResult> EditDeleteUserLanguage(EditDeleteUserLanguageCommand request)
             => Result.HandleResult(await Mediator.Send(request));
 
+        [HttpGet]
+        public async Task<IActionResult> ProjectTechnologyList([FromQuery] ProjectTechnologyListQuery request)
+            => Result.HandleResult(await Mediator.Send(request));
+        [HttpGet]
+        public async Task<IActionResult> LKP_TechnologyList([FromQuery] LKP_TechnologyListQuery request)
+            => Result.HandleResult(await Mediator.Send(request));
+
         [HttpPost]
         public async Task<IActionResult> AddEditDeleteProjectTechnology(AddEditDeleteProjectTechnologyCommand request)
             => Result.HandleResult(await Mediator.Send(request));
 
         [HttpDelete]
         public async Task<IActionResult> DeleteProject(DeleteProjectCommand request)
+            => Result.HandleResult(await Mediator.Send(request));
+        [HttpPost]
+        public async Task<IActionResult> SortProject(SortProjectCommand request)
             => Result.HandleResult(await Mediator.Send(request));
     }
 }
