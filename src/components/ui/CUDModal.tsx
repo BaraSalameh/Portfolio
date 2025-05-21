@@ -1,6 +1,6 @@
 'use client';
 
-import { Edit, LucideTrash2, X } from 'lucide-react';
+import { Edit, LucideIcon, LucideTrash2, X } from 'lucide-react';
 import React, { InputHTMLAttributes, useState } from 'react';
 import { Paragraph } from './Paragraph';
 import { Button } from './Button';
@@ -21,6 +21,7 @@ interface CUDProps extends InputHTMLAttributes<HTMLInputElement> {
     title?: string;
     subTitle?: string;
     children?: React.ReactNode;
+    icon?: LucideIcon;
     className?: string;
 }
 
@@ -33,10 +34,21 @@ export const CUDModal = ({
     title,
     subTitle = title,
     children,
+    icon,
     className
 }: CUDProps) => {
 
     const [openModal, setOpenModal] = useState(false);
+    const currentIcon =
+        icon ? (
+            <ResponsiveIcon icon={icon} />
+        ) : as === 'create' ? (
+            <ResponsiveIcon />
+        ) : as === 'update' ? (
+            <ResponsiveIcon icon={Edit} />
+        ) : (
+            <ResponsiveIcon icon={LucideTrash2} />
+        );
     
     return (
         <>
@@ -44,12 +56,7 @@ export const CUDModal = ({
             className="flex gap-2 cursor-pointer"
             onClick={() => setOpenModal(true)}
         >
-            {as === 'create'
-            ?   <ResponsiveIcon />
-            :   as === 'update'
-                ?   <ResponsiveIcon icon={Edit} />
-                :   <ResponsiveIcon icon={LucideTrash2} />
-            }
+            {currentIcon}
             {title && <Paragraph size='md'>{title}</Paragraph>}
         </div>
   

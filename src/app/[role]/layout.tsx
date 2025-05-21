@@ -15,9 +15,7 @@ export default function OwnerLayout({children}: Readonly<{children: React.ReactN
     useEffect(() => {
         if(role === 'owner' && owner?.username && owner.username !== username){
             router.replace(`/owner/${owner.username}/dashboard`);
-            console.log('Changed!');
         }
-        console.log('Visited!');
     }, [owner?.username]);
 
     return (

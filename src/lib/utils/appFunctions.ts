@@ -121,3 +121,17 @@ export const getNavLinks = (username?: string | undefined, role?: 'owner' | 'cli
 
     return [{ href: '/', label: 'Home', icon: Home }];
 }
+
+export const getClientLink = (): string | null => {
+    if (typeof window === 'undefined') return null;
+
+    const { origin, pathname } = window.location;
+    const parts = pathname.split('/');
+
+    if (parts.length > 1) {
+        parts[1] = 'client';
+    }
+
+    const modifiedPath = parts.join('/');
+    return `${origin}${modifiedPath}`;
+};

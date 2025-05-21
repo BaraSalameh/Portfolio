@@ -10,6 +10,7 @@ interface ButtonProps extends ButtonVariantProps {
     className?: string;
     type?: 'button' | 'submit' | 'reset';
     onClick?: () => void;
+    onClose?: () => void;
     url?: string;
     disabled?: boolean;
 }
@@ -22,17 +23,23 @@ export const Button: React.FC<ButtonProps> = ({
     className,
     type = 'button',
     onClick,
+    onClose,
     url,
     disabled
 }) => {
     const router = useRouter();
+
+    const handleClick = () => {
+        onClick?.();
+        onClose?.();
+    };
     
     const buttonContent = (
 
         <button
             type={type}
             className={cn(button({ intent, size, rounded }), className)}
-            onClick={onClick}
+            onClick={handleClick}
             disabled={disabled}
         >
             {children}

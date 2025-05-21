@@ -7,7 +7,10 @@ import { CUDModal } from '../CUDModal';
 import { ProfileFormData } from '@/lib/schemas/profileSchema';
 import { useParams } from 'next/navigation';
 import ProfileForm from '@/app/[role]/[username]/forms/profileForm';
-import StaticBackground from '../StaticBackground';
+import { Button } from '../Button';
+import { Copy } from 'lucide-react';
+import ResponsiveIcon from '../ResponsiveIcon';
+import { getClientLink } from '@/lib/utils/appFunctions';
 
 interface ProfileProps {
     user: ProfileFormData,
@@ -20,7 +23,7 @@ const Profile = ({
 } : ProfileProps) => {
 
     const { role } = useParams<{role: 'owner' | 'client' | 'admin' }>();
-    
+    const clientLink = getClientLink() as string;
     const profilePicture =
         user?.profilePicture ??
         (user?.gender === 0 ? '/Default-Female.svg' : '/Default-Male.svg');
@@ -56,8 +59,20 @@ const Profile = ({
                         </CUDModal>
                     </div>
                 }
+                <div className='absolute bottom-0 left-0'>
+                    <CUDModal subTitle='Copy link' icon={Copy}>
+                        <Button intent='standard' rounded='full' onClick={() => navigator.clipboard.writeText(clientLink)}>
+                            <Paragraph>
+                                <ResponsiveIcon icon={Copy} />
+                                {clientLink}
+                            </Paragraph>
+                        </Button>
+                    </CUDModal>
+                </div>
+            
             </div>
         </div>
+        
         <div className='px-7 sm:px-10 lg:px-15 pt-3 space-y-1'>
             <Paragraph position='start' size='lg'>
                 {user?.firstname} {user?.lastname}
