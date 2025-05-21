@@ -4,6 +4,7 @@ import {
     Menu, Home, Info, LayoutDashboard, Book, Briefcase, Folder, BadgePercent,
     Languages, PenSquare, MessageSquare, Settings, LogOut
 } from 'lucide-react';
+import { string } from 'zod';
 
 export function transformPayload<T extends object>(obj: T): T {
     return Object.fromEntries(
@@ -13,38 +14,57 @@ export function transformPayload<T extends object>(obj: T): T {
     ) as T;
 };
 
+const normalizeFieldValue = (value: any): string[] => {
+    if (Array.isArray(value)) return value.filter(Boolean);
+    if (value) return [value];
+    return [];
+};
+
+
 export const generatePieData = <T extends Record<string, any>>(
     list: T[],
     key: string | Record<string, string | string[]>
 ) => {
-    const counts = list.reduce((acc: Record<string, number>, item) => {
-        const field = extractValue(item, key) as string;
-        if (!field) return acc;
+    const counts = new Map<string, number>();
 
-        acc[field] = (acc[field] || 0) + 1;
-        return acc;
-    }, {});
+    list.forEach(item => {
+        const names = normalizeFieldValue(extractValue(item, key));
 
-    return Object.entries(counts).map(([name, value]) => ({ name, value }));
+        names.forEach(name => {
+            counts.set(name, (counts.get(name) ?? 0) + 1);
+        });
+    });
+
+    return Array.from(counts.entries()).map(([name, value]) => ({ name, value }));
 };
+
+
 
 export const generateDurationData = <T extends Record<string, any>>(
     list: T[],
-    nameKey:  string | Record<string, string | string[]>,
+    nameKey: string | Record<string, string | string[]>,
     startDateKey: keyof T = 'startDate',
     endDateKey: keyof T = 'endDate',
     unit: dayjs.ManipulateType = 'month'
 ): { name: string; duration: number }[] => {
-    return list.map(item => {
-        const start = dayjs(item[startDateKey]);
+    const durations = new Map<string, number>();
+
+    list.forEach(item => {
+        const start = item[startDateKey] ? dayjs(item[startDateKey]) : null;
         const end = item[endDateKey] ? dayjs(item[endDateKey]) : dayjs();
-        const name = extractValue(item, nameKey);
-        return {
-            name: name ?? 'Unknown',
-            duration: end.diff(start, unit),
-        };
+        const duration = start ? end.diff(start, unit) : null;
+
+        const names = normalizeFieldValue(extractValue(item, nameKey)) || ['Unknown'];
+
+        names.forEach(name => {
+            const total = durations.get(name) ?? 0;
+            durations.set(name, total + (duration !== null ? duration : 1));
+        });
     });
+
+    return Array.from(durations.entries()).map(([name, duration]) => ({ name, duration }));
 };
+
 
 export const generateColorMap = (
     data: { name: string }[],
@@ -61,29 +81,35 @@ export const extractValue = (
     key: string | Record<string, string | string[]>
 ): any => {
     if (typeof key === 'string') {
-        return item[key];
+        return item?.[key];
     }
 
-    if (typeof key === 'object') {
-        const [parentKey, nestedKeys] = Object.entries(key)[0];
-        const parent = item[parentKey];
+    const [parentKey, nestedKeys] = Object.entries(key)[0];
+    const parent = item?.[parentKey];
 
-        if (!parent) return undefined;
+    if (!parent) return undefined;
 
-        if (typeof nestedKeys === 'string') {
-            return parent[nestedKeys];
-        }
+    // Case: parent is an array and nestedKeys is a string
+    if (Array.isArray(parent) && typeof nestedKeys === 'string') {
+        return parent.map(child => child?.[nestedKeys]).filter(Boolean);
+    }
 
-        if (Array.isArray(nestedKeys)) {
-            return nestedKeys
-                .map(k => parent?.[k])
-                .filter(Boolean) // remove undefined/null
-                .join(' '); // or customize this!
-        }
+    // Case: parent is an object and nestedKeys is a string
+    if (typeof nestedKeys === 'string') {
+        return parent?.[nestedKeys];
+    }
+
+    // Case: parent is an object and nestedKeys is an array
+    if (Array.isArray(nestedKeys)) {
+        return nestedKeys
+            .map(k => parent?.[k])
+            .filter(Boolean)
+            .join(' | ');
     }
 
     return undefined;
 };
+
 
 export const mapEducationToForm = (educationFromDb: any): EducationFormData => ({
     ...educationFromDb,

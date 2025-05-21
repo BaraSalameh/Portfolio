@@ -51,7 +51,7 @@ export interface WidgetChartsProps {
 
 export interface ListItemConfig {
     icon?: any;
-    leftKey: string | Record<string, string | string[]>;
+    leftKey?: string | Record<string, string | string[]>;
     between?: string;
     rightKey?: string | Record<string, string | string[]>;
     size?: 'lg' | 'md' | 'sm' | null;

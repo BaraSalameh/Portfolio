@@ -44,7 +44,7 @@ export const WidgetList: React.FC<WidgetListProps> = ({ items, list, onItemClick
                     onClick={() => onItemClick?.(item)}
                 >
                     {list.map((cfg, index) => {
-                        const leftRaw = extractValue(item, cfg.leftKey);
+                        const leftRaw = cfg.leftKey ? extractValue(item, cfg.leftKey) : undefined;
                         const rightRaw = cfg.rightKey ? extractValue(item, cfg.rightKey) : undefined;
 
                         const leftVal = cfg.isTime
@@ -62,7 +62,11 @@ export const WidgetList: React.FC<WidgetListProps> = ({ items, list, onItemClick
                         return (
                             <Paragraph key={index} size={cfg.size}>
                                 {cfg.icon && <ResponsiveIcon icon={cfg.icon} />}
-                                {leftVal} {cfg.between ?? ''} {rightVal}
+                                {Array.isArray(leftVal)
+                                    ? leftVal.map((val, idx) => `${idx !== leftVal.length - 1
+                                        ? val + ' | '
+                                        : val}`) 
+                                    : leftVal} {cfg.between ?? ''} {rightVal}
                             </Paragraph>
                         );
                     })}

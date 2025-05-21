@@ -8,7 +8,7 @@ import { ProfileFormData } from '@/lib/schemas/profileSchema';
 import { useParams } from 'next/navigation';
 import ProfileForm from '@/app/[role]/[username]/forms/profileForm';
 import { Button } from '../Button';
-import { Copy } from 'lucide-react';
+import { Copy, Link } from 'lucide-react';
 import ResponsiveIcon from '../ResponsiveIcon';
 import { getClientLink } from '@/lib/utils/appFunctions';
 
@@ -60,7 +60,7 @@ const Profile = ({
                     </div>
                 }
                 <div className='absolute bottom-0 left-0'>
-                    <CUDModal subTitle='Copy link' icon={Copy}>
+                    <CUDModal subTitle='Copy link' icon={Link}>
                         <Button intent='standard' rounded='full' onClick={() => navigator.clipboard.writeText(clientLink)}>
                             <Paragraph>
                                 <ResponsiveIcon icon={Copy} />

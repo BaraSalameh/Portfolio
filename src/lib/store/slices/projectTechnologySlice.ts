@@ -1,16 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { institutionListQuery } from '@/lib/apis/owner/education/institutionListQuery';
-import { degreeListQuery } from '@/lib/apis/owner/education/degreeListQuery';
-import { fieldOfStudyListQuery } from '@/lib/apis/owner/education/fieldOfStudyListQuery';
 import { userFullInfoQuery } from '@/lib/apis/owner/user/userFullInfoQuery';
-import { educationListQuery } from '@/lib/apis/owner/education/educationListQuery';
-import { addEditEducation } from '@/lib/apis/owner/education/addEditEducation';
-import { deleteEducation } from '@/lib/apis/owner/education/deleteEducation';
-import { EducationFormData } from '@/lib/schemas/educationSchema';
-import { userByUsernameQuery } from '@/lib/apis/client/userBuUsernameQuery';
 import { ProjectTechnologyFormData, TechnologyFormData } from '@/lib/schemas/projectTechnologyScehma';
 import { projectTechnologyListQuery } from '@/lib/apis/owner/projectTechnology/projectTechnologyListQuery';
 import { technologyListQuery } from '@/lib/apis/owner/projectTechnology/technologyListQuery';
+import { addEditDeleteProjectTechnology } from '@/lib/apis/owner/projectTechnology/addEdetDeleteProjectTechnology';
+import { deleteProject } from '@/lib/apis/owner/projectTechnology/deleteProject';
 
 interface ProjectTechnologyState {
     lstProjectTechnologies: ProjectTechnologyFormData[],
@@ -58,6 +52,30 @@ const projectTechnologySlice = createSlice({
             state.lstTechnologies = action.payload;
         })
         .addCase(technologyListQuery.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
+        })
+        
+        .addCase(addEditDeleteProjectTechnology.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(addEditDeleteProjectTechnology.fulfilled, (state) => {
+            state.loading = false;
+        })
+        .addCase(addEditDeleteProjectTechnology.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
+        })
+
+        .addCase(deleteProject.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(deleteProject.fulfilled, (state) => {
+            state.loading = false;
+        })
+        .addCase(deleteProject.rejected, (state, action) => {
             state.loading = false;
             state.error = action.payload as string;
         });

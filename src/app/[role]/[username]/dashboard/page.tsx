@@ -2,7 +2,7 @@
 
 import { Main } from "@/components/shared/Main";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import { Briefcase, Clock, Folder, GraduationCap, LocationEdit } from "lucide-react";
+import { Briefcase, Clock, Folder, GraduationCap, LocationEdit, WandSparklesIcon, Link, SearchCodeIcon } from "lucide-react";
 import { useCallback, useEffect } from "react";
 import { sortEducation } from "@/lib/apis/owner/education/sortEducation";
 import debounce from "lodash.debounce";
@@ -25,6 +25,7 @@ import WithSkeleton from "@/components/shared/WithSkeleton";
 import { sortProject } from "@/lib/apis/owner/projectTechnology/sortProject";
 import { projectTechnologyListQuery } from "@/lib/apis/owner/projectTechnology/projectTechnologyListQuery";
 import ProjectTechnologyForm from "../forms/projectTechnologyForm";
+import { deleteProject } from "@/lib/apis/owner/projectTechnology/deleteProject";
 
 export default function OwnerDashboardPage() {
 
@@ -39,6 +40,15 @@ export default function OwnerDashboardPage() {
     const currentUser = {
         user: role === 'owner' ? owner : client,
         isLoading: role === 'owner' ? ownerInfoLoading : clientInfoLoading,
+    };
+
+    const handleProjectDelete = async (id: string) => {
+        try {
+            await dispatch(deleteProject(id));
+            await dispatch(projectTechnologyListQuery());
+        } catch (err) {
+            console.error('Failed to delete:', err);
+        }
     };
 
     const handleEducationDelete = async (id: string) => {
@@ -109,20 +119,20 @@ export default function OwnerDashboardPage() {
                             isLoading={projectTechnologyLoading}
                             items={lstProjectTechnologies}
                             header={{title: 'Project', icon: Folder}}
-                            bar={{groupBy: 'title'}}
-                            pie={{title:'Project Overview', groupBy: 'title'}}
+                            bar={{title: 'Used technologies', groupBy: {lstTechnologies: 'name'}}}
+                            pie={{title:'Technology Overview', groupBy: {lstTechnologies: 'name'}}}
                             list={[
                                 {leftKey: 'title', size:'lg'},
                                 {leftKey: 'isFeatured'}
                             ]}
-                            create={{subTitle: 'Add Education', form: <ProjectTechnologyForm />}}
-                            update={{subTitle: 'Update Education', form: <ProjectTechnologyForm />}}
-                            del={{subTitle: 'Delete education', message: 'Are you sure?', onDelete: handleEducationDelete }}
+                            create={{subTitle: 'Add Project & technologis', form: <ProjectTechnologyForm />}}
+                            update={{subTitle: 'Update Project & technologies', form: <ProjectTechnologyForm />}}
+                            del={{subTitle: 'Delete Project', message: 'Are you sure?', onDelete: handleProjectDelete }}
                             details={[
                                 {leftKey: 'title', size:'lg'},
-                                {leftKey: 'description'},
-                                {leftKey: 'liveLink', icon: GraduationCap},
-                                {leftKey: 'sourceCode', icon: GraduationCap},
+                                {leftKey: 'liveLink', icon: Link},
+                                {leftKey: 'sourceCode', icon: SearchCodeIcon},
+                                {leftKey: {lstTechnologies: 'name'}, icon: WandSparklesIcon},
                                 {leftKey: 'description', size: 'sm'}
                             ]}
                             onSort={debouncedSortProject}

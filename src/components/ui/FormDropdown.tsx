@@ -1,6 +1,6 @@
 'use client';
 
-import Select from 'react-select';
+import Select, { ActionMeta, MultiValue, SingleValue } from 'react-select';
 import { FieldError } from 'react-hook-form';
 import { Paragraph } from './Paragraph';
 import { Option } from '../types';
@@ -9,12 +9,13 @@ import { Option } from '../types';
 interface FormDropdownProps {
     label?: string;
     options: Option[];
-    value?: Option;
-    onChange?: (option: Option | null) => void;
+    value?: Option | MultiValue<Option>;
+    onChange?: (value: MultiValue<Option> | SingleValue<Option>, actionMeta: ActionMeta<Option>) => void;
     onBlur?: () => void;
     error?: FieldError;
     isSearchable?: boolean;
     isClearable?: boolean;
+    isMulti?: boolean;
     placeholder?: string;
     isLoading?: boolean;
 }
@@ -28,6 +29,7 @@ export const FormDropdown = ({
     error,
     isSearchable = true,
     isClearable = true,
+    isMulti = false,
     placeholder = 'Select...',
     isLoading
 }: FormDropdownProps) => {
@@ -96,6 +98,7 @@ export const FormDropdown = ({
                 styles={customStyles}
                 isSearchable={isSearchable}
                 isClearable={isClearable}
+                isMulti={isMulti}
                 placeholder={placeholder}
                 onBlur={onBlur}
                 isLoading={isLoading}

@@ -19,6 +19,7 @@ import { getSelectedOption, mapEducationToForm } from "@/lib/utils/appFunctions"
 import { addEditEducation } from "@/lib/apis/owner/education/addEditEducation";
 import { educationListQuery } from "@/lib/apis/owner/education/educationListQuery";
 import { EducationProps } from "../types";
+import { Option } from "@/components/types";
 
 export default function EducationForm({id, onClose} : EducationProps) {
 
@@ -92,7 +93,7 @@ export default function EducationForm({id, onClose} : EducationProps) {
                 label={label}
                 options={options}
                 value={getSelectedOption(options, field.value as string)}
-                onChange={(option) => field.onChange(option?.value ?? '')}
+                onChange={(option) => field.onChange((option as Option)?.value ?? '')}
                 onBlur={field.onBlur}
                 error={errors[name]}
                 isLoading={options.length === 0}

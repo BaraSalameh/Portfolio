@@ -16,6 +16,9 @@ import { projectTechnologyListQuery } from "@/lib/apis/owner/projectTechnology/p
 import { FormDropdown } from "@/components/ui/FormDropdown";
 import { getSelectedOption } from "@/lib/utils/appFunctions";
 import { technologyListQuery } from "@/lib/apis/owner/projectTechnology/technologyListQuery";
+import { MultiValue } from "react-select";
+import { Option } from "@/components/types";
+import { addEditDeleteProjectTechnology } from "@/lib/apis/owner/projectTechnology/addEdetDeleteProjectTechnology";
 
 const ProjectTechnology = ({id, onClose} : ProjectTechnologyProps) => {
 
@@ -41,7 +44,7 @@ const ProjectTechnology = ({id, onClose} : ProjectTechnologyProps) => {
     });
 
     const onSubmit = async (data: ProjectTechnologyFormData) => {
-        // await dispatch(addEditExperience(data));
+        await dispatch(addEditDeleteProjectTechnology(data));
         await dispatch(projectTechnologyListQuery());
         onClose?.();
     };
@@ -73,11 +76,17 @@ const ProjectTechnology = ({id, onClose} : ProjectTechnologyProps) => {
                 label={label}
                 options={options}
                 value={getSelectedOption(options, field.value as string)}
-                onChange={(option) => field.onChange(option?.value ?? '')}
+                onChange={(option) => {
+                    const selectedIds = (option as MultiValue<Option>)?.map((opt) => opt.value) ?? [];
+                    field.onChange(selectedIds);
+                }}
                 onBlur={field.onBlur}
-                // error={errors[name]}
+                error={Array.isArray(errors[name]) 
+                    ? errors[name][0] 
+                    : errors[name]
+                }
                 isLoading={options.length === 0}
-                // isMulti
+                isMulti
             />
             )}
         />
