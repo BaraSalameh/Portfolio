@@ -62,11 +62,21 @@ export const WidgetList: React.FC<WidgetListProps> = ({ items, list, onItemClick
                         return (
                             <Paragraph key={index} size={cfg.size}>
                                 {cfg.icon && <ResponsiveIcon icon={cfg.icon} />}
+
                                 {Array.isArray(leftVal)
-                                    ? leftVal.map((val, idx) => `${idx !== leftVal.length - 1
-                                        ? val + ' | '
-                                        : val}`) 
-                                    : leftVal} {cfg.between ?? ''} {rightVal}
+                                    ?   leftVal.length > 0
+                                            ?   leftVal.map((val, idx) => (
+                                                    <code key={idx}>
+                                                        {val}
+                                                        {idx !== leftVal.length - 1 && ' | '}
+                                                    </code>
+                                                ))
+                                            :   'Empty'  
+                                    :   leftVal
+                                }
+                                {cfg.between && ` ${cfg.between} `}
+
+                                {rightVal}
                             </Paragraph>
                         );
                     })}

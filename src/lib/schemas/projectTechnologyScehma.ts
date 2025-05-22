@@ -28,7 +28,6 @@ export const projectTechnologySchema = z.object({
     
     lstTechnologies: z
         .array(z.string())
-        .min(1, "At least one technology is required")
 });
 
 export const technologySchema = z.object({

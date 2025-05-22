@@ -80,9 +80,41 @@ export const FormDropdown = ({
             color: state.isSelected || state.isFocused ? 'white' : 'inherit',
             cursor: 'pointer',
         }),
+        multiValue: (provided: any) => ({
+            ...provided,
+            backgroundColor: '#22c55e', // Tailwind: green-500
+            borderRadius: '0.375rem', // Tailwind: rounded-md
+            padding: '2px 6px',
+        }),
+
+        multiValueLabel: (provided: any) => ({
+            ...provided,
+            color: 'white',
+            // fontWeight: 500,
+        }),
+
+        multiValueRemove: (provided: any) => ({
+            ...provided,
+            color: 'white',
+            cursor: 'pointer',
+            ':hover': {
+                backgroundColor: '#15803d', // Tailwind: green-700
+                color: 'white',
+            },
+        }),
+        clearIndicator: (provided: any, state: any) => ({
+            ...provided,
+            color: 'white',
+            cursor: 'pointer'
+        }),
+        dropdownIndicator: (provided: any, state: any) => ({
+            ...provided,
+            color: 'white',
+            cursor: 'pointer',
+            transition: 'transform 0.2s ease',
+            transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)'
+        }),
     };
-
-
 
     return (
         <div className="space-y-1">
@@ -102,6 +134,7 @@ export const FormDropdown = ({
                 placeholder={placeholder}
                 onBlur={onBlur}
                 isLoading={isLoading}
+                closeMenuOnSelect={isMulti ? false : true}
             />
             {error && <Paragraph intent="danger" size="sm">{error.message}</Paragraph>}
         </div>

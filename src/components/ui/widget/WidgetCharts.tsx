@@ -5,7 +5,7 @@ import { WidgetChartsProps } from './type';
 
 export const WidgetCharts: React.FC<WidgetChartsProps> = ({ pieData, durationData, pieTitle, barTitle, colorMap }) => (
     <div className={`w-full grid grid-cols-1 ${pieData && durationData.length > 0 ? 'sm:grid-cols-3' : ''}`}>
-        {pieData && (
+        {pieData.length > 0 && (
             <div className="h-64">
                 <Paragraph size="md" position="center">{pieTitle ?? 'Distribution'}</Paragraph>
                 <PieChartWidget data={pieData} colorMap={colorMap} />
