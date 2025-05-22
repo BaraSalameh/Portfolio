@@ -29,11 +29,11 @@ namespace Application.Owner.Handlers.ProjectTechnologyHandlers
             try
             {
                 var validIds = await _context.LKP_Technology
-                    .Where(t => (request.LstProjectTechnologies ?? new List<Guid>()).Contains(t.ID))
+                    .Where(t => (request.LstTechnologies ?? new List<Guid>()).Contains(t.ID))
                     .Select(t => t.ID)
                     .ToListAsync(cancellationToken);
 
-                if (validIds.Count != (request.LstProjectTechnologies ?? []).Count)
+                if (validIds.Count != (request.LstTechnologies ?? []).Count)
                 {
                     response.lstError.Add("Some technologies do not exist.");
                     return response;

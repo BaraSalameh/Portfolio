@@ -12,6 +12,6 @@ namespace Application.Owner.Commands.ProjectTechnologyCommands
         public string SourceCode { get; set; }
         public string ImageUrl { get; set; }
         public bool IsFeatured { get; set; }
-        public List<Guid>? LstProjectTechnologies { get; set; }
+        public List<Guid>? LstTechnologies { get; set; }
     }
 }
