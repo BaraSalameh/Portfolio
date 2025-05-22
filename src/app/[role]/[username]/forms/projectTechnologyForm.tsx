@@ -19,6 +19,7 @@ import { technologyListQuery } from "@/lib/apis/owner/projectTechnology/technolo
 import { MultiValue } from "react-select";
 import { Option } from "@/components/types";
 import { addEditDeleteProjectTechnology } from "@/lib/apis/owner/projectTechnology/addEdetDeleteProjectTechnology";
+import { ControlledDropdown } from "@/components/ui/form/ControlledDropdown";
 
 const ProjectTechnology = ({id, onClose} : ProjectTechnologyProps) => {
 
@@ -59,44 +60,19 @@ const ProjectTechnology = ({id, onClose} : ProjectTechnologyProps) => {
     useEffect(() => {
         lstTechnologies.length === 0 && dispatch(technologyListQuery());
     }, []);
-
-    const ControlledDropdown = ({
-        name,
-        label,
-        options,
-    }: {
-        name: keyof ProjectTechnologyFormData;
-        label: string;
-        options: { label: string; value: string }[];
-    }) => (
-        <Controller
-            name={name}
-            control={control}
-            render={({ field }) => (
-            <FormDropdown
-                label={label}
-                options={options}
-                value={getSelectedOption(options, field.value as string[])}
-                onChange={(option) => {
-                    const selectedIds = (option as MultiValue<Option>)?.map((opt) => opt.value) ?? [];
-                    field.onChange(selectedIds);
-                }}
-                onBlur={field.onBlur}
-                error={Array.isArray(errors[name]) 
-                    ? errors[name][0] 
-                    : errors[name]
-                }
-                isLoading={options.length === 0}
-                isMulti
-            />
-            )}
-        />
-    );
-
+ 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="relative space-y-4">
             <fieldset disabled={loading} className="space-y-4">
-                <ControlledDropdown name="lstTechnologies" label="Technologies" options={technologyOptions} />
+                <ControlledDropdown
+                    name="lstTechnologies"
+                    control={control}
+                    label="Technologies"
+                    options={technologyOptions}
+                    isMulti
+                    errors={errors}
+                />
+
                 <FormInput
                     label="Title"
                     type="text"

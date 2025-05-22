@@ -20,6 +20,7 @@ import { addEditEducation } from "@/lib/apis/owner/education/addEditEducation";
 import { educationListQuery } from "@/lib/apis/owner/education/educationListQuery";
 import { EducationProps } from "../types";
 import { Option } from "@/components/types";
+import { ControlledDropdown } from "@/components/ui/form/ControlledDropdown";
 
 export default function EducationForm({id, onClose} : EducationProps) {
 
@@ -76,38 +77,12 @@ export default function EducationForm({id, onClose} : EducationProps) {
         lstFields.length === 0 && dispatch(fieldOfStudyListQuery());
     }, []);
 
-    const ControlledDropdown = ({
-        name,
-        label,
-        options,
-    }: {
-        name: keyof EducationFormData;
-        label: string;
-        options: { label: string; value: string }[];
-    }) => (
-        <Controller
-            name={name}
-            control={control}
-            render={({ field }) => (
-            <FormDropdown
-                label={label}
-                options={options}
-                value={getSelectedOption(options, field.value as string)}
-                onChange={(option) => field.onChange((option as Option)?.value ?? '')}
-                onBlur={field.onBlur}
-                error={errors[name]}
-                isLoading={options.length === 0}
-            />
-            )}
-        />
-    );
-
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="relative space-y-4">
             <fieldset disabled={loading} className="space-y-4">
-                <ControlledDropdown name="LKP_InstitutionID" label="Institution" options={institutionOptions} />
-                <ControlledDropdown name="LKP_DegreeID" label="Degree" options={degreeOptions} />
-                <ControlledDropdown name="LKP_FieldOfStudyID" label="Field of study" options={fieldOptions} />
+                <ControlledDropdown control={control} errors={errors} name="LKP_InstitutionID" label="Institution" options={institutionOptions} />
+                <ControlledDropdown control={control} errors={errors} name="LKP_DegreeID" label="Degree" options={degreeOptions} />
+                <ControlledDropdown control={control} errors={errors} name="LKP_FieldOfStudyID" label="Field of study" options={fieldOptions} />
 
                 <FormInput
                     label="Start date"
