@@ -26,7 +26,7 @@ export const projectTechnologySchema = z.object({
         .boolean()
         .optional(),
     
-    lstProjectTechnologies: z
+    lstTechnologies: z
         .array(z.string())
         .min(1, "At least one technology is required")
 });

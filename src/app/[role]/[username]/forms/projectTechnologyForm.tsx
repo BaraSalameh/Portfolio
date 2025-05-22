@@ -14,7 +14,7 @@ import { ProjectTechnologyProps } from "../types";
 import { ProjectTechnologyFormData, projectTechnologySchema } from "@/lib/schemas/projectTechnologyScehma";
 import { projectTechnologyListQuery } from "@/lib/apis/owner/projectTechnology/projectTechnologyListQuery";
 import { FormDropdown } from "@/components/ui/FormDropdown";
-import { getSelectedOption } from "@/lib/utils/appFunctions";
+import { getSelectedOption, mapProjectTechnologyToForm } from "@/lib/utils/appFunctions";
 import { technologyListQuery } from "@/lib/apis/owner/projectTechnology/technologyListQuery";
 import { MultiValue } from "react-select";
 import { Option } from "@/components/types";
@@ -51,8 +51,9 @@ const ProjectTechnology = ({id, onClose} : ProjectTechnologyProps) => {
 
     useEffect(() => {
         if (projectTechnologyToHandle) {
-            reset({...projectTechnologyToHandle});
+            reset(mapProjectTechnologyToForm(projectTechnologyToHandle) ?? {});
         }
+        console.log(projectTechnologyToHandle);
     }, [id]);
 
     useEffect(() => {
@@ -75,7 +76,7 @@ const ProjectTechnology = ({id, onClose} : ProjectTechnologyProps) => {
             <FormDropdown
                 label={label}
                 options={options}
-                value={getSelectedOption(options, field.value as string)}
+                value={getSelectedOption(options, field.value as string[])}
                 onChange={(option) => {
                     const selectedIds = (option as MultiValue<Option>)?.map((opt) => opt.value) ?? [];
                     field.onChange(selectedIds);
@@ -95,7 +96,7 @@ const ProjectTechnology = ({id, onClose} : ProjectTechnologyProps) => {
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="relative space-y-4">
             <fieldset disabled={loading} className="space-y-4">
-                <ControlledDropdown name="lstProjectTechnologies" label="Technologies" options={technologyOptions} />
+                <ControlledDropdown name="lstTechnologies" label="Technologies" options={technologyOptions} />
                 <FormInput
                     label="Title"
                     type="text"

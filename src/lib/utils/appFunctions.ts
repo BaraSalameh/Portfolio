@@ -5,6 +5,7 @@ import {
     Languages, PenSquare, MessageSquare, Settings, LogOut
 } from 'lucide-react';
 import { string } from 'zod';
+import { ProjectTechnologyFormData } from '../schemas/projectTechnologyScehma';
 
 export function transformPayload<T extends object>(obj: T): T {
     return Object.fromEntries(
@@ -120,8 +121,24 @@ export const mapEducationToForm = (educationFromDb: any): EducationFormData => (
     LKP_FieldOfStudyID: educationFromDb.fieldOfStudy?.id ?? '',
 });
 
-export const getSelectedOption = (options: {label: string; value: string}[], value: string | undefined) =>
-    options.find(opt => opt.value === value);
+export const mapProjectTechnologyToForm = (projectTechnologyFromDb: any): ProjectTechnologyFormData => ({
+    ...projectTechnologyFromDb,
+    lstTechnologies: projectTechnologyFromDb.lstTechnologies?.map(
+        (pt: any) => pt.id
+    ) ?? []
+});
+
+export const getSelectedOption = (
+    options: { label: string; value: string }[],
+    value: string | string[] | undefined
+) => {
+    if (!value) return Array.isArray(value) ? [] : undefined;
+
+    return Array.isArray(value)
+        ? options.filter(opt => value.includes(opt.value))
+        : options.find(opt => opt.value === value);
+};
+
 
 export const getNavLinks = (username?: string | undefined, role?: 'owner' | 'client' | 'admin' ) => {
     if (!username) return [{ href: '/', label: 'Home', icon: Home }];
