@@ -117,7 +117,7 @@ export default function OwnerDashboardPage() {
                     <div className="break-inside-avoid">
                         <ControlledWidget
                             isLoading={projectTechnologyLoading}
-                            items={lstProjectTechnologies}
+                            items={lstProjectTechnologies} 
                             header={{title: 'Project', icon: Folder}}
                             bar={{title: 'Used technologies', groupBy: {lstTechnologies: 'name'}}}
                             pie={{title:'Technology Overview', groupBy: {lstTechnologies: 'name'}}}
