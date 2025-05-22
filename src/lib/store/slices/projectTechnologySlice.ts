@@ -4,7 +4,10 @@ import { ProjectTechnologyFormData, TechnologyFormData } from '@/lib/schemas/pro
 import { projectTechnologyListQuery } from '@/lib/apis/owner/projectTechnology/projectTechnologyListQuery';
 import { technologyListQuery } from '@/lib/apis/owner/projectTechnology/technologyListQuery';
 import { addEditDeleteProjectTechnology } from '@/lib/apis/owner/projectTechnology/addEdetDeleteProjectTechnology';
+<<<<<<< HEAD
 import { deleteProject } from '@/lib/apis/owner/projectTechnology/deleteProject';
+=======
+>>>>>>> 66dad79ae870a51fc7a2bdd0b285bc3655e2a788
 
 interface ProjectTechnologyState {
     lstProjectTechnologies: ProjectTechnologyFormData[],
@@ -66,6 +69,7 @@ const projectTechnologySlice = createSlice({
         .addCase(addEditDeleteProjectTechnology.rejected, (state, action) => {
             state.loading = false;
             state.error = action.payload as string;
+<<<<<<< HEAD
         })
 
         .addCase(deleteProject.pending, (state) => {
@@ -78,6 +82,8 @@ const projectTechnologySlice = createSlice({
         .addCase(deleteProject.rejected, (state, action) => {
             state.loading = false;
             state.error = action.payload as string;
+=======
+>>>>>>> 66dad79ae870a51fc7a2bdd0b285bc3655e2a788
         });
     },
 });
