@@ -26,7 +26,7 @@ export const BarChartWidget: React.FC<BarChartWidgetProps> = ({
                 <YAxis />
                 <Tooltip content={CustomTooltip} />
                 <Bar
-                    dataKey="duration"
+                    dataKey="value"
                     radius={[10, 0, 10, 0]}
                     fillOpacity={1}
                 >

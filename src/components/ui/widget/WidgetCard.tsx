@@ -38,7 +38,7 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({ isLoading, header, items
 
     const pieData = useMemo(() => pie ? generatePieData(items, pie.groupBy) : null, [items, pie]);
     const durationData = useMemo(
-        () => bar ? generateDurationData(items, bar.groupBy, bar.durationKeys?.start || 'startDate', bar.durationKeys?.end || 'endDate') : [],
+        () => bar ? generateDurationData(items, bar.groupBy, bar.durationKeys?.start, bar.durationKeys?.end) : [],
         [items, bar]
     );
     const colorMap = useMemo(() => generateColorMap(pieData ?? durationData), [pieData, durationData]);

@@ -47,23 +47,23 @@ export const generateDurationData = <T extends Record<string, any>>(
     startDateKey: keyof T = 'startDate',
     endDateKey: keyof T = 'endDate',
     unit: dayjs.ManipulateType = 'month'
-): { name: string; duration: number }[] => {
+): { name: string; value: number }[] => {
     const durations = new Map<string, number>();
 
     list.forEach(item => {
         const start = item[startDateKey] ? dayjs(item[startDateKey]) : null;
         const end = item[endDateKey] ? dayjs(item[endDateKey]) : dayjs();
-        const duration = start ? end.diff(start, unit) : null;
+        const value = start ? end.diff(start, unit) : null;
 
         const names = normalizeFieldValue(extractValue(item, nameKey)) || ['Unknown'];
 
         names.forEach(name => {
             const total = durations.get(name) ?? 0;
-            durations.set(name, total + (duration !== null ? duration : 1));
+            durations.set(name, total + (value !== null ? value : 1));
         });
     });
 
-    return Array.from(durations.entries()).map(([name, duration]) => ({ name, duration }));
+    return Array.from(durations.entries()).map(([name, value]) => ({ name, value }));
 };
 
 

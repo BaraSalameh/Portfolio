@@ -72,11 +72,10 @@ export const WidgetList: React.FC<WidgetListProps> = ({ items, list, onItemClick
                                                     </code>
                                                 ))
                                             :   'Empty'  
-                                        :   typeof leftVal === 'boolean'
-                                                ? leftVal
-                                                    ? `${cfg.leftKey}: ${leftVal}`
-                                                    : ''
-                                                : leftVal
+                                    :   typeof leftVal === 'boolean'
+                                            ?   `${cfg.leftKey}: ${leftVal}`
+                                            :   leftVal
+                                                
                                 }
                                 {cfg.between && ` ${cfg.between} `}
 

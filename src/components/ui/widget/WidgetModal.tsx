@@ -16,7 +16,7 @@ export const WidgetModal: React.FC<WidgetModalProps> = ({ isLoading, isOpen, onC
     if (!isOpen) return null;
 
     return (
-        <BlurBackGround intent='sm'>
+        <BlurBackGround intent='sm' className='p-5'>
             <div className={cn(widgetCard({}), className)}>
                 <Header itemsX='between' paddingX="xs" paddingY="xs">
                     <div className='flex gap-3'>

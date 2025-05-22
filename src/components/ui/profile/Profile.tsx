@@ -93,14 +93,11 @@ const Profile = ({
             {(user?.bio) && 
                 <hr className='pb-3' />
             }
-            
                 {user?.bio?.split('\n').map((line, index) => (
                     <Paragraph key={index} className="italic">
                         {line}
                     </Paragraph>
                 ))}
-            
-            
         </div>
     </Header>
   );
