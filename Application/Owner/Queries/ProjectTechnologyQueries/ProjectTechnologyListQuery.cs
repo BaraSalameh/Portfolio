@@ -14,15 +14,10 @@ namespace Application.Owner.Queries.ProjectTechnologyQueries
         public string SourceCode { get; set; }
         public string ImageUrl { get; set; }
         public bool IsFeatured { get; set; }
-        public List<PTLQ_ProjectTechnology> LstProjectTechnologies { get; set; }
+        public List<PTLQ_Technology> LstTechnologies { get; set; }
     }
 
-    public class PTLQ_ProjectTechnology
-    {
-        public PTLQ_LKP_Technology LKP_Technology { get; set; }
-    }
-
-    public class PTLQ_LKP_Technology
+    public class PTLQ_Technology
     {
         public Guid ID { get; set; }
         public string Name { get; set; }

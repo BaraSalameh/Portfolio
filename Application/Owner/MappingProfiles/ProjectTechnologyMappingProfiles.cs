@@ -18,11 +18,10 @@ namespace Application.Owner.MappingProfiles
                 ));
 
             CreateMap<Project, PTLQ_Response>()
-                .ForMember(dest => dest.LstProjectTechnologies,
-                    opt => opt.MapFrom(src => src.LstProjectTechnologies)
+                .ForMember(dest => dest.LstTechnologies,
+                    opt => opt.MapFrom(src => src.LstProjectTechnologies.Select(pt => pt.LKP_Technology))
                 );
-            CreateMap<ProjectTechnology, PTLQ_ProjectTechnology>();
-            CreateMap<LKP_Technology, PTLQ_LKP_Technology>();
+            CreateMap<LKP_Technology, PTLQ_Technology>();
 
             CreateMap<LKP_Technology, LKP_TLQ_Response>();
         }

@@ -41,12 +41,7 @@ namespace Application.Owner.Queries.UserQueries
         public string SourceCode { get; set; }
         public string ImageUrl { get; set; }
         public bool IsFeatured { get; set; }
-        public List<UFIQ_ProjectTechnology> LstProjectTechnologies { get; set; }
-    }
-
-    public class UFIQ_ProjectTechnology
-    {
-        public UFIQ_LKP_Technology LKP_Technology { get; set; }
+        public List<UFIQ_LKP_Technology> LstTechnologies { get; set; }
     }
 
     public class UFIQ_LKP_Technology

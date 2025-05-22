@@ -29,6 +29,7 @@ namespace Application.Owner.Handlers.UserHandlers
             try
             {
                 var existingEntity = await _context.User
+                    .AsNoTracking()
                     .Where(u => u.ID == _currentUserService.UserID)
                     .ProjectTo<UFIQ_Response>(_mapper.ConfigurationProvider)
                     .FirstOrDefaultAsync(cancellationToken);
