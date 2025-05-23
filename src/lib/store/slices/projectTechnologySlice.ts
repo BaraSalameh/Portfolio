@@ -5,6 +5,7 @@ import { projectTechnologyListQuery } from '@/lib/apis/owner/projectTechnology/p
 import { technologyListQuery } from '@/lib/apis/owner/projectTechnology/technologyListQuery';
 import { addEditDeleteProjectTechnology } from '@/lib/apis/owner/projectTechnology/addEdetDeleteProjectTechnology';
 import { deleteProject } from '@/lib/apis/owner/projectTechnology/deleteProject';
+import { userByUsernameQuery } from '@/lib/apis/client/userBuUsernameQuery';
 
 interface ProjectTechnologyState {
     lstProjectTechnologies: ProjectTechnologyFormData[],
@@ -29,6 +30,10 @@ const projectTechnologySlice = createSlice({
         .addCase(userFullInfoQuery.fulfilled, (state, action) => {
             state.lstProjectTechnologies = action.payload.lstProjects;
         })
+
+        .addCase(userByUsernameQuery.fulfilled, (state, action) => {
+                state.lstProjectTechnologies = action.payload.lstProjects;
+            })
         
         .addCase(projectTechnologyListQuery.pending, (state) => {
             state.loading = true;
