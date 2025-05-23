@@ -31,8 +31,10 @@ namespace Application.Client.MappingProfiles
                 .ForMember(dest => dest.LstSocialLinks,
                     opt => opt.MapFrom(src => src.LstSocialLinks.Where(l => l.IsDeleted == false)));
             CreateMap<User, UBUQ_User>();
-            CreateMap<Project, UBUQ_Project>();
-            CreateMap<ProjectTechnology, UBUQ_ProjectTechnology>();
+            CreateMap<Project, UBUQ_Project>()
+                .ForMember(dest => dest.LstTechnologies,
+                    opt => opt.MapFrom(src => src.LstProjectTechnologies.Select(pt => pt.LKP_Technology))
+                );
             CreateMap<LKP_Technology, UBUQ_LKP_Technology>();
             CreateMap<Skill, UBUQ_Skill>();
             CreateMap<Education, UBUQ_Education>()
