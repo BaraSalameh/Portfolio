@@ -1,21 +1,11 @@
 'use client';
 
 import React from 'react';
-import { cn } from '@/components/utils/cn';
-import { container, ContainerVariantProps } from '@/styles/container';
+import { cn } from '@/components/utils';
+import { container } from '@/styles';
+import { ContainerProps } from './types';
 
-interface ContainerProps extends ContainerVariantProps {
-    children: React.ReactNode;
-    className?: string;
-}
-
-export const Container: React.FC<ContainerProps> = ({
-    children,
-    className
-}) => {
-    return (
-        <div className={cn(container(), className)}>
-            {children}
-        </div>
-    );
-};
+export const Container = ({ children, className }: ContainerProps) => 
+    <div className={cn(container(), className)}>
+        {children}
+    </div>

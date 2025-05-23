@@ -1,14 +1,7 @@
 'use client';
 
-import { InputHTMLAttributes } from 'react';
-import { FieldError, UseFormRegisterReturn } from 'react-hook-form';
-import { Paragraph } from './Paragraph';
-
-interface FormCheckboxProps extends InputHTMLAttributes<HTMLInputElement> {
-    label?: string;
-    registration?: UseFormRegisterReturn;
-    error?: FieldError;
-}
+import { Paragraph } from '../Paragraph';
+import { FormCheckboxProps } from './types';
 
 export const FormCheckbox = ({
     label,

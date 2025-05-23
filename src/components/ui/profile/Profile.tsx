@@ -1,23 +1,15 @@
-// components/Header.tsx
 import { Header } from '@/components/shared/Header';
 import Image from 'next/image';
 import React from 'react';
-import { Paragraph } from '../Paragraph';
-import { CUDModal } from '../CUDModal';
-import { ProfileFormData } from '@/lib/schemas/profileSchema';
+import { Paragraph, CUDModal, ResponsiveIcon } from '..';
 import { useParams } from 'next/navigation';
 import ProfileForm from '@/app/[role]/[username]/forms/profileForm';
-import { Button } from '../Button';
+import { Button } from '../form/Button';
 import { Copy, Link } from 'lucide-react';
-import ResponsiveIcon from '../ResponsiveIcon';
 import { getClientLink } from '@/lib/utils/appFunctions';
+import { ProfileProps } from './types';
 
-interface ProfileProps {
-    user: ProfileFormData,
-    className?: string;
-}
-
-const Profile = ({ 
+export const Profile = ({ 
     user,
     className
 } : ProfileProps) => {
@@ -101,6 +93,4 @@ const Profile = ({
         </div>
     </Header>
   );
-}
-
-export default Profile;
+};

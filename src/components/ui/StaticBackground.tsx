@@ -1,12 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { Main } from "../shared/Main";
-import { Header } from "../shared/Header";
+import React from "react";
+import { Main } from "../shared";
 
-interface StaticBackgroundProps {
-    className?: string;
-}
-
-const StaticBackground: React.FC<StaticBackgroundProps> = ({ className }) => {
+export const StaticBackground = () => {
     return (
         <React.Fragment>
             <div className='px-7 sm:px-10 lg:px-15 pt-3 space-y-1 w-full'>
@@ -40,5 +35,3 @@ const StaticBackground: React.FC<StaticBackgroundProps> = ({ className }) => {
         </React.Fragment>
     );
 };
-
-export default StaticBackground;

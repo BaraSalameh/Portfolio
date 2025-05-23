@@ -1,15 +1,11 @@
 'use client';
 
 import React from 'react';
-import { cn } from '@/components/utils/cn';
-import { paragraph, ParagraphVariantProps } from '@/styles/paragraph';
+import { cn } from '@/components/utils';
+import { paragraph } from '@/styles';
+import { ParagraphProps } from './types';
 
-interface ParagraphProps extends ParagraphVariantProps {
-    children: React.ReactNode;
-    className?: string;
-}
-
-export const Paragraph: React.FC<ParagraphProps> = ({
+export const Paragraph = ({
     children,
     intent,
     size,
@@ -17,7 +13,7 @@ export const Paragraph: React.FC<ParagraphProps> = ({
     position,
     space,
     className
-}) => {
+}: ParagraphProps) => {
     return (
         <p className={cn(paragraph({ intent, size, text, position, space }), className)}>
             {children}

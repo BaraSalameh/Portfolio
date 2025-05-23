@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Paragraph } from '../Paragraph';
-import ResponsiveIcon from '../ResponsiveIcon';
 import dayjs from 'dayjs';
-import { widgetList } from '@/styles/widget';
-import { cn } from '@/components/utils/cn';
+import { widgetList } from '@/styles';
+import { cn } from '@/components/utils';
 import { closestCenter, DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableItem';
-import { WidgetListProps } from './type';
+import { WidgetListProps } from './types';
 import { extractValue } from '@/lib/utils/appFunctions';
+import { ResponsiveIcon, Paragraph } from '..';
 
-export const WidgetList: React.FC<WidgetListProps> = ({ items, list, onItemClick, className, sort }) => {
+export const WidgetList = ({ items, list, onItemClick, className, sort }: WidgetListProps) => {
 
     const [rows, setRows] = useState<Record<string, any>[]>(items);
     const sensors = useSensors(useSensor(PointerSensor));
@@ -88,7 +87,7 @@ export const WidgetList: React.FC<WidgetListProps> = ({ items, list, onItemClick
 
             return sort?.sortable
                 ?   (
-                        <SortableItem key={item.id} id={item.id} child={listItem} />
+                        <SortableItem key={item.id} id={item.id} children={listItem} />
                     )
                 :   (
                         <div key={idx}>{listItem}</div>

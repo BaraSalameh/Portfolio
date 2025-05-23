@@ -1,7 +1,7 @@
 'use client';
 
 import Image from "next/image";
-import { Anchor } from "@/components/ui/Anchor";
+import { Anchor } from "@/components/ui/form/Anchor";
 import { Main } from "@/components/shared/Main";
 import { SubFooter } from "@/components/shared/SubFooter";
 import { Paragraph } from "@/components/ui/Paragraph";

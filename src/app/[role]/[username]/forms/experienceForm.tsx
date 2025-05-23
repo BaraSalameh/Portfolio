@@ -2,18 +2,17 @@
 
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { Paragraph } from "@/components/ui/Paragraph";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/form/Button";
 import Image from "next/image";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormInput } from "@/components/ui/FormInput";
 import { List } from "@/components/ui/List";
-import { FormCheckbox } from "@/components/ui/FormCheckbox";
 import { useEffect } from "react";
 import { ExperienceFormData, experienceSchema } from "@/lib/schemas/experienceSchema";
 import { addEditExperience } from "@/lib/apis/owner/experience/addEditExperience";
 import { experienceListQuery } from "@/lib/apis/owner/experience/experienceListQuery";
 import { ExperienceProps } from "../types";
+import { FormCheckbox, FormInput } from "@/components/ui/form";
 
 const ExperienceForm = ({id, onClose} : ExperienceProps) => {
 

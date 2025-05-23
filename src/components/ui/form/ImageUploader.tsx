@@ -2,18 +2,12 @@
 
 import React, { useState, useCallback } from 'react';
 import Cropper, { Area } from 'react-easy-crop';
-import getCroppedImg from '../utils/getCroppedImg';
-import { Button } from './Button';
+import { Button, FormInput } from '.';
 import Image from "next/image";
-import { FormInput } from './FormInput';
+import { ImageUploaderProps } from './types';
+import { getCroppedImg } from '@/components/utils';
 
-interface ImageUploaderProps {
-    preset: 'Profile_Picture' | 'Cover_Photo';
-    onAction: (url: string) => void;
-    onClose?: () => void;
-}
-
-const ImageUploader = ({ preset, onAction, onClose }: ImageUploaderProps) => {
+export const ImageUploader = ({ preset, onAction, onClose }: ImageUploaderProps) => {
     const [imageSrc, setImageSrc] = useState<string | null>(null);
     const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
     const [zoom, setZoom] = useState(1);
@@ -102,6 +96,4 @@ const ImageUploader = ({ preset, onAction, onClose }: ImageUploaderProps) => {
             )}
         </div>
     );
-}
-
-export default ImageUploader;
+};

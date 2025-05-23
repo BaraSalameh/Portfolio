@@ -1,15 +1,11 @@
 'use client';
 
 import React from 'react';
-import { cn } from '@/components/utils/cn';
-import { subFooter, SubFooterVariantProps } from '@/styles/subFooter';
+import { cn } from '@/components/utils';
+import { subFooter } from '@/styles';
+import { SubFooterProps } from './types';
 
-interface SubFooterProps extends SubFooterVariantProps {
-    children: React.ReactNode;
-    className?: string;
-}
-
-export const SubFooter: React.FC<SubFooterProps> = ({
+export const SubFooter = ({
     children,
     className,
     itemsX,
@@ -17,11 +13,7 @@ export const SubFooter: React.FC<SubFooterProps> = ({
     paddingX,
     paddingY,
     space
-
-}) => {
-    return (
-        <div className={cn(subFooter({ itemsX, itemsY, paddingX, paddingY, space}), className)}>
-            {children}
-        </div>
-    );
-};
+}: SubFooterProps) => 
+    <div className={cn(subFooter({ itemsX, itemsY, paddingX, paddingY, space}), className)}>
+        {children}
+    </div>

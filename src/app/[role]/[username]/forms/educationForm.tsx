@@ -2,25 +2,22 @@
 
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { Paragraph } from "@/components/ui/Paragraph";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/form/Button";
 import Image from "next/image";
-import { Controller, useForm, useWatch } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { EducationFormData, educationSchema } from "@/lib/schemas/educationSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormInput } from "@/components/ui/FormInput";
 import { List } from "@/components/ui/List";
-import { FormCheckbox } from "@/components/ui/FormCheckbox";
 import { useEffect, useMemo } from "react";
 import { institutionListQuery } from "@/lib/apis/owner/education/institutionListQuery";
-import { FormDropdown } from "@/components/ui/FormDropdown";
 import { degreeListQuery } from "@/lib/apis/owner/education/degreeListQuery";
 import { fieldOfStudyListQuery } from "@/lib/apis/owner/education/fieldOfStudyListQuery";
-import { getSelectedOption, mapEducationToForm } from "@/lib/utils/appFunctions";
+import { mapEducationToForm } from "@/lib/utils/appFunctions";
 import { addEditEducation } from "@/lib/apis/owner/education/addEditEducation";
 import { educationListQuery } from "@/lib/apis/owner/education/educationListQuery";
 import { EducationProps } from "../types";
-import { Option } from "@/components/types";
 import { ControlledDropdown } from "@/components/ui/form/ControlledDropdown";
+import { FormCheckbox, FormInput } from "@/components/ui/form";
 
 export default function EducationForm({id, onClose} : EducationProps) {
 

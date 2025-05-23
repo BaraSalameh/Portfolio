@@ -1,22 +1,12 @@
-import { CustomTooltip } from "@/components/utils/customTooltip";
+import { CustomTooltip } from "@/components/utils";
 import { generateColorMap } from "@/lib/utils/appFunctions";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import { ChartWidgetProps } from "./types";
 
-type PieEntry = {
-    name: string;
-    value: number;
-};
-
-type PieChartWidgetProps = {
-    data: PieEntry[];
-    colorMap?: Record<string, string>;
-};
-
-export const PieChartWidget: React.FC<PieChartWidgetProps> = ({
+export const PieChartWidget = ({
     data,
     colorMap
-  }) => {
-
+}: ChartWidgetProps) => {
     const internalColorMap = colorMap ?? generateColorMap(data);
   
     return (

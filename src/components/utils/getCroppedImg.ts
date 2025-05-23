@@ -1,7 +1,7 @@
 import { Area } from 'react-easy-crop';
-import { createImage } from './CreateImage';
+import { createImage } from '.';
 
-export default async function getCroppedImg(imageSrc: string, pixelCrop: Area): Promise<Blob> {
+export const getCroppedImg = async (imageSrc: string, pixelCrop: Area): Promise<Blob> => {
     const image = await createImage(imageSrc);
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');

@@ -4,15 +4,13 @@ import LoginForm from "@/app/account/forms/loginForm";
 import {  useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { useEffect } from "react";
 import Image from "next/image";
-import { Anchor } from "@/components/ui/Anchor";
-import { Main } from "@/components/shared/Main";
-import { SubFooter } from "@/components/shared/SubFooter";
+import { Anchor } from "@/components/ui/form/Anchor";
 import { useRouter } from "next/navigation";
 import { validateToken } from "@/lib/apis/account/validateToken";
 import { cn } from "@/components/utils/cn";
 import { widgetCard } from "@/styles/widget";
-import Loading from "@/components/shared/Loading";
 import React from "react";
+import { Loading, Main, SubFooter } from "@/components/shared";
 
 const LoginPage = () => {
 

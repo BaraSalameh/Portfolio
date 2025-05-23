@@ -4,8 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Menu } from 'lucide-react';
-import { Paragraph } from '../ui/Paragraph';
-import ResponsiveIcon from '../ui/ResponsiveIcon';
+import { Paragraph, ResponsiveIcon } from '../ui';
 import { getNavLinks } from '@/lib/utils/appFunctions';
 import React from 'react';
 

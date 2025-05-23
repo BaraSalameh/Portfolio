@@ -1,13 +1,10 @@
 'use client';
 
-import { Main } from "@/components/shared/Main";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { Briefcase, Clock, Folder, GraduationCap, LocationEdit, WandSparklesIcon, Link, SearchCodeIcon } from "lucide-react";
 import { useCallback, useEffect } from "react";
 import { sortEducation } from "@/lib/apis/owner/education/sortEducation";
 import debounce from "lodash.debounce";
-import Loading from "@/components/shared/Loading";
-import Profile from "@/components/ui/profile/Profile";
 import { ProfileFormData } from "@/lib/schemas/profileSchema";
 import { deleteEducation } from "@/lib/apis/owner/education/deleteEducation";
 import { educationListQuery } from "@/lib/apis/owner/education/educationListQuery";
@@ -19,13 +16,14 @@ import { useParams } from "next/navigation";
 import { userByUsernameQuery } from "@/lib/apis/client/userBuUsernameQuery";
 import EducationForm from "../forms/educationForm";
 import ExperienceForm from "../forms/experienceForm";
-import ControlledWidget from "@/components/ui/widget/ControlledWidget";
-import StaticBackground from "@/components/ui/StaticBackground";
-import WithSkeleton from "@/components/shared/WithSkeleton";
 import { sortProject } from "@/lib/apis/owner/projectTechnology/sortProject";
 import { projectTechnologyListQuery } from "@/lib/apis/owner/projectTechnology/projectTechnologyListQuery";
 import ProjectTechnologyForm from "../forms/projectTechnologyForm";
 import { deleteProject } from "@/lib/apis/owner/projectTechnology/deleteProject";
+import { Profile } from "@/components/ui/profile";
+import { StaticBackground } from "@/components/ui";
+import { ControlledWidget } from "@/components/ui/widget";
+import { Loading, WithSkeleton, Main } from "@/components/shared";
 
 export default function OwnerDashboardPage() {
 

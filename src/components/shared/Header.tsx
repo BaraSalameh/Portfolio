@@ -1,15 +1,11 @@
 'use client';
 
 import React from 'react';
-import { cn } from '@/components/utils/cn';
-import { header, HeaderVariantProps } from '@/styles/header';
+import { cn } from '@/components/utils';
+import { header } from '@/styles';
+import { HeaderProps } from './types';
 
-interface HeaderProps extends HeaderVariantProps {
-    children: React.ReactNode;
-    className?: string;
-}
-
-export const Header: React.FC<HeaderProps> = ({
+export const Header = ({
     children,
     className,
     itemsX,
@@ -17,11 +13,7 @@ export const Header: React.FC<HeaderProps> = ({
     paddingX,
     paddingY,
     space
-
-}) => {
-    return (
-        <div className={cn(header({ itemsX, itemsY, paddingX, paddingY, space}), className)}>
-            {children}
-        </div>
-    );
-};
+}: HeaderProps) => 
+    <div className={cn(header({ itemsX, itemsY, paddingX, paddingY, space}), className)}>
+        {children}
+    </div>

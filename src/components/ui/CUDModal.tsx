@@ -1,29 +1,14 @@
 'use client';
 
-import { Edit, LucideIcon, LucideTrash2, X } from 'lucide-react';
-import React, { InputHTMLAttributes, useState } from 'react';
-import { Paragraph } from './Paragraph';
-import { Button } from './Button';
+import { Edit, LucideTrash2, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { Button } from './form';
 import Image from "next/image";
-import ResponsiveIcon from './ResponsiveIcon';
-import { BlurBackGround } from './BlurBackGround';
-import { Header } from '../shared/Header';
-import { cn } from '../utils/cn';
+import { Header, Main } from '../shared';
+import { cn } from '../utils';
 import { widgetCard } from '@/styles/widget';
-import { Main } from '../shared/Main';
-
-interface CUDProps extends InputHTMLAttributes<HTMLInputElement> {
-    isLoading?: boolean;
-    idToDelete?: string;
-    onAction?: (id: string) => any;
-    onClose?: () => void;
-    as?: 'create' | 'update' | 'delete' | 'none';
-    title?: string;
-    subTitle?: string;
-    children?: React.ReactNode;
-    icon?: LucideIcon;
-    className?: string;
-}
+import { CUDProps } from './types';
+import { ResponsiveIcon, BlurBackground, Paragraph } from '.';
 
 export const CUDModal = ({
     isLoading,
@@ -62,7 +47,7 @@ export const CUDModal = ({
   
   
         {openModal && (
-            <BlurBackGround intent='sm'>
+            <BlurBackground intent='sm'>
                 <div className={ cn(widgetCard({ scroll: true }), className) }>
                     <Header itemsX="between" paddingX="xs" paddingY="xs">
                         {subTitle && <Paragraph size="md">{subTitle}</Paragraph>}
@@ -105,7 +90,7 @@ export const CUDModal = ({
                             }
                     </Main>
                 </div>
-            </BlurBackGround>
+            </BlurBackground>
         )}
         </>
     );

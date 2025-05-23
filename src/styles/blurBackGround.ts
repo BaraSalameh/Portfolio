@@ -1,6 +1,6 @@
 import { cva, VariantProps } from 'class-variance-authority';
 
-export const blurBackGround = cva(
+export const blurBackground = cva(
     'flex items-center justify-center inset-0 z-50',
     {
         variants: {
@@ -21,4 +21,4 @@ export const blurBackGround = cva(
     }
 );
 
-export type BlurBackGroundVariantProps = VariantProps<typeof blurBackGround>;
+export type BlurBackgroundVariantProps = VariantProps<typeof blurBackground>;

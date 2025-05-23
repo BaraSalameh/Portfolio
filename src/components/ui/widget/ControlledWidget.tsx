@@ -1,9 +1,9 @@
 import React from "react";
-import { WidgetCardProps } from "./type";
+import { WidgetCardProps } from "./types";
 import { useParams } from "next/navigation";
 import { WidgetCard } from "./WidgetCard";
 
-const ControlledWidget = React.memo((props: WidgetCardProps) => {
+export const ControlledWidget = React.memo((props: WidgetCardProps) => {
     const { role } = useParams<{ role: 'owner' | 'client' | 'admin', username: string }>();
     const isOwner = role === 'owner';
 
@@ -17,5 +17,3 @@ const ControlledWidget = React.memo((props: WidgetCardProps) => {
         />
     );
 });
-
-export default ControlledWidget;

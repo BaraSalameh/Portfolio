@@ -1,24 +1,19 @@
 'use client';
 
 import React from 'react';
-import { cn } from '@/components/utils/cn'; // optional helper
-import { blurBackGround, BlurBackGroundVariantProps } from '@/styles/blurBackGround';
+import { cn } from '@/components/utils';
+import { blurBackground } from '@/styles';
+import { BlurBackgroundProps } from './types';
 
-interface BlurBackGroundProps extends BlurBackGroundVariantProps {
-    children: React.ReactNode;
-    className?: string;
-    onClick?: () => void;
-}
-
-export const BlurBackGround: React.FC<BlurBackGroundProps> = ({
+export const BlurBackground = ({
     children,
     fullScreen,
     intent,
     className,
     onClick,
-}) => {
+}: BlurBackgroundProps) => {
     return (
-        <div className={cn(blurBackGround({ intent, fullScreen }), className)} onClick={onClick}>
+        <div className={cn(blurBackground({ intent, fullScreen }), className)} onClick={onClick}>
             {children}
         </div>
     );

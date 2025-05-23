@@ -1,22 +1,12 @@
-import { CustomTooltip } from "@/components/utils/customTooltip";
-import { generateColorMap, generateDurationData, generatePieData } from "@/lib/utils/appFunctions";
+import { CustomTooltip } from "@/components/utils";
+import { generateColorMap } from "@/lib/utils/appFunctions";
 import { Cell, Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { ChartWidgetProps } from "./types";
 
-type BarEntry = {
-    name: string;
-    duration: number;
-};
-
-type BarChartWidgetProps = {
-    data: BarEntry[];
-    colorMap?: Record<string, string>;
-};
-
-export const BarChartWidget: React.FC<BarChartWidgetProps> = ({
+export const BarChartWidget = ({
     data,
     colorMap
-  }) => {
-  
+}: ChartWidgetProps) => {
     const internalColorMap = colorMap ?? generateColorMap(data);
 
     return (

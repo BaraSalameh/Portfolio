@@ -1,22 +1,17 @@
-import { BlurBackGround } from '../BlurBackGround';
-import { CUDModal } from '../CUDModal';
+import { CUDModal, BlurBackground, ResponsiveIcon, List } from '..';
 import { X } from 'lucide-react';
-import { cn } from '@/components/utils/cn';
-import { widgetCard } from '@/styles/widget';
+import { cn } from '@/components/utils';
+import { widgetCard } from '@/styles';
 import React from 'react';
-import { Header } from '@/components/shared/Header';
-import ResponsiveIcon from '../ResponsiveIcon';
+import { Header, Main } from '@/components/shared';
 import { WidgetList } from './WidgetList';
-import { Main } from '@/components/shared/Main';
-import { List } from '../List';
-import { WidgetModalProps } from './type';
+import { WidgetModalProps } from './types';
 
-
-export const WidgetModal: React.FC<WidgetModalProps> = ({ isLoading, isOpen, onClose, item, update, del, details, className }) => {
+export const WidgetModal = ({ isLoading, isOpen, onClose, item, update, del, details, className }: WidgetModalProps) => {
     if (!isOpen) return null;
 
     return (
-        <BlurBackGround intent='sm' className='p-5'>
+        <BlurBackground intent='sm' className='p-5'>
             <div className={cn(widgetCard({}), className)}>
                 <Header itemsX='between' paddingX="xs" paddingY="xs">
                     <div className='flex gap-3'>
@@ -47,6 +42,6 @@ export const WidgetModal: React.FC<WidgetModalProps> = ({ isLoading, isOpen, onC
                     </Main>
                 }
             </div>
-        </BlurBackGround>
+        </BlurBackground>
     );
 };

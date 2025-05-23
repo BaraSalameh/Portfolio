@@ -1,9 +1,8 @@
-import { Paragraph } from '../Paragraph';
-import { PieChartWidget } from './PieChart';
-import { BarChartWidget } from './BarChart';
-import { WidgetChartsProps } from './type';
+import { Paragraph } from '..';
+import { PieChartWidget, BarChartWidget } from '.';
+import { WidgetChartsProps } from './types';
 
-export const WidgetCharts: React.FC<WidgetChartsProps> = ({ pieData, durationData, pieTitle, barTitle, colorMap }) => (
+export const WidgetCharts = ({ pieData, durationData, pieTitle, barTitle, colorMap }: WidgetChartsProps) => (
     <div className={`w-full grid grid-cols-1 ${pieData && durationData.length > 0 ? 'sm:grid-cols-3' : ''}`}>
         {pieData.length > 0 && (
             <div className="h-64">

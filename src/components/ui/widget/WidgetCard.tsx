@@ -1,24 +1,18 @@
 'use client';
 
-import { widgetCard } from '@/styles/widget';
-import { cn } from '@/components/utils/cn';
-import { Header } from '@/components/shared/Header';
-import { Main } from '@/components/shared/Main';
-import { Paragraph } from '../Paragraph';
-import { List } from '../List';
-import ResponsiveIcon from '../ResponsiveIcon';
+import { widgetCard } from '@/styles';
+import { cn } from '@/components/utils';
+import { Paragraph, List } from '..';
 import { generateColorMap, generateDurationData, generatePieData } from '@/lib/utils/appFunctions';
 import { useState, useMemo } from 'react';
-import { WidgetList } from './WidgetList';
-import { WidgetCharts } from './WidgetCharts';
-import { WidgetModal } from './WidgetModal';
-import { CUDModal } from '../CUDModal';
+import { WidgetList, WidgetCharts, WidgetModal } from '.';
+import { CUDModal, ResponsiveIcon } from '..';
 import React from 'react';
 import { ArrowUpDown, GripVertical } from 'lucide-react';
-import { WidgetCardProps } from './type';
-import Loading from '@/components/shared/Loading';
+import { WidgetCardProps } from './types';
+import { Loading, Main, Header } from '@/components/shared';
 
-export const WidgetCard: React.FC<WidgetCardProps> = ({ isLoading, header, items, list, pie, bar, create, update, del, details, onSort, className }) => {
+export const WidgetCard = ({ isLoading, header, items, list, pie, bar, create, update, del, details, onSort, className }: WidgetCardProps) => {
 
     var isInitialWidgetCard: boolean = false;
 

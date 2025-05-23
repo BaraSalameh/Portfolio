@@ -1,17 +1,7 @@
 import { getSelectedOption } from "@/lib/utils/appFunctions";
-import { Control, Controller, FieldPath, FieldValues } from "react-hook-form";
-import { FormDropdown } from "../FormDropdown";
-
-type Option = { label: string; value: string };
-
-type ControlledDropdownProps<T extends FieldValues> = {
-    name: FieldPath<T>;
-    control: Control<T>;
-    label: string;
-    options: Option[];
-    isMulti?: boolean;
-    errors?: Partial<Record<keyof T, any>>;
-};
+import { Controller, FieldValues } from "react-hook-form";
+import { FormDropdown } from "./FormDropdown";
+import { ControlledDropdownProps, Option } from "./types";
 
 export const ControlledDropdown = <T extends FieldValues>({
     name,

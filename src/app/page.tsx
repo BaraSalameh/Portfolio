@@ -1,17 +1,15 @@
 'use client'
-import { Anchor } from "@/components/ui/Anchor";
-import { Button } from "@/components/ui/Button";
-import { SearchBar } from "@/components/ui/SearchBar";
+import { Button, Anchor } from "@/components/ui/form";
+import { SearchBar } from "@/components/ui";
 import Image from "next/image";
 import { useState } from 'react';
 import { abstractParagraph, listParagraphOne, listParagrapTwo } from "@/lib/constants";
-import { Paragraph } from "@/components/ui/Paragraph";
-import { List } from "@/components/ui/List";
+import { Paragraph, List } from "@/components/ui";
 import { Container } from "@/components/shared/Container";
 import { Header } from "@/components/shared/Header";
 import { Main } from "@/components/shared/Main";
 import { SubFooter } from "@/components/shared/SubFooter";
-import { BlurBackGround } from "@/components/ui/BlurBackGround";
+import { BlurBackground } from "@/components/ui";
 
 export default function Home() {
     const [searchOpen, setSearchOpen] = useState(false);
@@ -27,7 +25,7 @@ export default function Home() {
     return (
         <>
            {searchOpen && (
-                <BlurBackGround intent='sm'>
+                <BlurBackground intent='sm'>
                     {/* Backdrop */}
                     <div
                         className="absolute inset-0 bg-black/30 backdrop-blur-sm cursor-pointer"
@@ -41,7 +39,7 @@ export default function Home() {
                     >
                         <SearchBar />
                     </div>
-                </BlurBackGround>
+                </BlurBackground>
             )}
             {/* Main content */}
             <Container>

@@ -2,28 +2,25 @@
 
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { Paragraph } from "@/components/ui/Paragraph";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/form/Button";
 import Image from "next/image";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { ProfileFormData, profileSchema } from "@/lib/schemas/profileSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormInput } from "@/components/ui/FormInput";
 import { List } from "@/components/ui/List";
 import { useEffect } from "react";
-import { FormDropdown } from "@/components/ui/FormDropdown";
-import { getSelectedOption } from "@/lib/utils/appFunctions";
 import { CUDModal } from "@/components/ui/CUDModal";
 import { editProfile } from "@/lib/apis/owner/user/editProfile";
 import { userInfoQuery } from "@/lib/apis/owner/user/userInfoQuery";
-import ImageUploader from "@/components/ui/ImageUploader";
+import { ControlledDropdown, FormInput, ImageUploader } from "@/components/ui/form";
 
 const ProfileForm = ({ onClose } : { onClose?: () => void }) => {
 
     const dispatch = useAppDispatch();
     const { loading, error, user } = useAppSelector((state) => state.owner);
     const genderOptions = [
-        { label: 'Female', value: 0 },
-        { label: 'Male', value: 1 }
+        { label: 'Female', value: '0' },
+        { label: 'Male', value: '1' }
     ];
 
     const {
@@ -52,32 +49,6 @@ const ProfileForm = ({ onClose } : { onClose?: () => void }) => {
         await dispatch(userInfoQuery());
         onClose?.();
     };
-
-    const ControlledDropdown = ({
-        name,
-        label,
-        options,
-    }: {
-        name: keyof ProfileFormData;
-        label: string;
-        options: { label: string; value: string | number }[];
-    }) => (
-        <Controller
-            name={name}
-            control={control}
-            render={({ field }) => (
-            <FormDropdown
-                label={label}
-                options={options as any}
-                value={getSelectedOption(options as any, field.value as string)}
-                onChange={(option) => field.onChange(option?.value ?? '')}
-                onBlur={field.onBlur}
-                error={errors[name]}
-                isLoading={options.length === 0}
-            />
-            )}
-        />
-    );
 
     const handleProfilePicture = (url: string) => {
         setValue("profilePicture", url);
@@ -131,7 +102,7 @@ const ProfileForm = ({ onClose } : { onClose?: () => void }) => {
                     error={errors.phone}
                 />
 
-                <ControlledDropdown name="gender" label="Gender" options={genderOptions} />
+                <ControlledDropdown control={control} errors={errors} name="gender" label="Gender" options={genderOptions} />
 
                 <CUDModal as='update' title='Update profile picture' subTitle='Choose a new profile picture'>
                     <ImageUploader onAction={handleProfilePicture} preset="Profile_Picture"/>

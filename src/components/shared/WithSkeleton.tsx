@@ -1,13 +1,7 @@
 import React from 'react';
+import { WithSkeletonProps } from './types';
 
-interface WithSkeletonProps {
-  isLoading: boolean;
-  skeleton: React.ReactNode;
-  children: React.ReactNode;
-}
-
-const WithSkeleton: React.FC<WithSkeletonProps> = ({ isLoading, skeleton, children }) => {
-  return <React.Fragment>{isLoading ? skeleton : children}</React.Fragment>;
-};
-
-export default WithSkeleton;
+export const WithSkeleton = ({ isLoading, skeleton, children }: WithSkeletonProps) => 
+    <React.Fragment>
+        {isLoading ? skeleton : children}
+    </React.Fragment>

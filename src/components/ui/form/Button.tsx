@@ -1,21 +1,12 @@
 'use client';
 
 import React from 'react';
-import { button, ButtonVariantProps } from '@/styles/button';
-import { cn } from '@/components/utils/cn'; // optional helper
+import { button } from '@/styles';
+import { cn } from '@/components/utils';
 import { useRouter } from 'next/navigation';
+import { ButtonProps } from './types';
 
-interface ButtonProps extends ButtonVariantProps {
-    children: React.ReactNode;
-    className?: string;
-    type?: 'button' | 'submit' | 'reset';
-    onClick?: () => void;
-    onClose?: () => void;
-    url?: string;
-    disabled?: boolean;
-}
-
-export const Button: React.FC<ButtonProps> = ({
+export const Button = ({
     children,
     intent,
     size,
@@ -26,7 +17,7 @@ export const Button: React.FC<ButtonProps> = ({
     onClose,
     url,
     disabled
-}) => {
+}: ButtonProps) => {
     const router = useRouter();
 
     const handleClick = () => {

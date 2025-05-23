@@ -5,7 +5,7 @@ import { Search as SearchIcon } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/lib/store/hooks';
 import { userListQuery } from '@/lib/apis/client/userListQuery';
 import debounce from 'lodash.debounce';
-import { Paragraph } from './Paragraph';
+import { Paragraph } from '.';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 

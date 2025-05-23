@@ -2,15 +2,14 @@
 
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { Paragraph } from "@/components/ui/Paragraph";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/form/Button";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { LoginFormData, loginSchema } from "@/lib/schemas/loginSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormInput } from "@/components/ui/FormInput";
 import { login } from "@/lib/apis/account/login";
 import { List } from "@/components/ui/List";
-import { FormCheckbox } from "@/components/ui/FormCheckbox";
+import { FormCheckbox, FormInput } from "@/components/ui/form";
 
 const LoginForm = () => {
 

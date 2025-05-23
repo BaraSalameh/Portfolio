@@ -88,3 +88,18 @@ export interface WidgetModalProps {
     details?: ListItemConfig[];
     className?: string;
 }
+
+type CahrtEntry = {
+    name: string;
+    value: number;
+}
+
+export type ChartWidgetProps = {
+    data: CahrtEntry[];
+    colorMap?: Record<string, string>;
+}
+
+export interface SortableItemProps {
+    id: string;
+    children: React.ReactNode;
+}

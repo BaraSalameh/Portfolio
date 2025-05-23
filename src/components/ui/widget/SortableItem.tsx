@@ -1,13 +1,9 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { SortableItemProps } from './types';
 
-interface SortableItemProps {
-    id: string;
-    child: React.ReactNode;
-}
-
-export const SortableItem: React.FC<SortableItemProps> = ({ id, child }) => {
+export const SortableItem = ({ id, children }: SortableItemProps) => {
     const {
         attributes,
         listeners,
@@ -30,7 +26,7 @@ export const SortableItem: React.FC<SortableItemProps> = ({ id, child }) => {
                 {...listeners}
                 style={{ cursor: 'grab' }}
             >
-                {child}
+                {children}
             </div>
         </div>
     );

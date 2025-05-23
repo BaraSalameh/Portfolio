@@ -2,24 +2,20 @@
 
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { Paragraph } from "@/components/ui/Paragraph";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/form/Button";
 import Image from "next/image";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormInput } from "@/components/ui/FormInput";
 import { List } from "@/components/ui/List";
-import { FormCheckbox } from "@/components/ui/FormCheckbox";
 import { useEffect, useMemo } from "react";
 import { ProjectTechnologyProps } from "../types";
 import { ProjectTechnologyFormData, projectTechnologySchema } from "@/lib/schemas/projectTechnologyScehma";
 import { projectTechnologyListQuery } from "@/lib/apis/owner/projectTechnology/projectTechnologyListQuery";
-import { FormDropdown } from "@/components/ui/FormDropdown";
-import { getSelectedOption, mapProjectTechnologyToForm } from "@/lib/utils/appFunctions";
+import { mapProjectTechnologyToForm } from "@/lib/utils/appFunctions";
 import { technologyListQuery } from "@/lib/apis/owner/projectTechnology/technologyListQuery";
-import { MultiValue } from "react-select";
-import { Option } from "@/components/types";
 import { addEditDeleteProjectTechnology } from "@/lib/apis/owner/projectTechnology/addEdetDeleteProjectTechnology";
 import { ControlledDropdown } from "@/components/ui/form/ControlledDropdown";
+import { FormCheckbox, FormInput } from "@/components/ui/form";
 
 const ProjectTechnology = ({id, onClose} : ProjectTechnologyProps) => {
 
