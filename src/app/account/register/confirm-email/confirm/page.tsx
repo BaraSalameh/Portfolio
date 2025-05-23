@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useAppDispatch } from "@/lib/store/hooks";
 import { confirmEmail } from "@/lib/apis/account/confirmEmail";
 
-export default function ConfirmedPage() {
+const ConfirmedPage = () => {
 
     const searchParams = useSearchParams();
     const token = searchParams.get('token');
@@ -23,4 +23,6 @@ export default function ConfirmedPage() {
     
         router.push('/account/login');
     }, [token, email]);
-}
+};
+
+export default ConfirmedPage;

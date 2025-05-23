@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Anchor } from "@/components/ui/Anchor";
 import { Main } from "@/components/shared/Main";
 import { SubFooter } from "@/components/shared/SubFooter";
-import RegisterForm from "./RegisterForm";
+import RegisterForm from "../forms/RegisterForm";
 import { useAppSelector } from "@/lib/store/hooks";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -13,11 +13,7 @@ import { widgetCard } from "@/styles/widget";
 import Loading from "@/components/shared/Loading";
 import React from "react";
 
-interface RegisterProps {
-    className?: string;
-}
-
-const RegisterPage: React.FC<RegisterProps> = ({ className }) => {
+const RegisterPage = () => {
 
     var router = useRouter();
     const { loading, username, isConfirmed } = useAppSelector((state) => state.auth);
@@ -30,7 +26,7 @@ const RegisterPage: React.FC<RegisterProps> = ({ className }) => {
         <React.Fragment>
             <Loading isLoading={loading} />
             <Main paddingY='none'>
-                <section className={cn(widgetCard({ scroll: true }), className)}>
+                <section className={cn(widgetCard({ scroll: true }))}>
                     <RegisterForm />
                 </section>
             </Main>

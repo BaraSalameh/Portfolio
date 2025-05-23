@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/styles/globals.css";
-import Footer from "@/components/shared/Footer";
 import ReduxProvider from "@/lib/providers/ReduxProvider";
 
 const geistSans = Geist({
@@ -28,7 +27,6 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
                         {children}
                     </ReduxProvider>
                 </main>
-                {/* <Footer /> */}
             </body>
         </html>
     );

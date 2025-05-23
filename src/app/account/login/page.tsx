@@ -1,12 +1,10 @@
 'use client';
 
-import LoginForm from "@/app/account/login/loginForm";
+import LoginForm from "@/app/account/forms/loginForm";
 import {  useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { useEffect } from "react";
 import Image from "next/image";
 import { Anchor } from "@/components/ui/Anchor";
-import { Container } from "@/components/shared/Container";
-import { Header } from "@/components/shared/Header";
 import { Main } from "@/components/shared/Main";
 import { SubFooter } from "@/components/shared/SubFooter";
 import { useRouter } from "next/navigation";
@@ -16,11 +14,7 @@ import { widgetCard } from "@/styles/widget";
 import Loading from "@/components/shared/Loading";
 import React from "react";
 
-interface LoginProps {
-    className?: string;
-}
-
-const LoginPage: React.FC<LoginProps> = ({ className }) => {
+const LoginPage = () => {
 
     const router = useRouter();
     const { loading, isConfirmed, username } = useAppSelector(state => state.auth);
@@ -47,7 +41,7 @@ const LoginPage: React.FC<LoginProps> = ({ className }) => {
         <React.Fragment>
             <Loading isLoading={loading} />
             <Main>
-                <section className={cn(widgetCard(), className)}>
+                <section className={cn(widgetCard())}>
                     <LoginForm />
                 </section>
             </Main>

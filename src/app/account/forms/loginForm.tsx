@@ -11,9 +11,8 @@ import { FormInput } from "@/components/ui/FormInput";
 import { login } from "@/lib/apis/account/login";
 import { List } from "@/components/ui/List";
 import { FormCheckbox } from "@/components/ui/FormCheckbox";
-import { Header } from "@/components/shared/Header";
 
-export default function LoginForm() {
+const LoginForm = () => {
 
     const dispatch = useAppDispatch();
     const { loading, error } = useAppSelector((state) => state.auth);
@@ -83,3 +82,5 @@ export default function LoginForm() {
         </form>
     );
 };
+
+export default LoginForm;

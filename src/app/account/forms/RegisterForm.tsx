@@ -11,9 +11,8 @@ import { register as registerAPI } from "@/lib/apis/account/register";
 import { List } from "@/components/ui/List";
 import { FormCheckbox } from "@/components/ui/FormCheckbox";
 import { RegisterFormData, registerSchema } from "@/lib/schemas/registerSchema";
-import { useEffect } from "react";
 
-export default function RegisterForm() {
+const RegisterForm = () => {
 
     const dispatch = useAppDispatch();
     const { loading, error } = useAppSelector((state) => state.auth);
@@ -102,3 +101,5 @@ export default function RegisterForm() {
         </form>
     );
 };
+
+export default RegisterForm;

@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useAppDispatch } from "@/lib/store/hooks";
 import { resendEmail } from "@/lib/apis/account/resendEmail";
 
-export default function ResendPage() {
+const ResendPage = () => {
 
     const searchParams = useSearchParams();
     const email = searchParams.get('email');
@@ -22,3 +22,5 @@ export default function ResendPage() {
         router.push(`/account/register/confirm-email`);
     }, [email]);
 }
+
+export default ResendPage;
