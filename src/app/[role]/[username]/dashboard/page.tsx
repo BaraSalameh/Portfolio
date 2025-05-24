@@ -3,27 +3,14 @@
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { Briefcase, Clock, Folder, GraduationCap, LocationEdit, WandSparklesIcon, Link, SearchCodeIcon } from "lucide-react";
 import { useCallback, useEffect } from "react";
-import { sortEducation } from "@/lib/apis/owner/education/sortEducation";
 import debounce from "lodash.debounce";
 import { ProfileFormData } from "@/lib/schemas";
-import { deleteEducation } from "@/lib/apis/owner/education/deleteEducation";
-import { educationListQuery } from "@/lib/apis/owner/education/educationListQuery";
-import { sortExperience } from "@/lib/apis/owner/experience/sortExperience";
-import { experienceListQuery } from "@/lib/apis/owner/experience/experienceListQuery";
-import { userFullInfoQuery } from "@/lib/apis/owner/user/userFullInfoQuery";
-import { deleteExperience } from "@/lib/apis/owner/experience/deleteExperience";
 import { useParams } from "next/navigation";
-import { userByUsernameQuery } from "@/lib/apis/client/userBuUsernameQuery";
 import EducationForm from "../forms/educationForm";
 import ExperienceForm from "../forms/experienceForm";
-import { sortProject } from "@/lib/apis/owner/projectTechnology/sortProject";
-import { projectTechnologyListQuery } from "@/lib/apis/owner/projectTechnology/projectTechnologyListQuery";
 import ProjectTechnologyForm from "../forms/projectTechnologyForm";
-import { deleteProject } from "@/lib/apis/owner/projectTechnology/deleteProject";
-import { Profile } from "@/components/ui/profile";
-import { StaticBackground } from "@/components/ui";
-import { ControlledWidget } from "@/components/ui/widget";
-import { Loading, WithSkeleton, Main } from "@/components/shared";
+import { deleteProject, projectTechnologyListQuery, sortProject, userByUsernameQuery, deleteExperience, userFullInfoQuery, experienceListQuery, sortExperience, educationListQuery, deleteEducation, sortEducation } from "@/lib/apis";
+import { Loading, WithSkeleton, Main, StaticBackground, ControlledWidget, Profile } from "@/components";
 
 export default function OwnerDashboardPage() {
 

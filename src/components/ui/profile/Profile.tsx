@@ -18,7 +18,7 @@ export const Profile = ({
     const clientLink = getClientLink() as string;
     const profilePicture =
         user?.profilePicture ??
-        (user?.gender === 0 ? '/Default-Female.svg' : '/Default-Male.svg');
+        (user?.gender === '0' ? '/Default-Female.svg' : '/Default-Male.svg');
     const coverPhoto = user?.coverPhoto ?? '/Default-CoverPhoto.svg';
 
   return (
@@ -72,11 +72,11 @@ export const Profile = ({
             <Paragraph position='start' className="italic">
                 {user?.title}
             </Paragraph>
-            {(user?.gender === 0 || user?.gender === 1 || user?.birthDate) && (
+            {(user?.gender === '0' || user?.gender === '1' || user?.birthDate) && (
                 <Paragraph position="start">
-                    {user?.gender === 1
+                    {user?.gender === '1'
                     ? 'Male'
-                    : user?.gender === 0
+                    : user?.gender === '0'
                     ? 'Female'
                     : ''}
                     {user?.birthDate ? ` (${user.birthDate})` : ''}
