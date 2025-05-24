@@ -1,8 +1,40 @@
 import { AnchorVariantProps } from "@/styles/anchor";
 import { ButtonVariantProps } from "@/styles/button";
 import { InputHTMLAttributes } from "react";
-import { Control, FieldError, FieldPath, FieldValues, UseFormRegisterReturn } from "react-hook-form";
+import { Control, FieldError, FieldPath, FieldValues, Path, UseFormRegisterReturn } from "react-hook-form";
 import { ActionMeta, MultiValue, SingleValue } from "react-select";
+import { z } from "zod";
+
+type As = 'Input' | 'Checkbox' | 'Dropdown';
+type Type = 'Password' | 'Email' | 'Text' | 'Number' | 'Date';
+
+export interface ControlledFormProps<T extends z.ZodTypeAny> {
+    schema: T;
+    onSubmit: (data: z.infer<T>) => void;
+    items: {
+        as: As;
+        label?: string;
+        type?: Type;
+        placeholder?: string;
+        name: Path<z.infer<T>>;
+        options?: Option[];
+    }[];
+    error?: string | string[] | null;
+    loading?: boolean;
+    className?: string;
+    defaultValues?: Partial<z.infer<T>>;
+    watch?: {
+        name: Path<z.infer<T>>;
+        defaultValue: boolean;
+        watched: Path<z.infer<T>>
+    };
+    resetItems?: T;
+    indicator?: {
+        when: string;
+        while?: string;
+    };
+    children?: React.ReactNode;
+}
 
 export interface AnchorProps extends AnchorVariantProps {
     children: React.ReactNode;

@@ -1,3 +1,4 @@
+export { ControlledForm } from './ControlledForm';
 export { Anchor } from './Anchor';
 export { Button } from './Button';
 export { ControlledDropdown } from './ControlledDropdown';

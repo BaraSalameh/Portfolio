@@ -1,29 +1,20 @@
 'use client';
 
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
-import { Paragraph } from "@/components/ui/Paragraph";
-import { Button } from "@/components/ui/form/Button";
-import Image from "next/image";
-import { useForm, useWatch } from "react-hook-form";
 import { EducationFormData, educationSchema } from "@/lib/schemas/educationSchema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { List } from "@/components/ui/List";
 import { useEffect, useMemo } from "react";
-import { institutionListQuery } from "@/lib/apis/owner/education/institutionListQuery";
-import { degreeListQuery } from "@/lib/apis/owner/education/degreeListQuery";
-import { fieldOfStudyListQuery } from "@/lib/apis/owner/education/fieldOfStudyListQuery";
+import { institutionListQuery, degreeListQuery, fieldOfStudyListQuery, addEditEducation, educationListQuery } from "@/lib/apis/owner/education";
 import { mapEducationToForm } from "@/lib/utils/appFunctions";
-import { addEditEducation } from "@/lib/apis/owner/education/addEditEducation";
-import { educationListQuery } from "@/lib/apis/owner/education/educationListQuery";
 import { EducationProps } from "../types";
-import { ControlledDropdown } from "@/components/ui/form/ControlledDropdown";
-import { FormCheckbox, FormInput } from "@/components/ui/form";
+import { ControlledForm } from "@/components/ui/form";
 
-export default function EducationForm({id, onClose} : EducationProps) {
+const EducationForm = ({id, onClose} : EducationProps) => {
 
     const dispatch = useAppDispatch();
     const { loading, error, lstEducations, lstInstitutions, lstDegrees, lstFields } = useAppSelector((state) => state.education);
     const educationToHandle = lstEducations.find(ed => ed.id === id);
+
+    const indicator = id ? {when: 'Update', while: 'Updating...'} : {when: 'Create', while: 'creating...'};
 
     const institutionOptions = useMemo(() =>
         lstInstitutions.map(i => ({ label: i.name, value: i.id }))
@@ -37,36 +28,11 @@ export default function EducationForm({id, onClose} : EducationProps) {
         lstFields.map(i => ({ label: i.name, value: i.id }))
     , [lstFields]);
 
-    const {
-        register,
-        handleSubmit, 
-        control,
-        reset,
-        formState: { errors },
-    } = useForm<EducationFormData>({
-        resolver: zodResolver(educationSchema),
-        defaultValues: {
-            isStudying: false,
-        }
-    });
-
-    const isStudying = useWatch({
-        control,
-        name: "isStudying",
-        defaultValue: false,
-    });
-
     const onSubmit = async (data: EducationFormData) => {
         await dispatch(addEditEducation(data));
         await dispatch(educationListQuery());
         onClose?.();
     };
-
-    useEffect(() => {
-        if (educationToHandle) {
-            reset(mapEducationToForm(educationToHandle) ?? {});
-        }
-    }, [id]);
 
     useEffect(() => {
         lstInstitutions.length === 0 && dispatch(institutionListQuery());
@@ -75,64 +41,29 @@ export default function EducationForm({id, onClose} : EducationProps) {
     }, []);
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="relative space-y-4">
-            <fieldset disabled={loading} className="space-y-4">
-                <ControlledDropdown control={control} errors={errors} name="LKP_InstitutionID" label="Institution" options={institutionOptions} />
-                <ControlledDropdown control={control} errors={errors} name="LKP_DegreeID" label="Degree" options={degreeOptions} />
-                <ControlledDropdown control={control} errors={errors} name="LKP_FieldOfStudyID" label="Field of study" options={fieldOptions} />
-
-                <FormInput
-                    label="Start date"
-                    type="date"
-                    registration={register('startDate')}
-                    error={errors.startDate}
-                />
-
-                {!isStudying && (
-                    <FormInput
-                        label="End date"
-                        type="date"
-                        registration={register('endDate')}
-                        error={errors.endDate}
-                    />
-                )}
-
-                <FormCheckbox
-                    label="Still studying"
-                    registration={register('isStudying')}
-                    error={errors.isStudying}
-                />
-
-                <FormInput
-                    label="Description"
-                    type="text"
-                    placeholder="Desciption"
-                    registration={register('description')}
-                    error={errors.description}
-                />
-            </fieldset>
-            
-
-            {Array.isArray(error) && error.length > 1 ? (
-                <List intent="danger" size="sm">
-                    {error.map((e: string, i: number) => (
-                        <li key={i}>{e}</li>
-                    ))}
-                </List>
-            ) : (
-                error && <Paragraph intent="danger" size="sm">{error}</Paragraph>
-            )}
-
-            <Button intent="standard" rounded="full" size="lg" type="submit" disabled={loading}>
-                <Image
-                    className="dark:invert"
-                    src="/vercel.svg"
-                    alt="Vercel logomark"
-                    width={20}
-                    height={20}
-                />
-                {loading ? 'Submitting...' : 'Submit'}
-            </Button>
-        </form>
+        <ControlledForm
+            schema={educationSchema}
+            onSubmit={onSubmit}
+            items={[
+                {as: 'Dropdown', name: 'LKP_InstitutionID', options: institutionOptions, label: 'Institution'},
+                {as: 'Dropdown', name: 'LKP_DegreeID', options: degreeOptions, label: 'Degree'},
+                {as: 'Dropdown', name: 'LKP_FieldOfStudyID', options: fieldOptions, label: 'Field of study'},
+                {as: 'Input', name: 'startDate', label: 'Start date', type: 'Date'},
+                {as: 'Input', name: 'endDate', label: 'End date', type: 'Date'},
+                {as: 'Checkbox', name: 'isStudying', label: 'Still studying?'},
+            ]}
+            error={error}
+            loading={loading}
+            defaultValues={{isStudying: false}}
+            watch={{
+                name: 'isStudying',
+                defaultValue: false,
+                watched: 'endDate'
+            }}
+            resetItems={mapEducationToForm(educationToHandle) as any}
+            indicator={indicator}
+        />
     );
 }
+
+export default EducationForm;

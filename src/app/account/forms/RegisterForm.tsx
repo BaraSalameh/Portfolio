@@ -2,102 +2,39 @@
 
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { Paragraph } from "@/components/ui/Paragraph";
-import { Button } from "@/components/ui/form/Button";
-import Image from "next/image";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { register as registerAPI } from "@/lib/apis/account/register";
-import { List } from "@/components/ui/List";
+import { register } from "@/lib/apis/account/register";
 import { RegisterFormData, registerSchema } from "@/lib/schemas/registerSchema";
-import { FormCheckbox, FormInput } from "@/components/ui/form";
+import { ControlledForm } from "@/components/ui/form";
 
 const RegisterForm = () => {
 
     const dispatch = useAppDispatch();
     const { loading, error } = useAppSelector((state) => state.auth);
-    
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<RegisterFormData>({
-        resolver: zodResolver(registerSchema),
-        defaultValues:{
-            rememberMe: false
-        }
-    });
-    
+
     const onSubmit = (data: RegisterFormData) => {
-        dispatch(registerAPI(data));
+        dispatch(register(data));
     };
-      
+
     return(
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <ControlledForm
+            schema={registerSchema}
+            onSubmit={onSubmit}
+            items={[
+                {as: 'Input', name: 'firstname', label: 'Firstname', placeholder: 'John'},
+                {as: 'Input', name: 'lastname', label: 'Lastname', placeholder: 'Doe'},
+                {as: 'Input', name: 'email', label: 'Email', placeholder: 'john.doe@example.com', type: 'Email'},
+                {as: 'Input', name: 'reEmail', label: 'Confirm Email', placeholder: 'Re-enter your email', type: 'Email'},
+                {as: 'Input', name: 'password', label: 'Password', placeholder: '* * * * * * * *', type: 'Password'},
+                {as: 'Checkbox', name: 'rememberMe', label: 'Remember me'},
+            ]}
+            error={error}
+            loading={loading}
+            defaultValues={{rememberMe: false}}
+        >
             <Paragraph size="xl" className="py-3">
                 Register
             </Paragraph>
-            <FormInput
-                label="Firstname"
-                type="text"
-                placeholder="Ex. John"
-                registration={register('firstname')}
-                error={errors.firstname}
-            />
-            <FormInput
-                label="Lastname"
-                type="text"
-                placeholder="Ex. Doe"
-                registration={register('lastname')}
-                error={errors.lastname}
-            />
-            <FormInput
-                label="Email"
-                type="text"
-                placeholder="Enter your email"
-                registration={register('email')}
-                error={errors.email}
-            />
-            <FormInput
-                label="Confirm Email"
-                type="text"
-                placeholder="Re-enter your email"
-                registration={register('reEmail')}
-                error={errors.reEmail}
-            />
-            <FormInput
-                label="Password"
-                type="password"
-                placeholder="Enter your password"
-                registration={register('password')}
-                error={errors.password}
-            />
-            <FormCheckbox
-                label="Remember me"
-                registration={register('rememberMe')}
-                error={errors.rememberMe}
-            />
-
-            {Array.isArray(error) && error.length > 1 ? (
-                <List intent="danger" size="sm">
-                    {error.map((e: string, i: number) => (
-                        <li key={i}>{e}</li>
-                    ))}
-                </List>
-            ) : (
-                error && <Paragraph intent="danger" size="sm">{error}</Paragraph>
-            )}
-
-            <Button intent="standard" rounded="full" size="lg" type="submit" disabled={loading}>
-                <Image
-                    className="dark:invert"
-                    src="/vercel.svg"
-                    alt="Vercel logomark"
-                    width={20}
-                    height={20}
-                />
-                {loading ? 'Registering...' : 'Register'}
-            </Button>
-        </form>
+        </ControlledForm>
     );
 };
 
