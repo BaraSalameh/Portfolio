@@ -2,15 +2,15 @@
 
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { Briefcase, Clock, Folder, GraduationCap, LocationEdit, WandSparklesIcon, Link, SearchCodeIcon } from "lucide-react";
-import { useCallback, useEffect } from "react";
-import debounce from "lodash.debounce";
+import { useEffect } from "react";
 import { ProfileFormData } from "@/lib/schemas";
 import { useParams } from "next/navigation";
 import EducationForm from "../forms/educationForm";
 import ExperienceForm from "../forms/experienceForm";
 import ProjectTechnologyForm from "../forms/projectTechnologyForm";
-import { deleteProject, projectTechnologyListQuery, sortProject, userByUsernameQuery, deleteExperience, userFullInfoQuery, experienceListQuery, sortExperience, educationListQuery, deleteEducation, sortEducation } from "@/lib/apis";
+import { userByUsernameQuery, userFullInfoQuery } from "@/lib/apis";
 import { Loading, WithSkeleton, Main, StaticBackground, ControlledWidget, Profile } from "@/components";
+import { useDebouncedSortEducation, useDebouncedSortExperience, useDebouncedSortProject, useHandleEducationDelete, useHandleExperienceDelete, useHandleProjectDelete } from "./handlers";
 
 export default function OwnerDashboardPage() {
 
@@ -27,62 +27,12 @@ export default function OwnerDashboardPage() {
         isLoading: role === 'owner' ? ownerInfoLoading : clientInfoLoading,
     };
 
-    const handleProjectDelete = async (id: string) => {
-        try {
-            await dispatch(deleteProject(id));
-            await dispatch(projectTechnologyListQuery());
-        } catch (err) {
-            console.error('Failed to delete:', err);
-        }
-    };
-
-    const handleEducationDelete = async (id: string) => {
-        try {
-            await dispatch(deleteEducation(id));
-            await dispatch(educationListQuery());
-        } catch (err) {
-            console.error('Failed to delete:', err);
-        }
-    };
-
-    const handleExperienceDelete = async (id: string) => {
-        try {
-            await dispatch(deleteExperience(id));
-            await dispatch(experienceListQuery());
-        } catch (err) {
-            console.error('Failed to delete:', err);
-        }
-    };
-
-    const debouncedSortProject = useCallback(
-        debounce( async (lstIds: string[]) => {
-            if (lstIds.length > 0) {
-                await dispatch(sortProject(lstIds));
-                await dispatch(projectTechnologyListQuery());
-            }
-        
-        }, 1000), []
-    );
-
-    const debouncedSortEducation = useCallback(
-        debounce( async (lstIds: string[]) => {
-            if (lstIds.length > 0) {
-                await dispatch(sortEducation(lstIds));
-                await dispatch(educationListQuery());
-            }
-        
-        }, 1000), []
-    );
-
-    const debouncedSortExperience = useCallback(
-        debounce( async (lstIds: string[]) => {
-            if (lstIds.length > 0) {
-                await dispatch(sortExperience(lstIds));
-                await dispatch(experienceListQuery());
-            }
-        
-        }, 1000), []
-    );
+    const handleProjectDelete = useHandleProjectDelete();
+    const handleEducationDelete = useHandleEducationDelete();
+    const handleExperienceDelete = useHandleExperienceDelete();
+    const debouncedSortProject = useDebouncedSortProject();
+    const debouncedSortEducation = useDebouncedSortEducation();
+    const debouncedSortExperience = useDebouncedSortExperience();
 
     useEffect(() => {
         if(role === 'owner') {
