@@ -1,5 +1,5 @@
 import { userByUsernameQuery } from '@/lib/apis/client/userBuUsernameQuery';
-import { ProfileFormData } from '@/lib/schemas/profileSchema';
+import { ProfileFormData } from '@/lib/schemas';
 import { createSlice } from '@reduxjs/toolkit';
 
 interface ProfileState {

@@ -1,4 +1,4 @@
-import { EducationFormData } from "@/lib/schemas/educationSchema";
+import { EducationFormData } from "@/lib/schemas";
 import { transformPayload } from "@/lib/utils/appFunctions";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { dynamicApi } from "../../apiClient";

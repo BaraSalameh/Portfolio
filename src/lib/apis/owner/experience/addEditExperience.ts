@@ -1,7 +1,7 @@
 import { transformPayload } from "@/lib/utils/appFunctions";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { dynamicApi } from "../../apiClient";
-import { ExperienceFormData } from "@/lib/schemas/experienceSchema";
+import { ExperienceFormData } from "@/lib/schemas";
 
 export const addEditExperience = createAsyncThunk(
     'experience/addEditExperience',

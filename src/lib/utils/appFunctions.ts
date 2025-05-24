@@ -126,12 +126,24 @@ export const mapEducationToForm = (educationFromDb: any): EducationFormData => {
     return result;
 };
 
-export const mapProjectTechnologyToForm = (projectTechnologyFromDb: any): ProjectTechnologyFormData => ({
-    ...projectTechnologyFromDb,
-    lstTechnologies: projectTechnologyFromDb.lstTechnologies?.map(
-        (pt: any) => pt.id
-    ) ?? []
-});
+export const mapProjectTechnologyToForm = (projectTechnologyFromDb: any): EducationFormData => {
+    const result = projectTechnologyFromDb
+        ?   {
+                ...projectTechnologyFromDb,
+                lstTechnologies: projectTechnologyFromDb.lstTechnologies?.map(
+                    (pt: any) => pt.id
+                ) ?? []
+            }
+        : null;
+    return result;
+};
+
+// export const mapProjectTechnologyToForm = (projectTechnologyFromDb: any): ProjectTechnologyFormData => ({
+//     ...projectTechnologyFromDb,
+    // lstTechnologies: projectTechnologyFromDb.lstTechnologies?.map(
+    //     (pt: any) => pt.id
+    // ) ?? []
+// });
 
 export const getSelectedOption = (
     options: { label: string; value: string }[],

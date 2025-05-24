@@ -32,9 +32,9 @@ export const FormInput = ({
                     <Paragraph>{label}</Paragraph>
                 </label>
             }
-            {rest.type === 'textarea' ? (
+            {(rest.type === 'textarea' || rest.type === 'Textarea') ? (
                 <textarea
-                    {...(registration as any)} // casting because it can be for input or textarea
+                    {...(registration as any)}
                     {...rest}
                     className={`${inputClasses} overflow-auto scrollbar-hide`}
                 />

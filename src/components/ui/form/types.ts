@@ -1,12 +1,13 @@
 import { AnchorVariantProps } from "@/styles/anchor";
 import { ButtonVariantProps } from "@/styles/button";
-import { InputHTMLAttributes } from "react";
+import React, { InputHTMLAttributes } from "react";
 import { Control, FieldError, FieldPath, FieldValues, Path, UseFormRegisterReturn } from "react-hook-form";
 import { ActionMeta, MultiValue, SingleValue } from "react-select";
 import { z } from "zod";
 
-type As = 'Input' | 'Checkbox' | 'Dropdown';
-type Type = 'Password' | 'Email' | 'Text' | 'Number' | 'Date';
+type As = 'Input' | 'Checkbox' | 'Dropdown' | 'DropdownMulti' | 'Modal';
+type Type = 'Password' | 'Email' | 'Text' | 'Number' | 'Date' | 'Textarea';
+type ModalAs = 'create' | 'update' | 'delete' | 'none';
 
 export interface ControlledFormProps<T extends z.ZodTypeAny> {
     schema: T;
@@ -18,6 +19,12 @@ export interface ControlledFormProps<T extends z.ZodTypeAny> {
         placeholder?: string;
         name: Path<z.infer<T>>;
         options?: Option[];
+        modal?: {
+            as: ModalAs;
+            children: React.ReactNode;
+            title?: string;
+            subTitle?: string;
+        }
     }[];
     error?: string | string[] | null;
     loading?: boolean;
@@ -95,6 +102,6 @@ export interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 export interface ImageUploaderProps {
     preset: 'Profile_Picture' | 'Cover_Photo';
-    onAction: (url: string) => void;
+    onAction?: (url: string) => void;
     onClose?: () => void;
 }

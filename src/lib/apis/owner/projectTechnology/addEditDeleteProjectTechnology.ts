@@ -1,7 +1,7 @@
 import { transformPayload } from "@/lib/utils/appFunctions";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { dynamicApi } from "../../apiClient";
-import { ProjectTechnologyFormData } from "@/lib/schemas/projectTechnologyScehma";
+import { ProjectTechnologyFormData } from "@/lib/schemas";
 
 export const addEditDeleteProjectTechnology = createAsyncThunk(
     'projectTechnology/addEditDeleteProjectTechnology',

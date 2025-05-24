@@ -1,13 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { institutionListQuery } from '@/lib/apis/owner/education/institutionListQuery';
-import { degreeListQuery } from '@/lib/apis/owner/education/degreeListQuery';
-import { fieldOfStudyListQuery } from '@/lib/apis/owner/education/fieldOfStudyListQuery';
-import { userFullInfoQuery } from '@/lib/apis/owner/user/userFullInfoQuery';
-import { educationListQuery } from '@/lib/apis/owner/education/educationListQuery';
-import { addEditEducation } from '@/lib/apis/owner/education/addEditEducation';
-import { deleteEducation } from '@/lib/apis/owner/education/deleteEducation';
-import { EducationFormData } from '@/lib/schemas/educationSchema';
-import { userByUsernameQuery } from '@/lib/apis/client/userBuUsernameQuery';
+import { institutionListQuery, degreeListQuery, fieldOfStudyListQuery, educationListQuery, addEditEducation, deleteEducation } from '@/lib/apis/owner/education';
+import { userFullInfoQuery } from '@/lib/apis/owner/user';
+import { EducationFormData } from '@/lib/schemas';
+import { userByUsernameQuery } from '@/lib/apis/client';
 
 interface EducationState {
     lstEducations: EducationFormData[];

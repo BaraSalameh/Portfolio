@@ -5,7 +5,7 @@ import { Briefcase, Clock, Folder, GraduationCap, LocationEdit, WandSparklesIcon
 import { useCallback, useEffect } from "react";
 import { sortEducation } from "@/lib/apis/owner/education/sortEducation";
 import debounce from "lodash.debounce";
-import { ProfileFormData } from "@/lib/schemas/profileSchema";
+import { ProfileFormData } from "@/lib/schemas";
 import { deleteEducation } from "@/lib/apis/owner/education/deleteEducation";
 import { educationListQuery } from "@/lib/apis/owner/education/educationListQuery";
 import { sortExperience } from "@/lib/apis/owner/experience/sortExperience";

@@ -1,11 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { userFullInfoQuery } from '@/lib/apis/owner/user/userFullInfoQuery';
-import { ProjectTechnologyFormData, TechnologyFormData } from '@/lib/schemas/projectTechnologyScehma';
-import { projectTechnologyListQuery } from '@/lib/apis/owner/projectTechnology/projectTechnologyListQuery';
-import { technologyListQuery } from '@/lib/apis/owner/projectTechnology/technologyListQuery';
-import { addEditDeleteProjectTechnology } from '@/lib/apis/owner/projectTechnology/addEdetDeleteProjectTechnology';
-import { deleteProject } from '@/lib/apis/owner/projectTechnology/deleteProject';
-import { userByUsernameQuery } from '@/lib/apis/client/userBuUsernameQuery';
+import { ProjectTechnologyFormData, TechnologyFormData } from '@/lib/schemas';
+import { deleteProject, addEditDeleteProjectTechnology, technologyListQuery, projectTechnologyListQuery } from '@/lib/apis/owner/projectTechnology';
+import { userFullInfoQuery } from '@/lib/apis/owner/user';
+import { userByUsernameQuery } from '@/lib/apis/client';
 
 interface ProjectTechnologyState {
     lstProjectTechnologies: ProjectTechnologyFormData[],

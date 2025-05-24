@@ -2,7 +2,7 @@
 
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { Paragraph } from "@/components/ui/Paragraph";
-import { LoginFormData, loginSchema } from "@/lib/schemas/loginSchema";
+import { LoginFormData, loginSchema } from "@/lib/schemas";
 import { login } from "@/lib/apis/account/login";
 import { ControlledForm } from "@/components/ui/form";
 

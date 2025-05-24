@@ -40,7 +40,7 @@ export const ImageUploader = ({ preset, onAction, onClose }: ImageUploaderProps)
         });
 
         const data = await res.json();
-        onAction(data.secure_url);
+        onAction?.(data.secure_url);
         onClose?.();
     };
 

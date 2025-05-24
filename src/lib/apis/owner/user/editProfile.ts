@@ -1,7 +1,7 @@
 import { transformPayload } from "@/lib/utils/appFunctions";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { dynamicApi } from "../../apiClient";
-import { ProfileFormData } from "@/lib/schemas/profileSchema";
+import { ProfileFormData } from "@/lib/schemas";
 
 export const editProfile = createAsyncThunk(
     'owner/editProfile',

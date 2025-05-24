@@ -1,8 +1,7 @@
-import { logout } from '@/lib/apis/account/logout';
-import { userInfoQuery } from '@/lib/apis/owner/user/userInfoQuery';
+import { logout } from '@/lib/apis/account';
+import { userInfoQuery, userFullInfoQuery } from '@/lib/apis/owner/user';
 import { createSlice } from '@reduxjs/toolkit';
-import { ProfileFormData } from "@/lib/schemas/profileSchema";
-import { userFullInfoQuery } from '@/lib/apis/owner/user/userFullInfoQuery';
+import { ProfileFormData } from "@/lib/schemas";;
 
 interface ProfileState {
     user: ProfileFormData | null;

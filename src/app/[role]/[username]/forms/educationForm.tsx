@@ -1,7 +1,7 @@
 'use client';
 
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
-import { EducationFormData, educationSchema } from "@/lib/schemas/educationSchema";
+import { EducationFormData, educationSchema } from "@/lib/schemas";
 import { useEffect, useMemo } from "react";
 import { institutionListQuery, degreeListQuery, fieldOfStudyListQuery, addEditEducation, educationListQuery } from "@/lib/apis/owner/education";
 import { mapEducationToForm } from "@/lib/utils/appFunctions";

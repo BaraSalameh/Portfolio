@@ -3,7 +3,7 @@
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { Paragraph } from "@/components/ui/Paragraph";
 import { register } from "@/lib/apis/account/register";
-import { RegisterFormData, registerSchema } from "@/lib/schemas/registerSchema";
+import { RegisterFormData, registerSchema } from "@/lib/schemas";
 import { ControlledForm } from "@/components/ui/form";
 
 const RegisterForm = () => {

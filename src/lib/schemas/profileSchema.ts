@@ -53,7 +53,7 @@ export const profileSchema = z.object({
         .nullable(),
 
     gender: z
-        .number()
+        .string()
         .optional()
         .nullable(),
 

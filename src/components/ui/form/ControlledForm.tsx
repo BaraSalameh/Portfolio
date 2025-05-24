@@ -12,6 +12,8 @@ import { FormInput } from "./FormInput";
 import { FormCheckbox } from "./FormCheckbox";
 import { ControlledDropdown } from "./ControlledDropdown";
 import { useEffect } from "react";
+import { CUDModal } from "..";
+import React from "react";
 
 export const ControlledForm = <T extends z.ZodTypeAny> ({ 
     schema,
@@ -32,6 +34,7 @@ export const ControlledForm = <T extends z.ZodTypeAny> ({
         register,
         handleSubmit,
         reset,
+        setValue,
         formState: { errors },
     } = useForm<z.infer<T>>({
         resolver: zodResolver(schema),
@@ -58,37 +61,52 @@ export const ControlledForm = <T extends z.ZodTypeAny> ({
                 items.map((item, index) => {
                     if(toWatch && watch?.watched === item.name && watch.defaultValue !== toWatch) return null;
 
-                    if(item.as === 'Input') {
-                        return (
-                            <FormInput
-                                key={index}
-                                label={item.label}
-                                type={item.type || 'text'}
-                                placeholder={item.placeholder}
-                                registration={register(item.name)}
-                                error={(errors as any)[item.name]}
-                            />
-                        )
-                    } else if(item.as === 'Checkbox') {
-                        return (
-                            <FormCheckbox
-                                key={index}
-                                label={item.label}
-                                registration={register(item.name)}
-                                error={(errors as any)[item.name]}
-                            />
-                        )
-                    } else if (item.as === 'Dropdown') {
-                        return (
-                            <ControlledDropdown
-                                key={index}
-                                control={control}
-                                errors={errors}
-                                name={item.name}
-                                label={item.label || 'Select'}
-                                options={item.options || []}
-                            />
-                        )
+                    switch (item.as) {
+                        case 'Input':
+                            return (
+                                <FormInput
+                                    key={index}
+                                    label={item.label}
+                                    type={item.type || 'text'}
+                                    placeholder={item.placeholder}
+                                    registration={register(item.name)}
+                                    error={(errors as any)[item.name]}
+                                />
+                            )
+                        case 'Checkbox':
+                            return (
+                                <FormCheckbox
+                                    key={index}
+                                    label={item.label}
+                                    registration={register(item.name)}
+                                    error={(errors as any)[item.name]}
+                                />
+                            )
+                        case 'Dropdown':
+                        case 'DropdownMulti':
+                            return (
+                                <ControlledDropdown
+                                    key={index}
+                                    control={control}
+                                    errors={errors}
+                                    name={item.name}
+                                    label={item.label || 'Select'}
+                                    options={item.options || []}
+                                    isMulti={item.as === 'DropdownMulti'}
+                                />
+                            )
+                        case 'Modal':
+                            return (
+                                <CUDModal key={index} as={item.modal?.as} title={item.modal?.title} subTitle={item.modal?.subTitle}>
+                                    {React.isValidElement(item.modal?.children)
+                                        ?   React.cloneElement(item.modal?.children as React.ReactElement<{ onAction: (value: any) => void }>, {
+                                                onAction: (item.modal?.children as any)?.props.onAction ?? ((value) => setValue(item.name, value))
+                                            })
+                                        :   item.modal?.children
+                                    }
+                                </CUDModal>
+                            )
+                        default: return null;
                     }
                 })
             }

@@ -1,9 +1,7 @@
-import { userByUsernameQuery } from '@/lib/apis/client/userBuUsernameQuery';
-import { addEditExperience } from '@/lib/apis/owner/experience/addEditExperience';
-import { deleteExperience } from '@/lib/apis/owner/experience/deleteExperience';
-import { experienceListQuery } from '@/lib/apis/owner/experience/experienceListQuery';
-import { userFullInfoQuery } from '@/lib/apis/owner/user/userFullInfoQuery';
-import { ExperienceFormData } from '@/lib/schemas/experienceSchema';
+import { userByUsernameQuery } from '@/lib/apis/client';
+import { addEditExperience, deleteExperience, experienceListQuery } from '@/lib/apis/owner/experience';
+import { userFullInfoQuery } from '@/lib/apis/owner/user';
+import { ExperienceFormData } from '@/lib/schemas';
 import { createSlice } from '@reduxjs/toolkit';
 
 interface ExperienceState {
