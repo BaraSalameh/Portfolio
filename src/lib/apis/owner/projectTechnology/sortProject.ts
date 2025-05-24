@@ -8,7 +8,7 @@ export const sortProject = createAsyncThunk(
             const response = await dynamicApi({
                 method: 'POST',
                 url: '/Owner/SortProject',
-                data: {educationIdsInOrder: payload},
+                data: {ProjectIdsInOrder: payload},
                 withCredentials: true
             });
 
