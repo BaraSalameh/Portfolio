@@ -16,8 +16,8 @@ export interface WidgetCardProps extends WidgetCardVariantProps {
         title?: string;
         groupBy: string | Record<string, string | string[]>;
         durationKeys?: {
-        start?: string;
-        end?: string;
+            start?: string;
+            end?: string;
         };
     };
     create?: {

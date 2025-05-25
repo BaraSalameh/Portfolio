@@ -1,9 +1,24 @@
-'use client';
-
-import { deleteEducation, deleteExperience, deleteProject, educationListQuery, experienceListQuery, projectTechnologyListQuery, sortEducation, sortExperience, sortProject } from "@/lib/apis";
+import { deleteEducation, deleteExperience, deleteProject, educationListQuery, experienceListQuery, projectTechnologyListQuery, sortEducation, sortExperience, sortProject, userByUsernameQuery, userFullInfoQuery } from "@/lib/apis";
 import { useAppDispatch } from "@/lib/store/hooks";
 import debounce from "lodash.debounce";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
+
+export const useLoadUserData = (role: 'owner' | 'client' | 'admin', username: string, user: any) => {
+    const dispatch = useAppDispatch();
+    
+    useEffect(() => {
+        if(!user) {
+            switch (role) {
+                case 'owner':
+                    dispatch(userFullInfoQuery());
+                    break;
+                case 'client':
+                    dispatch(userByUsernameQuery(username));
+                    break;
+            }
+        }
+    }, [user, dispatch]);
+};
 
 export const useHandleEducationDelete = () => {
   const dispatch = useAppDispatch();
