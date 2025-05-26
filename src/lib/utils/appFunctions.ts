@@ -1,12 +1,9 @@
 import dayjs from 'dayjs';
 import { EducationFormData } from '../schemas/educationSchema';
 import {
-    Menu, Home, Info, LayoutDashboard, Book, Briefcase, Folder, BadgePercent,
+    Home, LayoutDashboard, Book, Briefcase, Folder, BadgePercent,
     Languages, PenSquare, MessageSquare, Settings, LogOut
 } from 'lucide-react';
-import { string } from 'zod';
-import { ProjectTechnologyFormData } from '../schemas/projectTechnologyScehma';
-import { UserLanguageFormData } from '../schemas';
 
 export function transformPayload<T extends object>(obj: T): T {
     return Object.fromEntries(
@@ -138,17 +135,6 @@ export const mapProjectTechnologyToForm = (projectTechnologyFromDb: any): Educat
         : null;
     return result;
 };
-
-export const mapUserLanguageToForm = (userLanguageFromDb: any): UserLanguageFormData => {
-    const result = userLanguageFromDb
-        ?   {
-                ...userLanguageFromDb,
-                lkP_LanguageID: userLanguageFromDb.language.id,
-                lkP_LanguageProficiencyID: userLanguageFromDb.languageProficiency.id
-            }
-        : null;
-    return result;
-}
 
 export const getSelectedOption = (
     options: { label: string; value: string }[],

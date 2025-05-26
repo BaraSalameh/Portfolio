@@ -12,7 +12,7 @@ export const editDeleteUserLanguage = createAsyncThunk(
             const response = await dynamicApi({
                 method: 'POST',
                 url: '/Owner/EditDeleteUserLanguage',
-                data: {lstLanguages: [request]},
+                data: request,
                 withCredentials: true
             });
 

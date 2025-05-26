@@ -4,7 +4,7 @@ import { useAppSelector } from "@/lib/store/hooks";
 import React, { useMemo } from "react";
 import { ProfileFormData } from "@/lib/schemas";
 import { useParams } from "next/navigation";
-import { Loading, WithSkeleton, Main, StaticBackground, Profile } from "@/components";
+import { Loading, WithSkeleton, Main, StaticBackground, Profile, ControlledForm } from "@/components";
 import { useLoadUserData } from "./handlers";
 import { useWidgets } from "./hooks";
 

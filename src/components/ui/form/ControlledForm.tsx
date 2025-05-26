@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm, useWatch } from "react-hook-form";
+import { Controller, FormProvider, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { ControlledFormProps } from "./types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Paragraph } from "../Paragraph";
@@ -12,8 +12,9 @@ import { FormInput } from "./FormInput";
 import { FormCheckbox } from "./FormCheckbox";
 import { ControlledDropdown } from "./ControlledDropdown";
 import { useEffect } from "react";
-import { CUDModal } from "..";
+import { CUDModal, FieldArray } from "..";
 import React from "react";
+import { LanguageFieldArray } from "@/app/[role]/[username]/forms/LanguageFieldArray";
 
 export const ControlledForm = <T extends z.ZodTypeAny> ({ 
     schema,
@@ -29,6 +30,11 @@ export const ControlledForm = <T extends z.ZodTypeAny> ({
     children
 }: ControlledFormProps<T>) => {
 
+    const methods = useForm<z.infer<T>>({
+        resolver: zodResolver(schema),
+        defaultValues: defaultValues as z.infer<T>,
+    });
+
     const {
         control,
         register,
@@ -36,10 +42,7 @@ export const ControlledForm = <T extends z.ZodTypeAny> ({
         reset,
         setValue,
         formState: { errors },
-    } = useForm<z.infer<T>>({
-        resolver: zodResolver(schema),
-        defaultValues: defaultValues as z.infer<T>
-    });
+    } = methods;
 
     const toWatch = watch
     ?   useWatch({
@@ -54,6 +57,7 @@ export const ControlledForm = <T extends z.ZodTypeAny> ({
     }, [resetItems]);
 
     return (
+        <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)} className={`relative space-y-4 ${className}`}>
             {children}
             <fieldset disabled={loading} className="space-y-4">
@@ -107,6 +111,17 @@ export const ControlledForm = <T extends z.ZodTypeAny> ({
                                 </CUDModal>
                             )
                         case 'FieldArray':
+                            return (
+                                <FieldArray
+                                    key={index}
+                                    name={item.name as string}
+                                    label={item.label}
+                                    control={control}
+                                    errors={errors}
+                                    register={register}
+                                    fields={item.fields}
+                                />
+                            );
                         default: return null;
                     }
                 })
@@ -133,5 +148,6 @@ export const ControlledForm = <T extends z.ZodTypeAny> ({
                 {loading ? indicator?.while || 'Submitting...' : indicator?.when || 'Submit'}
             </Button>
         </form>
+        </FormProvider>
     )
 }

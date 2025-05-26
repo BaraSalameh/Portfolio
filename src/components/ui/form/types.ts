@@ -24,7 +24,12 @@ export interface ControlledFormProps<T extends z.ZodTypeAny> {
             children: React.ReactNode;
             title?: string;
             subTitle?: string;
-        }
+        };
+        fields?: {
+            name: string;
+            label: string;
+            options: Option[];
+        }[];
     }[];
     error?: string | string[] | null;
     loading?: boolean;

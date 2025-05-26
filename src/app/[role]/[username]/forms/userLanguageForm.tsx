@@ -6,13 +6,11 @@ import { UserLanguageProps } from "../types";
 import { ControlledForm } from "@/components/ui/form";
 import { UserLanguageFormData, userLanguageSchema } from "@/lib/schemas";
 import { userLanguageListQuery, languageListQuery, languageProficiencyListQuery, editDeleteUserLanguage } from "@/lib/apis";
-import { mapUserLanguageToForm } from "@/lib/utils/appFunctions";
 
 const UserLanguageForm = ({id, onClose} : UserLanguageProps) => {
 
     const dispatch = useAppDispatch();
     const { loading, error, lstUserLanguages, lstLanguages, lstLanguageProficiencies } = useAppSelector((state) => state.userLanguage);
-    const userLanguageToHandle = lstUserLanguages.find(ul => ul.lkP_LanguageID === id);
 
     const languageOptions = useMemo(() =>
         lstLanguages.map(i => ({ label: i.name, value: i.id }))
@@ -23,7 +21,7 @@ const UserLanguageForm = ({id, onClose} : UserLanguageProps) => {
     , [lstLanguageProficiencies]);
 
     const onSubmit = async (data: UserLanguageFormData) => {
-        await dispatch(editDeleteUserLanguage({...lstUserLanguages, ...data}));
+        await dispatch(editDeleteUserLanguage(data));
         await dispatch(userLanguageListQuery());
         onClose?.();
     };
@@ -34,16 +32,24 @@ const UserLanguageForm = ({id, onClose} : UserLanguageProps) => {
     }, []);
 
     return (
+       
         <ControlledForm
             schema={userLanguageSchema}
             onSubmit={onSubmit}
             items={[
-                {as: 'Dropdown', name: 'lkP_LanguageID', options: languageOptions, label: 'Language'},
-                {as: 'Dropdown', name: 'lkP_LanguageProficiencyID', options: languageProficiencyOptions, label: 'Proficiency'}
+                {
+                    as: 'FieldArray',
+                    name: 'lstLanguages',
+                    label: 'Languages',
+                    fields: [
+                        {label: 'Language', name: 'lkP_LanguageID', options: languageOptions},
+                        {label: 'Proficiency', name: 'lkP_LanguageProficiencyID', options: languageProficiencyOptions}
+                    ]
+                }
             ]}
             error={error}
             loading={loading}
-            resetItems={mapUserLanguageToForm(userLanguageToHandle) as any}
+            resetItems={lstUserLanguages as any}
             indicator={{when: 'Update', while: 'Updating...'}}
         />
     );
