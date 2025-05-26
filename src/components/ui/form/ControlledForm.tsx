@@ -106,6 +106,7 @@ export const ControlledForm = <T extends z.ZodTypeAny> ({
                                     }
                                 </CUDModal>
                             )
+                        case 'FieldArray':
                         default: return null;
                     }
                 })

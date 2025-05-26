@@ -8,7 +8,7 @@ import { projectTechnologyListQuery, technologyListQuery, addEditDeleteProjectTe
 import { mapProjectTechnologyToForm } from "@/lib/utils/appFunctions";
 import { ControlledForm } from "@/components/ui/form";
 
-const ProjectTechnology = ({id, onClose} : ProjectTechnologyProps) => {
+const ProjectTechnologyForm = ({id, onClose} : ProjectTechnologyProps) => {
 
     const dispatch = useAppDispatch();
     const { loading, error, lstProjectTechnologies, lstTechnologies } = useAppSelector((state) => state.projectTechnology);
@@ -52,4 +52,4 @@ const ProjectTechnology = ({id, onClose} : ProjectTechnologyProps) => {
     );
 }
 
-export default ProjectTechnology;
+export default ProjectTechnologyForm;

@@ -5,7 +5,7 @@ import { Control, FieldError, FieldPath, FieldValues, Path, UseFormRegisterRetur
 import { ActionMeta, MultiValue, SingleValue } from "react-select";
 import { z } from "zod";
 
-type As = 'Input' | 'Checkbox' | 'Dropdown' | 'DropdownMulti' | 'Modal';
+type As = 'Input' | 'Checkbox' | 'Dropdown' | 'DropdownMulti' | 'Modal' | 'FieldArray';
 type Type = 'Password' | 'Email' | 'Text' | 'Number' | 'Date' | 'Textarea';
 type ModalAs = 'create' | 'update' | 'delete' | 'none';
 

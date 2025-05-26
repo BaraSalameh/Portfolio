@@ -1,19 +1,21 @@
 import { JSX, useMemo } from "react";
 import { WidgetCardProps } from "@/components/ui/widget/types";
 import { ControlledWidget } from "@/components";
-import { useEducationWidget, useExperienceWidget, useProjectWidget } from ".";
+import { useEducationWidget, useExperienceWidget, useLanguageWidget, useProjectWidget } from ".";
 
 export const useWidgets = () => {
 
     const projectData = useProjectWidget();
     const educationData = useEducationWidget();
     const experienceData = useExperienceWidget();
+    const languageData = useLanguageWidget();
 
     const renderWidgets = useMemo((): JSX.Element[] => {
         const widgets: WidgetCardProps[] = [
+            languageData,
             projectData,
             educationData,
-            experienceData
+            experienceData,
         ];
 
         return widgets.map((widget, index) => (
@@ -23,7 +25,7 @@ export const useWidgets = () => {
                 />
             </div>
         ));
-    }, [projectData, educationData, experienceData]);
+    }, [projectData, educationData, experienceData, languageData]);
 
     return renderWidgets;
 };

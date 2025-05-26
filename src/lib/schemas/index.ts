@@ -10,3 +10,5 @@ export { projectTechnologySchema } from './projectTechnologyScehma';
 export type { ProjectTechnologyFormData, TechnologyFormData } from './projectTechnologyScehma';
 export { registerSchema } from './registerSchema';
 export type { RegisterFormData } from './registerSchema';
+export { userLanguageSchema } from './userLanguageSchema';
+export type { UserLanguageFormData } from './userLanguageSchema';

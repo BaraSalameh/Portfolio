@@ -12,3 +12,8 @@ export interface ProjectTechnologyProps {
     id?: string;
     onClose?: () => void;
 }
+
+export interface UserLanguageProps {
+    id?: string;
+    onClose?: () => void;
+}

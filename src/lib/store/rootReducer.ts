@@ -6,6 +6,7 @@ import ownerSlice from "./slices/ownerSlice";
 import clientSlice from "./slices/clientSlice";
 import experienceSlice from "./slices/experienceSlice";
 import projectTechnologySlice from "./slices/projectTechnologySlice";
+import userLanguageSlice from "./slices/userLanguageSlice";
 
 
 const rootReducer = combineReducers({
@@ -15,7 +16,8 @@ const rootReducer = combineReducers({
     client: clientSlice,
     education: educationSlice,
     experience: experienceSlice,
-    projectTechnology: projectTechnologySlice
+    projectTechnology: projectTechnologySlice,
+    userLanguage: userLanguageSlice,
 });
 
 export default rootReducer;

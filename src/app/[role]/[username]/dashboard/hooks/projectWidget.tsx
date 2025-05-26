@@ -5,6 +5,7 @@ import ProjectTechnologyForm from "../../forms/projectTechnologyForm";
 import { useDebouncedSortProject, useHandleProjectDelete } from "../handlers";
 
 export const useProjectWidget = (): WidgetCardProps => {
+    
     const { loading: projectTechnologyLoading, lstProjectTechnologies } = useAppSelector(state => state.projectTechnology);
     const handleProjectDelete = useHandleProjectDelete();
     const debouncedSortProject = useDebouncedSortProject();
