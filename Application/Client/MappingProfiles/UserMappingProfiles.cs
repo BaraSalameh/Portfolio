@@ -47,7 +47,9 @@ namespace Application.Client.MappingProfiles
             CreateMap<Experience, UBUQ_Experience>();
             CreateMap<BlogPost, UBUQ_BlogPost>();
             CreateMap<SocialLink, UBUQ_SocialLink>();
-            CreateMap<UserLanguage, UBUQ_UserLanguage>();
+            CreateMap<UserLanguage, UBUQ_UserLanguage>()
+                .ForMember(dest => dest.Language, opt => opt.MapFrom(src => src.LKP_Language))
+                .ForMember(dest => dest.LanguageProficiency, opt => opt.MapFrom(src => src.LKP_LanguageProficiency));
             CreateMap<LKP_Language, UBUQ_LKP_Language>();
             CreateMap<LKP_LanguageProficiency, UBUQ_LKP_Language_Proficiency>();
 

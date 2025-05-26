@@ -122,8 +122,8 @@ namespace Application.Owner.Queries.UserQueries
 
     public class UFIQ_UserLanguage
     {
-        public UFIQ_LKP_Language LKP_Language { get; set; }
-        public UFIQ_LKP_Language_Proficiency? LKP_LanguageProficiency { get; set; }
+        public UFIQ_LKP_Language Language { get; set; }
+        public UFIQ_LKP_Language_Proficiency? LanguageProficiency { get; set; }
     }
 
     public class UFIQ_LKP_Language

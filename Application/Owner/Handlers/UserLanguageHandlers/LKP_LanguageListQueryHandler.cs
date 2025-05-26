@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Admin.Handlers.RoleHandlers
 {
-    public class RolesListQueryHandler : IRequestHandler<LKP_LanguageListQuery, ListQueryResponse<LKPLLQ_Response>>
+    public class RolesListQueryHandler : IRequestHandler<LKP_LanguageListQuery, ListQueryResponse<LKP_LLQ_Response>>
     {
 
         private readonly IAppDbContext _context;
@@ -19,13 +19,13 @@ namespace Application.Admin.Handlers.RoleHandlers
             _mapper = mapper;
         }
 
-        public async Task<ListQueryResponse<LKPLLQ_Response>> Handle(LKP_LanguageListQuery request, CancellationToken cancellationToken)
+        public async Task<ListQueryResponse<LKP_LLQ_Response>> Handle(LKP_LanguageListQuery request, CancellationToken cancellationToken)
         {
-            var response = new ListQueryResponse<LKPLLQ_Response>();
+            var response = new ListQueryResponse<LKP_LLQ_Response>();
 
             var existingEntity = _context.LKP_Language;
 
-            response.Items = await _mapper.ProjectTo<LKPLLQ_Response>(existingEntity).ToListAsync(cancellationToken);
+            response.Items = await _mapper.ProjectTo<LKP_LLQ_Response>(existingEntity).ToListAsync(cancellationToken);
             response.RowCount = response.Items.Count();
 
             return response;

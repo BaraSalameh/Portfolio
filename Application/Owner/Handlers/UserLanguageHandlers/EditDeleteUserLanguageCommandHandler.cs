@@ -47,6 +47,7 @@ namespace Application.Owner.Handlers.UserLanguageHandlers
                 var RequestedLanguages = request.LstLanguages.Select(x => x.LKP_LanguageID).ToList();
 
                 var LKP_LanguageIDs = await _context.LKP_Language
+                    .AsNoTracking()
                     .Where(l => RequestedLanguages.Contains(l.ID))
                     .Select(l => l.ID)
                     .ToListAsync(cancellationToken);

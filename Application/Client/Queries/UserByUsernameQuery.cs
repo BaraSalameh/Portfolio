@@ -115,8 +115,8 @@ namespace Application.Client.Queries
 
     public class UBUQ_UserLanguage
     {
-        public UBUQ_LKP_Language LKP_Language { get; set; }
-        public UBUQ_LKP_Language_Proficiency? LKP_LanguageProficiency { get; set; }
+        public UBUQ_LKP_Language Language { get; set; }
+        public UBUQ_LKP_Language_Proficiency? LanguageProficiency { get; set; }
     }
 
     public class UBUQ_LKP_Language

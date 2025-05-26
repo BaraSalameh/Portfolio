@@ -47,7 +47,9 @@ namespace Application.Owner.MappingProfiles
             CreateMap<Experience, UFIQ_Experience>();
             CreateMap<BlogPost, UFIQ_BlogPost>();
             CreateMap<SocialLink, UFIQ_SocialLink>();
-            CreateMap<UserLanguage, UFIQ_UserLanguage>();
+            CreateMap<UserLanguage, UFIQ_UserLanguage>()
+                .ForMember(dest => dest.Language, opt => opt.MapFrom(src => src.LKP_Language))
+                .ForMember(dest => dest.LanguageProficiency, opt => opt.MapFrom(src => src.LKP_LanguageProficiency));
             CreateMap<LKP_Language, UFIQ_LKP_Language>();
             CreateMap<LKP_LanguageProficiency, UFIQ_LKP_Language_Proficiency>();
 

@@ -8,5 +8,6 @@
         public LKP_Language LKP_Language { get; set; }
         public Guid LKP_LanguageProficiencyID { get; set; }
         public LKP_LanguageProficiency? LKP_LanguageProficiency { get; set; }
+        public int Order { get; set; }
     }
 }
