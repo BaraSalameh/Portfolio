@@ -9,12 +9,11 @@ export const ControlledDropdown = <T extends FieldValues>({
     label,
     options,
     isMulti = false,
-    errors = {},
 }: ControlledDropdownProps<T>) => (
     <Controller
         name={name}
         control={control}
-        render={({ field }) => {
+        render={({ field, fieldState }) => {
             const selectedValue = getSelectedOption(options, field.value);
 
             return (
@@ -31,11 +30,7 @@ export const ControlledDropdown = <T extends FieldValues>({
                         }
                     }}
                     onBlur={field.onBlur}
-                    error={
-                        Array.isArray(errors[name])
-                            ? errors[name]?.[0]
-                            : errors[name] as any
-                    }
+                    error={fieldState.error}
                     isLoading={options.length === 0}
                     isMulti={isMulti}
                 />

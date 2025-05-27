@@ -6,10 +6,9 @@ export const FieldArray = ({
     name,
     label,
     control,
-    errors,
-    register,
     fields: fieldConfigs
 }: any) => {
+
     const { fields, append, remove } = useFieldArray({
         control,
         name,
@@ -26,7 +25,6 @@ export const FieldArray = ({
                                 key={j}
                                 name={`${name}[${i}].${config.name}`}
                                 control={control}
-                                errors={errors?.[name]?.[i]?.[config.name]}
                                 label={config.label}
                                 options={config.options || []}
                             />

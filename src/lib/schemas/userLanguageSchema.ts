@@ -7,12 +7,12 @@ export const userLanguageSchema = z.object({
         z.object({
             lkP_LanguageID: z
                 .string()
-                .min(1, 'Institution is required')
-                .regex(guidRegex, 'Institution ID must be a valid GUID'),
+                .min(1, 'Language is required')
+                .regex(guidRegex, 'Language ID must be a valid GUID'),
             lkP_LanguageProficiencyID: z
                 .string()
-                .min(1, 'Degree is required')
-                .regex(guidRegex, 'Degree ID must be a valid GUID'),
+                .min(1, 'Proficiency is required')
+                .regex(guidRegex, 'Proficiency ID must be a valid GUID'),
         })
   ),
 });

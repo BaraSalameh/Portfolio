@@ -6,6 +6,7 @@ import { UserLanguageProps } from "../types";
 import { ControlledForm } from "@/components/ui/form";
 import { UserLanguageFormData, userLanguageSchema } from "@/lib/schemas";
 import { userLanguageListQuery, languageListQuery, languageProficiencyListQuery, editDeleteUserLanguage } from "@/lib/apis";
+import { mapUserLanguageToForm } from "@/lib/utils/appFunctions";
 
 const UserLanguageForm = ({id, onClose} : UserLanguageProps) => {
 
@@ -40,7 +41,6 @@ const UserLanguageForm = ({id, onClose} : UserLanguageProps) => {
                 {
                     as: 'FieldArray',
                     name: 'lstLanguages',
-                    label: 'Languages',
                     fields: [
                         {label: 'Language', name: 'lkP_LanguageID', options: languageOptions},
                         {label: 'Proficiency', name: 'lkP_LanguageProficiencyID', options: languageProficiencyOptions}
@@ -49,7 +49,7 @@ const UserLanguageForm = ({id, onClose} : UserLanguageProps) => {
             ]}
             error={error}
             loading={loading}
-            resetItems={lstUserLanguages as any}
+            resetItems={mapUserLanguageToForm(lstUserLanguages) as any}
             indicator={{when: 'Update', while: 'Updating...'}}
         />
     );

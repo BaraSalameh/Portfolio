@@ -1,9 +1,9 @@
 import dayjs from 'dayjs';
-import { EducationFormData } from '../schemas/educationSchema';
 import {
     Home, LayoutDashboard, Book, Briefcase, Folder, BadgePercent,
     Languages, PenSquare, MessageSquare, Settings, LogOut
 } from 'lucide-react';
+import { UserLanguageFormData, EducationFormData } from '../schemas';
 
 export function transformPayload<T extends object>(obj: T): T {
     return Object.fromEntries(
@@ -122,6 +122,16 @@ export const mapEducationToForm = (educationFromDb: any): EducationFormData => {
             }
         : null;
     return result;
+};
+
+export const mapUserLanguageToForm = (userLanguageFromDb: any): UserLanguageFormData => {
+    const userLanguageDto = {
+        lstLanguages: userLanguageFromDb.map((ul: Record<string, Record<string, string>>) => ({
+            lkP_LanguageID: ul.language.id,
+            lkP_LanguageProficiencyID: ul.languageProficiency.id
+        }))
+    };
+    return userLanguageDto;
 };
 
 export const mapProjectTechnologyToForm = (projectTechnologyFromDb: any): EducationFormData => {

@@ -1,7 +1,7 @@
 import { AnchorVariantProps } from "@/styles/anchor";
 import { ButtonVariantProps } from "@/styles/button";
 import React, { InputHTMLAttributes } from "react";
-import { Control, FieldError, FieldPath, FieldValues, Path, UseFormRegisterReturn } from "react-hook-form";
+import { ArrayPath, Control, FieldError, FieldPath, FieldValues, Path, UseFormRegisterReturn } from "react-hook-form";
 import { ActionMeta, MultiValue, SingleValue } from "react-select";
 import { z } from "zod";
 
@@ -76,7 +76,6 @@ export interface ControlledDropdownProps<T extends FieldValues>  {
     label: string;
     options: Option[];
     isMulti?: boolean;
-    errors?: Partial<Record<keyof T, any>>;
 }
 
 export interface FormCheckboxProps extends InputHTMLAttributes<HTMLInputElement> {

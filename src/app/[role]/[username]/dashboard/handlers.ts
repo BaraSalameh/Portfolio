@@ -59,19 +59,6 @@ export const useHandleExperienceDelete = () => {
     }
 };
 
-export const useHandleLanguageDelete = () => {
-  const dispatch = useAppDispatch();
-
-  return async (id: string) => {
-        try {
-            await dispatch(deleteProject(id));
-            await dispatch(projectTechnologyListQuery());
-        } catch (err) {
-            console.error('Failed to delete:', err);
-        }
-    }
-};
-
 export const useDebouncedSortProject = () => {
   const dispatch = useAppDispatch();
 

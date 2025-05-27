@@ -1,6 +1,6 @@
 'use client';
 
-import { Controller, FormProvider, useFieldArray, useForm, useWatch } from "react-hook-form";
+import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { ControlledFormProps } from "./types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Paragraph } from "../Paragraph";
@@ -14,7 +14,6 @@ import { ControlledDropdown } from "./ControlledDropdown";
 import { useEffect } from "react";
 import { CUDModal, FieldArray } from "..";
 import React from "react";
-import { LanguageFieldArray } from "@/app/[role]/[username]/forms/LanguageFieldArray";
 
 export const ControlledForm = <T extends z.ZodTypeAny> ({ 
     schema,
@@ -92,7 +91,6 @@ export const ControlledForm = <T extends z.ZodTypeAny> ({
                                 <ControlledDropdown
                                     key={index}
                                     control={control}
-                                    errors={errors}
                                     name={item.name}
                                     label={item.label || 'Select'}
                                     options={item.options || []}
@@ -114,11 +112,10 @@ export const ControlledForm = <T extends z.ZodTypeAny> ({
                             return (
                                 <FieldArray
                                     key={index}
-                                    name={item.name as string}
+                                    name={item.name}
                                     label={item.label}
                                     control={control}
                                     errors={errors}
-                                    register={register}
                                     fields={item.fields}
                                 />
                             );
