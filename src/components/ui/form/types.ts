@@ -1,13 +1,14 @@
 import { AnchorVariantProps } from "@/styles/anchor";
 import { ButtonVariantProps } from "@/styles/button";
 import React, { InputHTMLAttributes } from "react";
-import { ArrayPath, Control, FieldError, FieldPath, FieldValues, Path, UseFormRegisterReturn } from "react-hook-form";
+import { Control, FieldError, FieldPath, FieldValues, Path, UseFormRegisterReturn } from "react-hook-form";
 import { ActionMeta, MultiValue, SingleValue } from "react-select";
 import { z } from "zod";
 
 type As = 'Input' | 'Checkbox' | 'Dropdown' | 'DropdownMulti' | 'Modal' | 'FieldArray';
 type Type = 'Password' | 'Email' | 'Text' | 'Number' | 'Date' | 'Textarea';
 type ModalAs = 'create' | 'update' | 'delete' | 'none';
+type Config = 'Disabled';
 
 export interface ControlledFormProps<T extends z.ZodTypeAny> {
     schema: T;
@@ -30,6 +31,7 @@ export interface ControlledFormProps<T extends z.ZodTypeAny> {
             label: string;
             options: Option[];
         }[];
+        config?: Config[];
     }[];
     error?: string | string[] | null;
     loading?: boolean;

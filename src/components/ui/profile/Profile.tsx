@@ -5,9 +5,10 @@ import { Paragraph, CUDModal, ResponsiveIcon } from '..';
 import { useParams } from 'next/navigation';
 import ProfileForm from '@/app/[role]/[username]/forms/profileForm';
 import { Button } from '../form/Button';
-import { Copy, Link } from 'lucide-react';
+import { Copy, Link, MessageCircle } from 'lucide-react';
 import { getClientLink } from '@/lib/utils/appFunctions';
 import { ProfileProps } from './types';
+import ContactMessageForm from '@/app/[role]/[username]/forms/contactMessageForm';
 
 export const Profile = ({ 
     user,
@@ -20,7 +21,7 @@ export const Profile = ({
         user?.profilePicture ??
         (user?.gender === '0' ? '/Default-Female.svg' : '/Default-Male.svg');
     const coverPhoto = user?.coverPhoto ?? '/Default-CoverPhoto.svg';
-
+    
   return (
     <Header space='lg' paddingY='sm' itemsY='start' className={`grid grid-cols-1 ${className}`}>
         <div className="relative h-35 sm:h-50 lg:h-60">
@@ -44,13 +45,19 @@ export const Profile = ({
                         priority
                     />
                 </div>
-                {role === 'owner' &&
-                    <div className='absolute right-0 bottom-0'>
-                        <CUDModal as='update' subTitle='Update profile' >
+                <div className='absolute right-0 bottom-0'>
+                    {role === 'owner'
+                    ?   <CUDModal as='update' subTitle='Update profile' >
                             <ProfileForm />
                         </CUDModal>
-                    </div>
-                }
+                    :   role === 'client' &&
+                        <CUDModal subTitle='Send Message' icon={MessageCircle} >
+                            <ContactMessageForm />
+                        </CUDModal>
+                    }
+                    
+                </div>
+                
                 <div className='absolute bottom-0 left-0'>
                     <CUDModal subTitle='Copy link' icon={Link}>
                         <Button intent='standard' rounded='full' onClick={() => navigator.clipboard.writeText(clientLink)}>
@@ -74,9 +81,9 @@ export const Profile = ({
             </Paragraph>
             {(user?.gender === '0' || user?.gender === '1' || user?.birthDate) && (
                 <Paragraph position="start">
-                    {user?.gender === '1'
+                    {user?.gender?.toString() === '1'
                     ? 'Male'
-                    : user?.gender === '0'
+                    : user?.gender?.toString() === '0'
                     ? 'Female'
                     : ''}
                     {user?.birthDate ? ` (${user.birthDate})` : ''}

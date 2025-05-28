@@ -7,6 +7,10 @@ export const profileSchema = z.object({
         .string()
         .nullable(),
 
+    email: z
+        .string()
+        .nullable(),
+        
     firstname: z
         .string()
         .min(2, 'Firstname is required'),

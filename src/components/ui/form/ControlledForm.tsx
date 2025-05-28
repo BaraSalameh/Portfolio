@@ -74,6 +74,7 @@ export const ControlledForm = <T extends z.ZodTypeAny> ({
                                     placeholder={item.placeholder}
                                     registration={register(item.name)}
                                     error={(errors as any)[item.name]}
+                                    disabled={item.config?.includes('Disabled')}
                                 />
                             )
                         case 'Checkbox':

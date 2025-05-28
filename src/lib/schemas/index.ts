@@ -12,3 +12,5 @@ export { registerSchema } from './registerSchema';
 export type { RegisterFormData } from './registerSchema';
 export { userLanguageSchema } from './userLanguageSchema';
 export type { UserLanguageFormData } from './userLanguageSchema';
+export { contactMessageSchema } from './contactMessageSchema';
+export type { ContactMessageFormData } from './contactMessageSchema';
