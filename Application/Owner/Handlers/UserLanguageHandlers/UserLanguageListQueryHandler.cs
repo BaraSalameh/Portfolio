@@ -27,8 +27,7 @@ namespace Application.Owner.Handlers.UserLanguageHandlers
 
             var existingEntity = _context.UserLanguage
                 .AsNoTracking()
-                .Where(ul => ul.UserID == _currentUserService.UserID)
-                .OrderBy(ul => ul.Order);
+                .Where(ul => ul.UserID == _currentUserService.UserID);
 
             response.Items = await _mapper.ProjectTo<ULLQ_Response>(existingEntity).ToListAsync(cancellationToken);
             response.RowCount = response.Items.Count();

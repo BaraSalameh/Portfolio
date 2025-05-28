@@ -48,10 +48,6 @@ namespace Portfolio.Controllers
         public async Task<IActionResult> EditDeleteUserLanguage(EditDeleteUserLanguageCommand request)
             => Result.HandleResult(await Mediator.Send(request));
 
-        [HttpPost]
-        public async Task<IActionResult> SortLanguage(SortLanguageCommand request)
-            => Result.HandleResult(await Mediator.Send(request));
-
         // Profile
         [HttpPost]
         public async Task<IActionResult> EditProfile(EditProfileCommand request)
