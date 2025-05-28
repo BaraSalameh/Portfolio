@@ -1,6 +1,6 @@
 import { CustomTooltip } from "@/components/utils";
 import { generateColorMap } from "@/lib/utils/appFunctions";
-import { Cell, Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Cell, Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Legend } from "recharts";
 import { ChartWidgetProps } from "./types";
 
 export const BarChartWidget = ({

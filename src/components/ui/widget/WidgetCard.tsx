@@ -12,7 +12,7 @@ import { ArrowUpDown, GripVertical } from 'lucide-react';
 import { WidgetCardProps } from './types';
 import { Loading, Main, Header } from '@/components/shared';
 
-export const WidgetCard = ({ isLoading, header, items, list, pie, bar, create, update, del, details, onSort, className }: WidgetCardProps) => {
+export const WidgetCard = ({ isLoading, header, items, list, pie, bar, radar, create, update, del, details, onSort, className }: WidgetCardProps) => {
 
     var isInitialWidgetCard: boolean = false;
 
@@ -25,15 +25,19 @@ export const WidgetCard = ({ isLoading, header, items, list, pie, bar, create, u
     const [item, setItem] = useState<Record<string, any> | undefined>();
     
     const handleModal = (item: Record<string, any>) => {
-        setOpenModal(true);
+        setOpenModal(true); 
         setItem(item);
     };
     const clickable = (update || del || details) ? handleModal : undefined;
 
     const pieData = useMemo(() => pie ? generatePieData(items, pie.groupBy) : null, [items, pie]);
     const durationData = useMemo(
-        () => bar ? generateDurationData(items, bar.groupBy, bar.durationKeys?.start, bar.durationKeys?.end) : [],
+        () => bar ? bar.customData ?? generateDurationData(items, bar?.groupBy, bar.durationKeys?.start, bar.durationKeys?.end) : [],
         [items, bar]
+    );
+    const radarData = useMemo(
+        () => radar ? radar.customData ?? generateDurationData(items, radar?.groupBy) : [],
+        [items, radar]
     );
     const colorMap = useMemo(() => generateColorMap(pieData ?? durationData), [pieData, durationData]);
 
@@ -48,7 +52,7 @@ export const WidgetCard = ({ isLoading, header, items, list, pie, bar, create, u
                         {header?.icon && <ResponsiveIcon icon={header.icon} />}
                         {header?.title}
                     </Paragraph>
-                        <CUDModal isLoading={isLoading} title={create?.title} subTitle={create?.subTitle}>
+                        <CUDModal isLoading={isLoading} title={create?.title} subTitle={create?.subTitle} icon={create?.icon}>
                             {create?.form}
                         </CUDModal>
                             
@@ -75,7 +79,7 @@ export const WidgetCard = ({ isLoading, header, items, list, pie, bar, create, u
                                         />
                                 }
                                 {create && (
-                                    <CUDModal isLoading={isLoading} title={create.title} subTitle={create.subTitle}>
+                                    <CUDModal isLoading={isLoading} title={create.title} subTitle={create.subTitle} icon={create?.icon}>
                                         {create.form}
                                     </CUDModal>
                                 )}
@@ -84,9 +88,9 @@ export const WidgetCard = ({ isLoading, header, items, list, pie, bar, create, u
                     </Header>
                 )}
 
-                {(pie || bar) && (
+                {(pie || bar || radar) && (
                     <Main paddingX="none" paddingY="md">
-                        <WidgetCharts pieData={pieData} durationData={durationData} pieTitle={pie?.title} barTitle={bar?.title} colorMap={colorMap} />
+                        <WidgetCharts pieData={pieData} durationData={durationData} radarData={radarData} pieTitle={pie?.title} barTitle={bar?.title} radarTitle={radar?.title} colorMap={colorMap} />
                     </Main>
                 )}
 

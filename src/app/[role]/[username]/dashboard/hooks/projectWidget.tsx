@@ -14,8 +14,8 @@ export const useProjectWidget = (): WidgetCardProps => {
         isLoading: projectTechnologyLoading,
         items: lstProjectTechnologies,
         header: { title: 'Project', icon: Folder },
-        bar: { title: 'Used technologies', groupBy: { lstTechnologies: 'name' } },
-        pie: { title: 'Technology Overview', groupBy: { lstTechnologies: 'name' } },
+        radar: { title: 'Technology proficiency overview (count)', groupBy: { lstTechnologies: 'name' } },
+        pie: { title: 'Projects Overview', groupBy: 'title' },
         list: [
             { leftKey: 'title', size: 'lg' },
             { leftKey: 'isFeatured' }

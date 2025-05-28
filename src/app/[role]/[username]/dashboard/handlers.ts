@@ -1,4 +1,4 @@
-import { deleteEducation, deleteExperience, deleteProject, educationListQuery, experienceListQuery, projectTechnologyListQuery, sortEducation, sortExperience, sortLanguage, sortProject, userByUsernameQuery, userFullInfoQuery, userLanguageListQuery } from "@/lib/apis";
+import { deleteEducation, deleteExperience, deleteProject, educationListQuery, experienceListQuery, projectTechnologyListQuery, sortEducation, sortExperience, sortProject, userByUsernameQuery, userFullInfoQuery, userLanguageListQuery } from "@/lib/apis";
 import { useAppDispatch } from "@/lib/store/hooks";
 import debounce from "lodash.debounce";
 import { useCallback, useEffect } from "react";
@@ -95,20 +95,6 @@ export const useDebouncedSortExperience = () => {
             if (lstIds.length > 0) {
                 await dispatch(sortExperience(lstIds));
                 await dispatch(experienceListQuery());
-            }
-        }, 1000),
-        [dispatch]
-    );
-};
-
-export const useDebouncedSortLanguage = () => {
-  const dispatch = useAppDispatch();
-
-  return useCallback(
-        debounce(async (lstIds: string[]) => {
-            if (lstIds.length > 0) {
-                await dispatch(sortLanguage(lstIds));
-                await dispatch(userLanguageListQuery());
             }
         }, 1000),
         [dispatch]

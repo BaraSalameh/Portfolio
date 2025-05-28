@@ -1,4 +1,5 @@
 import { WidgetCardVariantProps, WidgetListVariantProps } from "@/styles/widget";
+import { LucideIcon } from "lucide-react";
 
 export interface WidgetCardProps extends WidgetCardVariantProps {
     isLoading?: boolean;
@@ -14,16 +15,23 @@ export interface WidgetCardProps extends WidgetCardVariantProps {
     };
     bar?: {
         title?: string;
-        groupBy: string | Record<string, string | string[]>;
+        groupBy?: string | Record<string, string | string[]>;
         durationKeys?: {
             start?: string;
             end?: string;
         };
+        customData?: CahrtEntry[];
+    };
+    radar?: {
+        title?: string;
+        groupBy?: string | Record<string, string | string[]>;
+        customData?: CahrtEntry[];
     };
     create?: {
         title?: string;
         subTitle?: string;
         form?: React.ReactNode;
+        icon?: LucideIcon;
     };
     update?: {
         title?: string;
@@ -44,8 +52,10 @@ export interface WidgetCardProps extends WidgetCardVariantProps {
 export interface WidgetChartsProps {
     pieData: any;
     durationData: any;
+    radarData: any;
     pieTitle?: string;
     barTitle?: string;
+    radarTitle?: string;
     colorMap: Record<string, string>;
 }
 
@@ -89,7 +99,7 @@ export interface WidgetModalProps {
     className?: string;
 }
 
-type CahrtEntry = {
+export type CahrtEntry = {
     name: string;
     value: number;
 }

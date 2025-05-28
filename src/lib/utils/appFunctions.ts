@@ -41,7 +41,7 @@ export const generatePieData = <T extends Record<string, any>>(
 
 export const generateDurationData = <T extends Record<string, any>>(
     list: T[],
-    nameKey: string | Record<string, string | string[]>,
+    nameKey?: string | Record<string, string | string[]>,
     startDateKey: keyof T = 'startDate',
     endDateKey: keyof T = 'endDate',
     unit: dayjs.ManipulateType = 'month'
@@ -53,7 +53,7 @@ export const generateDurationData = <T extends Record<string, any>>(
         const end = item[endDateKey] ? dayjs(item[endDateKey]) : dayjs();
         const value = start ? end.diff(start, unit) : null;
 
-        const names = normalizeFieldValue(extractValue(item, nameKey)) || ['Unknown'];
+        const names = normalizeFieldValue(extractValue(item, nameKey ?? '')) || ['Unknown'];
 
         names.forEach(name => {
             const total = durations.get(name) ?? 0;

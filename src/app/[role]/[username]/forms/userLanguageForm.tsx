@@ -34,11 +34,7 @@ const UserLanguageForm = ({id, onClose} : UserLanguageProps) => {
         lstLanguages.length === 0 && dispatch(languageListQuery());
         lstLanguageProficiencies.length === 0 && dispatch(languageProficiencyListQuery());
     }, []);
-
-    /*
-    TODO:
-    1- fix bar data for language (depending on proficiency)
-    */
+    
     return (
         <ControlledForm
             schema={userLanguageSchema}
