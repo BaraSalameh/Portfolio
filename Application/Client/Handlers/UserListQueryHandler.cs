@@ -27,21 +27,27 @@ namespace Application.Client.Handlers
 
             if (!string.IsNullOrEmpty(request.Search))
             {
-                var StrSearch = request.Search;
+                var search = request.Search.ToLower();
                 Filter = f =>
-                    (f.Email ?? "").Contains(StrSearch) ||
-                    (f.Firstname ?? "").Contains(StrSearch) ||
-                    (f.Lastname ?? "").Contains(StrSearch);
+                    f.Username.ToLower().Contains(search) ||
+                    f.Email.ToLower().Contains(search) ||
+                    f.Firstname.ToLower().Contains(search) ||
+                    f.Lastname.ToLower().Contains(search);
             }
 
-            var wxistingEntity =_context.User
-                .Where(Filter);
+            var existingEntity =_context.User.Where(Filter);
+
+            response.RowCount = await existingEntity.CountAsync(cancellationToken);
+            var pageNumber = request.PageNumber;
+            var pageSize = request.PageSize;
 
             response.Items =
                 await _mapper.ProjectTo<ULQ_Response>(
-                    wxistingEntity.Skip((int)(request.PageNumber * request.PageSize)!).Take((int)request.PageSize!)
-                ).ToListAsync();
-            response.RowCount = response.Items.Count();
+                    existingEntity
+                        .OrderBy(u => u.CreatedAt)
+                        .Skip(pageNumber * pageSize)
+                        .Take(pageSize)
+                ).ToListAsync(cancellationToken);
 
             return response;
         }

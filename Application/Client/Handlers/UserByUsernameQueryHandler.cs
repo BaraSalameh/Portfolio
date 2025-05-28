@@ -28,6 +28,7 @@ namespace Application.Client.Handlers
                 var existingEntity = await _context.User
                     .AsNoTracking()
                     .Where(u => u.Username == request.Username)
+                    .AsSplitQuery()
                     .ProjectTo<UBUQ_Response>(_mapper.ConfigurationProvider)
                     .FirstOrDefaultAsync(cancellationToken);
 
