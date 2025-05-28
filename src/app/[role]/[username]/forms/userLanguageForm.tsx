@@ -22,9 +22,12 @@ const UserLanguageForm = ({id, onClose} : UserLanguageProps) => {
     , [lstLanguageProficiencies]);
 
     const onSubmit = async (data: UserLanguageFormData) => {
-        await dispatch(editDeleteUserLanguage(data));
-        await dispatch(userLanguageListQuery());
-        onClose?.();
+        const resultAction = await dispatch(editDeleteUserLanguage(data));
+
+        if (!editDeleteUserLanguage.rejected.match(resultAction)) {
+            await dispatch(userLanguageListQuery());
+            onClose?.();
+        }
     };
 
     useEffect(() => {
@@ -32,6 +35,11 @@ const UserLanguageForm = ({id, onClose} : UserLanguageProps) => {
         lstLanguageProficiencies.length === 0 && dispatch(languageProficiencyListQuery());
     }, []);
 
+    /*
+    TODO:
+    1- fix the shape for add/delete buttons on the widget!
+    2- fix bar data for language (depending on proficiency)
+    */
     return (
        
         <ControlledForm

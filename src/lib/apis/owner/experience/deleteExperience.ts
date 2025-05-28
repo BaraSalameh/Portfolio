@@ -5,18 +5,19 @@ export const deleteExperience = createAsyncThunk(
     'experience/deleteExperience',
     async (id: string, thunkAPI) => {
         try {
-            const response = await dynamicApi({
+            await dynamicApi({
                 method: 'DELETE',
                 url: '/Owner/DeleteExperience',
                 data: {id},
                 withCredentials: true
             });
 
-            if(response.status === 400) return thunkAPI.rejectWithValue(response.data);
-
             return;
 
         } catch (error: any) {
+            if (error.response.status === 400) {
+                return thunkAPI.rejectWithValue(error.response.data);
+            }
             return thunkAPI.rejectWithValue(error.message);
         }
     }

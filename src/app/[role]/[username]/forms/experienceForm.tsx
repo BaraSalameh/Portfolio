@@ -14,9 +14,12 @@ const ExperienceForm = ({id, onClose} : ExperienceProps) => {
     const indicator = id ? {when: 'Update', while: 'Updating...'} : {when: 'Create', while: 'creating...'};
 
     const onSubmit = async (data: ExperienceFormData) => {
-        await dispatch(addEditExperience(data));
-        await dispatch(experienceListQuery());
-        onClose?.();
+        const resultAction = await dispatch(addEditExperience(data));
+
+        if (!addEditExperience.rejected.match(resultAction)) {
+            await dispatch(experienceListQuery());
+            onClose?.();
+        }
     };
 
     return (

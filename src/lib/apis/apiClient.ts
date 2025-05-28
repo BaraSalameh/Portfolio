@@ -52,6 +52,6 @@ export const dynamicApi = async <T = any>(
                 window.location.href = '/';
             }
         }
-        return error;
+        throw error;
     }
 };

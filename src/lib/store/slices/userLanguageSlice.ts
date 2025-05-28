@@ -29,8 +29,8 @@ const userLanguageSlice = createSlice({
         })
 
         .addCase(userByUsernameQuery.fulfilled, (state, action) => {
-                state.lstUserLanguages = action.payload.lstUserLanguages;
-            })
+            state.lstUserLanguages = action.payload.lstUserLanguages;
+        })
         
         .addCase(userLanguageListQuery.pending, (state) => {
             state.loading = true;

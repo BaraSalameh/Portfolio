@@ -5,18 +5,19 @@ export const sortEducation = createAsyncThunk(
     'education/sortEducation',
     async (payload: string[], thunkAPI) => {
         try {
-            const response = await dynamicApi({
+            await dynamicApi({
                 method: 'POST',
                 url: '/Owner/ReOrderEducation',
                 data: {educationIdsInOrder: payload},
                 withCredentials: true
             });
 
-            if (response.status === 400) return thunkAPI.rejectWithValue(response.data);
-
             return;
 
         } catch (error: any) {
+            if (error.response.status === 400) {
+                return thunkAPI.rejectWithValue(error.response.data);
+            }
             return thunkAPI.rejectWithValue(error.message);
         }
     }

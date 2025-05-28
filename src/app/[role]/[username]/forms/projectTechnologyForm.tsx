@@ -21,9 +21,12 @@ const ProjectTechnologyForm = ({id, onClose} : ProjectTechnologyProps) => {
     , [lstTechnologies]);
 
     const onSubmit = async (data: ProjectTechnologyFormData) => {
-        await dispatch(addEditDeleteProjectTechnology(data));
-        await dispatch(projectTechnologyListQuery());
-        onClose?.();
+        const resultAction = await dispatch(addEditDeleteProjectTechnology(data));
+
+        if (!addEditDeleteProjectTechnology.rejected.match(resultAction)) {
+            await dispatch(projectTechnologyListQuery());
+            onClose?.();
+        }
     };
 
     useEffect(() => {

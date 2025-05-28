@@ -29,9 +29,12 @@ const EducationForm = ({id, onClose} : EducationProps) => {
     , [lstFields]);
 
     const onSubmit = async (data: EducationFormData) => {
-        await dispatch(addEditEducation(data));
-        await dispatch(educationListQuery());
-        onClose?.();
+        const resultAction = await dispatch(addEditEducation(data));
+
+        if (!addEditEducation.rejected.match(resultAction)) {
+            await dispatch(educationListQuery());
+            onClose?.();
+        }
     };
 
     useEffect(() => {

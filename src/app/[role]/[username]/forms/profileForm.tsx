@@ -15,9 +15,12 @@ const ProfileForm = ({ onClose } : { onClose?: () => void }) => {
     ];
 
     const onSubmit = async (data: ProfileFormData) => {
-        await dispatch(editProfile(data));
-        await dispatch(userInfoQuery());
-        onClose?.();
+        const resultAction = await dispatch(editProfile(data));
+
+        if (!editProfile.rejected.match(resultAction)) {
+            await dispatch(userInfoQuery());
+            onClose?.();
+        }
     };
 
     return (

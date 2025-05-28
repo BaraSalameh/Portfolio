@@ -9,18 +9,19 @@ export const editProfile = createAsyncThunk(
         try {
             const request = transformPayload(payload);
 
-            const response = await dynamicApi({
+            await dynamicApi({
                 method: 'POST',
                 url: '/Owner/EditProfile',
                 data: request,
                 withCredentials: true
             });
 
-            if (response.status === 400) return thunkAPI.rejectWithValue(response.data);
-
             return;
 
         } catch (error: any) {
+            if (error.response.status === 400) {
+                return thunkAPI.rejectWithValue(error.response.data);
+            }
             return thunkAPI.rejectWithValue(error.message);
         }
     }
