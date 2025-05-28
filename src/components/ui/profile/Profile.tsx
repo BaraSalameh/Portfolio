@@ -5,7 +5,7 @@ import { Paragraph, CUDModal, ResponsiveIcon } from '..';
 import { useParams } from 'next/navigation';
 import ProfileForm from '@/app/[role]/[username]/forms/profileForm';
 import { Button } from '../form/Button';
-import { Copy, Link, MessageCircle } from 'lucide-react';
+import { Copy, Link, MessageCircle, MessageSquare } from 'lucide-react';
 import { getClientLink } from '@/lib/utils/appFunctions';
 import { ProfileProps } from './types';
 import ContactMessageForm from '@/app/[role]/[username]/forms/contactMessageForm';
@@ -33,7 +33,14 @@ export const Profile = ({
                 className="object-fill rounded-3xl "
                 priority
             />
-            
+            {/* Right side actions */}
+            <div className="absolute right-7 sm:right-10 lg:right-15 bottom-[-2rem] sm:bottom-[-2.5rem] lg:bottom-[-3.5rem] flex gap-5 items-center">
+                {role === 'owner' &&
+                    <CUDModal subTitle='Messages' icon={MessageSquare} >
+                        <ContactMessageForm />
+                    </CUDModal>
+                }
+            </div>
             {/* Profile and Info */}
             <div className="absolute left-7 sm:left-10 lg:left-15 bottom-[-2rem] sm:bottom-[-2.5rem] lg:bottom-[-3.5rem] flex flex-col items-center">
                 <div className="relative w-20 h-20 sm:w-30 sm:h-30 lg:w-40 lg:h-40 rounded-full border-4 border-white bg-black/25 backdrop-blur-sm overflow-hidden">
@@ -45,6 +52,7 @@ export const Profile = ({
                         priority
                     />
                 </div>
+                {/* Left side actions */}
                 <div className='absolute right-0 bottom-0'>
                     {role === 'owner'
                     ?   <CUDModal as='update' subTitle='Update profile' >
@@ -55,9 +63,7 @@ export const Profile = ({
                             <ContactMessageForm />
                         </CUDModal>
                     }
-                    
                 </div>
-                
                 <div className='absolute bottom-0 left-0'>
                     <CUDModal subTitle='Copy link' icon={Link}>
                         <Button intent='standard' rounded='full' onClick={() => navigator.clipboard.writeText(clientLink)}>
