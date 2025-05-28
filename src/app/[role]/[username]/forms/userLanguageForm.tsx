@@ -37,11 +37,9 @@ const UserLanguageForm = ({id, onClose} : UserLanguageProps) => {
 
     /*
     TODO:
-    1- fix the shape for add/delete buttons on the widget!
-    2- fix bar data for language (depending on proficiency)
+    1- fix bar data for language (depending on proficiency)
     */
     return (
-       
         <ControlledForm
             schema={userLanguageSchema}
             onSubmit={onSubmit}

@@ -1,6 +1,9 @@
 import { useFieldArray, Controller } from "react-hook-form";
 import { ControlledDropdown } from "./ControlledDropdown";
 import { Button } from "./Button";
+import { ResponsiveIcon } from "../ResponsiveIcon";
+import { Trash2 } from "lucide-react";
+import { Header, Main } from "@/components/shared";
 
 export const FieldArray = ({
     name,
@@ -20,6 +23,9 @@ export const FieldArray = ({
             <div className="space-y-3">
                 {fields.map((field, i) => (
                     <div key={field.id} className="border p-5 rounded-2xl space-y-3">
+                        <Header paddingX='none' paddingY='none' itemsX='end'>
+                            <ResponsiveIcon icon={Trash2} onClick={() => remove(i)} className="cursor-pointer" />
+                        </Header>
                         {fieldConfigs.map((config: any, j: number) => (
                             <ControlledDropdown
                                 key={j}
@@ -29,25 +35,20 @@ export const FieldArray = ({
                                 options={config.options || []}
                             />
                         ))}
-                        <Button
-                            type="button"
-                            intent="danger"
-                            size="sm"
-                            onClick={() => remove(i)}
-                        >
-                            Remove
-                        </Button>
                     </div>
                 ))}
             </div>
             <Button
                 type="button"
-                intent="standard"
-                onClick={() =>
-                    append({ lkP_LanguageID: '', lkP_LanguageProficiencyID: '' })
-                }
+                onClick={() => append(
+                    fieldConfigs.reduce((acc: any, config: any) => {
+                        acc[config.name] = '';
+                        return acc;
+                    }, {})
+                )}
             >
-                Add Language
+                <ResponsiveIcon />
+                Add new
             </Button>
         </div>
     );
