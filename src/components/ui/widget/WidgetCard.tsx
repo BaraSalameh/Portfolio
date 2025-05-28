@@ -3,8 +3,7 @@
 import { widgetCard } from '@/styles';
 import { cn } from '@/components/utils';
 import { Paragraph, List } from '..';
-import { generateColorMap, generateDurationData, generatePieData } from '@/lib/utils/appFunctions';
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { WidgetList, WidgetCharts, WidgetModal } from '.';
 import { CUDModal, ResponsiveIcon } from '..';
 import React from 'react';
@@ -29,17 +28,6 @@ export const WidgetCard = ({ isLoading, header, items, list, pie, bar, radar, cr
         setItem(item);
     };
     const clickable = (update || del || details) ? handleModal : undefined;
-
-    const pieData = useMemo(() => pie ? generatePieData(items, pie.groupBy) : null, [items, pie]);
-    const durationData = useMemo(
-        () => bar ? bar.customData ?? generateDurationData(items, bar?.groupBy, bar.durationKeys?.start, bar.durationKeys?.end) : [],
-        [items, bar]
-    );
-    const radarData = useMemo(
-        () => radar ? radar.customData ?? generateDurationData(items, radar?.groupBy) : [],
-        [items, radar]
-    );
-    const colorMap = useMemo(() => generateColorMap(pieData ?? durationData), [pieData, durationData]);
 
     return (
         isInitialWidgetCard
@@ -90,7 +78,7 @@ export const WidgetCard = ({ isLoading, header, items, list, pie, bar, radar, cr
 
                 {(pie || bar || radar) && (
                     <Main paddingX="none" paddingY="md">
-                        <WidgetCharts pieData={pieData} durationData={durationData} radarData={radarData} pieTitle={pie?.title} barTitle={bar?.title} radarTitle={radar?.title} colorMap={colorMap} />
+                        <WidgetCharts items={items} pie={pie} bar={bar} radar={radar} />
                     </Main>
                 )}
 

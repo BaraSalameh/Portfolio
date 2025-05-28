@@ -1,6 +1,27 @@
 import { WidgetCardVariantProps, WidgetListVariantProps } from "@/styles/widget";
 import { LucideIcon } from "lucide-react";
 
+export type PieChartProps = {
+    title?: string;
+    groupBy: string | Record<string, string | string[]>;
+} 
+
+export type BarChartProps = {
+    title?: string;
+    groupBy?: string | Record<string, string | string[]>;
+    durationKeys?: {
+        start?: string;
+        end?: string;
+    };
+    customData?: CahrtEntry[];
+}
+
+export type RadarChartProps = {
+    title?: string;
+    groupBy?: string | Record<string, string | string[]>;
+    customData?: CahrtEntry[];
+}
+
 export interface WidgetCardProps extends WidgetCardVariantProps {
     isLoading?: boolean;
     header?: {
@@ -9,24 +30,9 @@ export interface WidgetCardProps extends WidgetCardVariantProps {
     };
     items: Record<string, any>[];
     list?: ListItemConfig[];
-    pie?: {
-        title?: string;
-        groupBy: string | Record<string, string | string[]>;
-    };
-    bar?: {
-        title?: string;
-        groupBy?: string | Record<string, string | string[]>;
-        durationKeys?: {
-            start?: string;
-            end?: string;
-        };
-        customData?: CahrtEntry[];
-    };
-    radar?: {
-        title?: string;
-        groupBy?: string | Record<string, string | string[]>;
-        customData?: CahrtEntry[];
-    };
+    pie?: PieChartProps;
+    bar?: BarChartProps;
+    radar?: RadarChartProps;
     create?: {
         title?: string;
         subTitle?: string;
@@ -50,13 +56,10 @@ export interface WidgetCardProps extends WidgetCardVariantProps {
 }
 
 export interface WidgetChartsProps {
-    pieData: any;
-    durationData: any;
-    radarData: any;
-    pieTitle?: string;
-    barTitle?: string;
-    radarTitle?: string;
-    colorMap: Record<string, string>;
+    items?: Record<string, any>[];
+    pie?: PieChartProps;
+    bar?: BarChartProps;
+    radar?: RadarChartProps;
 }
 
 export interface ListItemConfig {
