@@ -8,6 +8,7 @@ using Application.Owner.Commands.ProjectTechnologyCommands;
 using Application.Owner.Commands.SkillCommands;
 using Application.Owner.Commands.SocialLinkCommands;
 using Application.Owner.Commands.UserLanguageCommands;
+using Application.Owner.Queries.ContactMessageQueries;
 using Application.Owner.Queries.EducationQueries;
 using Application.Owner.Queries.ExperienceQueries;
 using Application.Owner.Queries.LKP_LanguageQuieries;
@@ -54,6 +55,10 @@ namespace Portfolio.Controllers
             => Result.HandleResult(await Mediator.Send(request));
 
         // Message
+        [HttpGet]
+        public async Task<IActionResult> ContactMessageList([FromQuery] ContactMessageListQuery request)
+            => Result.HandleResult(await Mediator.Send(request));
+
         [HttpPost]
         public async Task<IActionResult> SignMessage(SignMessageCommand request)
             => Result.HandleResult(await Mediator.Send(request));
