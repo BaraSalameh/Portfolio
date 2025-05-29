@@ -1,4 +1,4 @@
-import { deleteEducation, deleteExperience, deleteProject, educationListQuery, experienceListQuery, projectTechnologyListQuery, sortEducation, sortExperience, sortProject, userByUsernameQuery, userFullInfoQuery, userLanguageListQuery } from "@/lib/apis";
+import { contactMessageListQuery, deleteEducation, deleteExperience, deleteMessage, deleteProject, educationListQuery, experienceListQuery, projectTechnologyListQuery, signMessage, sortEducation, sortExperience, sortProject, userByUsernameQuery, userFullInfoQuery, userLanguageListQuery } from "@/lib/apis";
 import { useAppDispatch } from "@/lib/store/hooks";
 import debounce from "lodash.debounce";
 import { useCallback, useEffect } from "react";
@@ -59,6 +59,32 @@ export const useHandleExperienceDelete = () => {
     }
 };
 
+export const useHandleMessageDelete = () => {
+  const dispatch = useAppDispatch();
+
+  return async (id: string) => {
+        try {
+            await dispatch(deleteMessage(id));
+            await dispatch(contactMessageListQuery());
+        } catch (err) {
+            console.error('Failed to delete:', err);
+        }
+    }
+};
+
+export const useHandleSignMessage = () => {
+  const dispatch = useAppDispatch();
+
+  return async (id: string) => {
+        try {
+            await dispatch(signMessage(id));
+            // await dispatch(contactMessageListQuery());
+        } catch (err) {
+            console.error('Failed to delete:', err);
+        }
+    }
+};
+
 export const useDebouncedSortProject = () => {
   const dispatch = useAppDispatch();
 
@@ -99,4 +125,12 @@ export const useDebouncedSortExperience = () => {
         }, 1000),
         [dispatch]
     );
+};
+
+export const useLoadContactMessageData = (messages: any) => {
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        !(Array.isArray(messages) && messages.length > 0) && dispatch(contactMessageListQuery());
+    }, []);
 };

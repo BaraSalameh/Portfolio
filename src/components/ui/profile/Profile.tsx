@@ -1,7 +1,7 @@
 import { Header } from '@/components/shared/Header';
 import Image from 'next/image';
 import React from 'react';
-import { Paragraph, CUDModal, ResponsiveIcon } from '..';
+import { Paragraph, CUDModal, ResponsiveIcon, ControlledWidget } from '..';
 import { useParams } from 'next/navigation';
 import ProfileForm from '@/app/[role]/[username]/forms/profileForm';
 import { Button } from '../form/Button';
@@ -9,6 +9,8 @@ import { Copy, Link, MessageCircle, MessageSquare } from 'lucide-react';
 import { getClientLink } from '@/lib/utils/appFunctions';
 import { ProfileProps } from './types';
 import ContactMessageForm from '@/app/[role]/[username]/forms/contactMessageForm';
+import { useContactMessageWidget } from '@/app/[role]/[username]/dashboard/hooks';
+import { ContactMessagePage } from '@/app/[role]/[username]/dashboard/ContactMessagePage';
 
 export const Profile = ({ 
     user,
@@ -37,7 +39,7 @@ export const Profile = ({
             <div className="absolute right-7 sm:right-10 lg:right-15 bottom-[-2rem] sm:bottom-[-2.5rem] lg:bottom-[-3.5rem] flex gap-5 items-center">
                 {role === 'owner' &&
                     <CUDModal subTitle='Messages' icon={MessageSquare} >
-                        <ContactMessageForm />
+                        <ContactMessagePage />
                     </CUDModal>
                 }
             </div>

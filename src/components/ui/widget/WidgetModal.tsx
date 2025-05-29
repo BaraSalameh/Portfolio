@@ -7,9 +7,11 @@ import { Header, Main } from '@/components/shared';
 import { WidgetList } from './WidgetList';
 import { WidgetModalProps } from './types';
 
-export const WidgetModal = ({ isLoading, isOpen, onClose, item, update, del, details, className }: WidgetModalProps) => {
+export const WidgetModal = ({ isLoading, isOpen, onClose, onAction, item, update, del, details, className }: WidgetModalProps) => {
     if (!isOpen) return null;
 
+    onAction?.(item?.id);
+    
     return (
         <BlurBackground intent='sm' className='p-5'>
             <div className={cn(widgetCard({}), className)}>

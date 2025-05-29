@@ -39,7 +39,7 @@ export const WidgetList = ({ items, list, onItemClick, className, sort }: Widget
             const listItem = (
                 <li
                     key={item.id ?? idx}
-                    className={`${cn(widgetList({ clickable: sort?.sortable ? false : onItemClick ? true : false }), className)}`}
+                    className={`${item?.isRead && 'opacity-50'} ${cn(widgetList({ clickable: sort?.sortable ? false : onItemClick ? true : false }), className)}`}
                     onClick={() => onItemClick?.(item)}
                 >
                     {list.map((cfg, index) => {

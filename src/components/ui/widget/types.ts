@@ -52,6 +52,7 @@ export interface WidgetCardProps extends WidgetCardVariantProps {
     };
     details?: ListItemConfig[];
     onSort?: (lstIds: string[]) => any;
+    onModalAction?: (id: string) => any;
     className?: string;
 }
 
@@ -100,6 +101,7 @@ export interface WidgetModalProps {
     };
     details?: ListItemConfig[];
     className?: string;
+    onAction?: (id: string) => any;
 }
 
 export type CahrtEntry = {
