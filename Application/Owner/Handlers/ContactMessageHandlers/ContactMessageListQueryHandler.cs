@@ -28,7 +28,7 @@ namespace Application.Owner.Handlers.ContactMessageHandlers
             var existingEntity = _context.ContactMessage
                 .AsNoTracking()
                 .Where(e => e.UserID == _currentUserService.UserID && e.IsDeleted == false)
-                .OrderBy(e => e.CreatedAt);
+                .OrderByDescending(e => e.CreatedAt);
 
             response.Items = await _mapper.ProjectTo<CMLQ_Response>(existingEntity).ToListAsync(cancellationToken);
             response.RowCount = response.Items.Count();
