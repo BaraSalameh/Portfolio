@@ -12,6 +12,10 @@ namespace Application.Owner.MappingProfiles
 
             CreateMap<User, UFIQ_Response>()
                 .ForMember(dest => dest.User, opt => opt.MapFrom(src => src))
+                .ForMember(dest => dest.UnreadContactMessageCount,
+                    opt => opt.MapFrom(src => src.LstContactMessages
+                        .Count(cm => !cm.IsDeleted && !cm.IsRead)
+                    ))
                 .ForMember(dest => dest.LstEducations,
                     opt => opt.MapFrom(src => src.LstEducations
                         .Where(e => e.IsDeleted == false)

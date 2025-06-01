@@ -1,5 +1,4 @@
-﻿using Application.Common.Entities;
-using Application.Common.Services.Interface;
+﻿using Application.Common.Services.Interface;
 using Application.Owner.Queries.ContactMessageQueries;
 using AutoMapper;
 using DataAccess.Interfaces;
@@ -8,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Owner.Handlers.ContactMessageHandlers
 {
-    public class ContactMessageListQueryHandler : IRequestHandler<ContactMessageListQuery, ListQueryResponse<CMLQ_Response>>
+    public class ContactMessageListQueryHandler : IRequestHandler<ContactMessageListQuery, CMLQ_Response>
     {
         private readonly IAppDbContext _context;
         private readonly IMapper _mapper;
@@ -21,17 +20,18 @@ namespace Application.Owner.Handlers.ContactMessageHandlers
             _currentUserService = currentUserService;
         }
 
-        public async Task<ListQueryResponse<CMLQ_Response>> Handle(ContactMessageListQuery request, CancellationToken cancellationToken)
+        public async Task<CMLQ_Response> Handle(ContactMessageListQuery request, CancellationToken cancellationToken)
         {
-            var response = new ListQueryResponse<CMLQ_Response>();
+            var response = new CMLQ_Response();
 
             var existingEntity = _context.ContactMessage
                 .AsNoTracking()
                 .Where(e => e.UserID == _currentUserService.UserID && e.IsDeleted == false)
                 .OrderByDescending(e => e.CreatedAt);
 
-            response.Items = await _mapper.ProjectTo<CMLQ_Response>(existingEntity).ToListAsync(cancellationToken);
+            response.Items = await _mapper.ProjectTo<CMLQ_ContactMessage>(existingEntity).ToListAsync(cancellationToken);
             response.RowCount = response.Items.Count();
+            response.UnreadContactMessageCount = existingEntity.Count(cm => !cm.IsRead);
 
             return response;
         }

@@ -8,7 +8,7 @@ namespace Application.Owner.MappingProfiles
     {
         public ContactMessageMappingProfiles()
         {
-            CreateMap<ContactMessage, CMLQ_Response>();
+            CreateMap<ContactMessage, CMLQ_ContactMessage>();
         }
     }
 }

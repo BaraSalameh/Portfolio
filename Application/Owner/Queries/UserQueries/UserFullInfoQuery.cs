@@ -8,6 +8,7 @@ namespace Application.Owner.Queries.UserQueries
     public class UFIQ_Response
     {
         public UFIQ_User User { get; set; }
+        public int UnreadContactMessageCount { get; set; }
         public List<UFIQ_Project> LstProjects { get; set; }
         public List<UFIQ_Skill> LstSkills { get; set; }
         public List<UFIQ_Education> LstEducations { get; set; }
