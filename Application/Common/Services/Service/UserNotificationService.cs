@@ -1,4 +1,5 @@
-﻿using Application.Common.Services.Interface;
+﻿using Application.Client.Commands;
+using Application.Common.Services.Interface;
 using Domain.Entities;
 using Microsoft.Extensions.Configuration;
 
@@ -13,6 +14,46 @@ namespace Application.Common.Services.Service
         {
             _emailService = emailService;
             _configuration = configuration;
+        }
+
+        public async Task SendContactMessageNotificationEmail(SendEmailCommand contactMessage)
+        {
+            var baseUrl = _configuration["App:FrontendUrl"];
+
+            var LoginPageUrl = $"{baseUrl}/account/login";
+            var body = $@"
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;'>
+                    <!-- Header with Logo -->
+                    <div style='background-color: #f8f9fa; padding: 20px; text-align: center;'>
+                        <img src='https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo_TV_2015.png' alt='Company Logo' style='max-height: 60px;'>
+                    </div>
+
+                    <!-- Email Body -->
+                    <div style='padding: 30px; background-color: #ffffff;'>
+                        <h2 style='color: #333;'>Hello {contactMessage.EmailTo}</h2>
+                        <p style='font-size: 16px; color: #555;'>
+                            You have received a new contact message from {contactMessage.Name}, ({contactMessage.Email})
+                        </p>
+                        <p style='text-align: center; margin: 30px 0;'>
+                            Please visit your Portfolio to check it out.
+                        </p>
+                        <p style='text-align: center; margin: 30px 0;'>
+                            <a href='{LoginPageUrl}' style='display: inline-block; padding: 12px 24px; color: white; background-color: #007bff; text-decoration: none; border-radius: 4px;'>Portfolio</a>
+                        </p>
+                        <p style='font-size: 12px; color: #999; margin-top: 40px;'>
+                            If you do not have portfolio account, no further action is required.
+                        </p>
+                    </div>
+
+                    <!-- Footer -->
+                    <div style='background-color: #f8f9fa; padding: 20px; text-align: center; font-size: 12px; color: #777;'>
+                        &copy; {DateTime.Now.Year} Portfolio. All rights reserved.<br>
+                        26 Al-Irsal, Ramallah, Palestine
+                    </div>
+                </div>
+            ";
+
+            await _emailService.SendEmailAsync(contactMessage.EmailTo, "New contact message notification", body);
         }
 
         public async Task SendEmailConfirmationAsync(User user)

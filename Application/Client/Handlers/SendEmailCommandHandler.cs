@@ -1,6 +1,7 @@
 ﻿using Application.Client.Commands;
 using Application.Common.Entities;
 using Application.Common.Services.Interface;
+using Application.Common.Services.Service;
 using AutoMapper;
 using DataAccess.Interfaces;
 using Domain.Entities;
@@ -14,13 +15,14 @@ namespace Application.Client.Handlers
         private readonly IAppDbContext _context;
         private readonly IMapper _mapper;
         private readonly IUserResolverService _userResolver;
+        private readonly IUserNotificationService _userNotificationService;
 
-        public SendEmailCommandHandler(IAppDbContext context, IMapper mapper, IUserResolverService userResolver)
+        public SendEmailCommandHandler(IAppDbContext context, IMapper mapper, IUserResolverService userResolver, IUserNotificationService userNotificationService)
         {
             _context = context;
             _mapper = mapper;
             _userResolver = userResolver;
-
+            _userNotificationService = userNotificationService;
         }
         public async Task<CommandResponse> Handle(SendEmailCommand request, CancellationToken cancellationToken)
         {
@@ -41,6 +43,8 @@ namespace Application.Client.Handlers
 
                 await _context.ContactMessage.AddAsync(newEntity, cancellationToken);
                 await _context.SaveChangesAsync();
+
+                await _userNotificationService.SendContactMessageNotificationEmail(request);
             }
             catch (DbUpdateException dbEx)
             {
