@@ -29,7 +29,10 @@ namespace Application.Owner.MappingProfiles
                 .ForMember(dest => dest.LstSkills,
                     opt => opt.MapFrom(src => src.LstSkills.Where(s => s.IsDeleted == false)))
                 .ForMember(dest => dest.LstProjects,
-                    opt => opt.MapFrom(src => src.LstProjects.Where(p => p.IsDeleted == false)))
+                    opt => opt.MapFrom(src => src.LstProjects
+                        .Where(p => p.IsDeleted == false)
+                        .OrderBy(p => p.Order)
+                    ))
                 .ForMember(dest => dest.LstBlogPosts,
                     opt => opt.MapFrom(src => src.LstBlogPosts.Where(p => p.IsDeleted == false)))
                 .ForMember(dest => dest.LstSocialLinks,
