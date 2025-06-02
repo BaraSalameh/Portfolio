@@ -42,7 +42,21 @@ namespace Application.Owner.Queries.UserQueries
         public string SourceCode { get; set; }
         public string ImageUrl { get; set; }
         public bool IsFeatured { get; set; }
+        public UFIQ_PS_Education Education { get; set; }
+        public UFIQ_PS_Experience Experience { get; set; }
         public List<UFIQ_LKP_Technology> LstTechnologies { get; set; }
+    }
+
+    public class UFIQ_PS_Education
+    {
+        public Guid ID { get; set; }
+        public UFIQ_LKP_Institution Institution { get; set; }
+    }
+
+    public class UFIQ_PS_Experience
+    {
+        public Guid ID { get; set; }
+        public string CompanyName { get; set; }
     }
 
     public class UFIQ_LKP_Technology
@@ -59,6 +73,8 @@ namespace Application.Owner.Queries.UserQueries
         public string Category { get; set; }
         public int Proficiency { get; set; }
         public string IconUrl { get; set; }
+        public UFIQ_PS_Education Education { get; set; }
+        public UFIQ_PS_Experience Experience { get; set; }
     }
 
     public class UFIQ_Education

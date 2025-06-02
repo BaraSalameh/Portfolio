@@ -9,5 +9,9 @@
         public string IconUrl { get; set; }
         public Guid UserID { get; set; }
         public User User { get; set; }
+        public Guid? EducationID { get; set; }
+        public Education Education { get; set; }
+        public Guid? ExperienceID { get; set; }
+        public Experience Experience { get; set; }
     }
 }

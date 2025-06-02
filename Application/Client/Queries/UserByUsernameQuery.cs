@@ -1,4 +1,5 @@
 ﻿using Application.Common.Entities;
+using Application.Owner.Queries.UserQueries;
 using MediatR;
 
 namespace Application.Client.Queries
@@ -43,7 +44,19 @@ namespace Application.Client.Queries
         public string SourceCode { get; set; }
         public string ImageUrl { get; set; }
         public bool IsFeatured { get; set; }
+        public UBUQ_PS_Education Education { get; set; }
+        public UBUQ_PS_Experience Experience { get; set; }
         public List<UBUQ_LKP_Technology> LstTechnologies { get; set; }
+    }
+
+    public class UBUQ_PS_Education
+    {
+        public UBUQ_LKP_Institution Institution { get; set; }
+    }
+
+    public class UBUQ_PS_Experience
+    {
+        public string CompanyName { get; set; }
     }
 
     public class UBUQ_LKP_Technology
@@ -58,6 +71,8 @@ namespace Application.Client.Queries
         public string Category { get; set; }
         public int Proficiency { get; set; }
         public string IconUrl { get; set; }
+        public UBUQ_PS_Education Education { get; set; }
+        public UBUQ_PS_Experience Experience { get; set; }
     }
 
     public class UBUQ_Education

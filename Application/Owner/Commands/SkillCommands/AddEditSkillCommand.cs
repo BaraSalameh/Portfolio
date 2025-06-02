@@ -10,5 +10,7 @@ namespace Application.Owner.Commands.SkillCommands
         public string Category { get; set; }
         public int Proficiency { get; set; }
         public string IconUrl { get; set; }
+        public Guid? EducationID { get; set; }
+        public Guid? ExperienceID { get; set; }
     }
 }

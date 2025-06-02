@@ -38,9 +38,26 @@ namespace Application.Owner.MappingProfiles
             CreateMap<Project, UFIQ_Project>()
                 .ForMember(dest => dest.LstTechnologies,
                     opt => opt.MapFrom(src => src.LstProjectTechnologies.Select(pt => pt.LKP_Technology))
+                )
+                .ForMember(dest => dest.Education,
+                    opt => opt.MapFrom(src => src.Education)
+                )
+                .ForMember(dest => dest.Experience,
+                    opt => opt.MapFrom(src => src.Experience)
                 );
             CreateMap<LKP_Technology, UFIQ_LKP_Technology>();
-            CreateMap<Skill, UFIQ_Skill>();
+            CreateMap<Skill, UFIQ_Skill>()
+                .ForMember(dest => dest.Education,
+                    opt => opt.MapFrom(src => src.Education)
+                )
+                .ForMember(dest => dest.Experience,
+                    opt => opt.MapFrom(src => src.Experience)
+                );
+            CreateMap<Education, UFIQ_PS_Education>()
+                .ForMember(dest => dest.Institution,
+                    opt => opt.MapFrom(src => src.LKP_Institution)
+                );
+            CreateMap<Experience, UFIQ_PS_Experience>();
             CreateMap<Education, UFIQ_Education>()
                 .ForMember(dest => dest.Institution, opt => opt.MapFrom(src => src.LKP_Institution))
                 .ForMember(dest => dest.Degree, opt => opt.MapFrom(src => src.LKP_Degree))
