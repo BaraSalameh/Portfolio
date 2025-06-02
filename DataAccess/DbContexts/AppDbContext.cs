@@ -24,6 +24,9 @@ namespace DataAccess.DbContexts
         public DbSet<LKP_FieldOfStudy> LKP_FieldOfStudy { get; set; }
         public DbSet<Experience> Experience { get; set; }
         public DbSet<BlogPost> BlogPost { get; set; }
+        public DbSet<Tag> Tag { get; set; }
+        public DbSet<BlogPostTag> BlogPostTag { get; set; }
+        public DbSet<LKP_BlogPostStatus> LKP_BlogPostStatus { get; set; }
         public DbSet<SocialLink> SocialLink { get; set; }
         public DbSet<ContactMessage> ContactMessage { get; set; }
         public DbSet<Project> Project { get; set; }
@@ -103,6 +106,7 @@ namespace DataAccess.DbContexts
 
             modelBuilder.Entity<PendingEmailConfirmation>().HasIndex(p => new { p.Email, p.Token });
             modelBuilder.Entity<ProjectTechnology>().HasKey(pt => new { pt.ProjectID, pt.LKP_TechnologyID });
+            modelBuilder.Entity<BlogPostTag>().HasKey(pt => new { pt.BlogPostID, pt.TagId });
             modelBuilder.Entity<UserLanguage>().HasKey(pt => new { pt.UserID, pt.LKP_LanguageID });
             modelBuilder.Entity<User>().HasIndex(x => x.Email).IsUnique();
             modelBuilder.Entity<User>().HasIndex(x => x.Username).IsUnique();
@@ -115,6 +119,7 @@ namespace DataAccess.DbContexts
             modelBuilder.ApplyConfiguration(new InstitutionSeedConfiguration());
             modelBuilder.ApplyConfiguration(new DegreeSeedConfiguration());
             modelBuilder.ApplyConfiguration(new FieldOfStudySeedConfiguration());
+            modelBuilder.ApplyConfiguration(new BlogPostStatusSeedConfiguration());
 
 
             return modelBuilder;
@@ -173,6 +178,19 @@ namespace DataAccess.DbContexts
                 .HasOne(b => b.User)
                 .WithMany(u => u.LstBlogPosts)
                 .HasForeignKey(b => b.UserID);
+            modelBuilder.Entity<BlogPost>()
+                .HasOne(b => b.LKP_BlogPostStatus)
+                .WithMany(u => u.LstBlogPosts)
+                .HasForeignKey(b => b.LKP_BlogPostStatusID);
+
+            modelBuilder.Entity<BlogPostTag>()
+                .HasOne(b => b.BlogPost)
+                .WithMany(u => u.LstBlogPostTags)
+                .HasForeignKey(b => b.BlogPostID);
+            modelBuilder.Entity<BlogPostTag>()
+                .HasOne(b => b.Tag)
+                .WithMany(u => u.LstBlogPostTags)
+                .HasForeignKey(b => b.TagId);
 
             modelBuilder.Entity<SocialLink>()
                 .HasOne(s => s.User)

@@ -16,6 +16,9 @@ namespace DataAccess.Interfaces
         public DbSet<LKP_FieldOfStudy> LKP_FieldOfStudy { get; set; }
         public DbSet<Experience> Experience { get; set; }
         public DbSet<BlogPost> BlogPost { get; set; }
+        public DbSet<Tag> Tag { get; set; }
+        public DbSet<BlogPostTag> BlogPostTag { get; set; }
+        public DbSet<LKP_BlogPostStatus> LKP_BlogPostStatus { get; set; }
         public DbSet<SocialLink> SocialLink { get; set; }
         public DbSet<ContactMessage> ContactMessage { get; set; }
         public DbSet<Project> Project { get; set; }
