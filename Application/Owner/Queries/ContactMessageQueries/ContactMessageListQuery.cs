@@ -3,7 +3,11 @@ using MediatR;
 
 namespace Application.Owner.Queries.ContactMessageQueries
 {
-    public class ContactMessageListQuery : IRequest<CMLQ_Response> { }
+    public class ContactMessageListQuery : IRequest<CMLQ_Response>
+    {
+        public int PageNumber { get; set; } = 0;
+        public int PageSize { get; set; } = 10;
+    }
     
     public class CMLQ_Response : ListQueryResponse<CMLQ_ContactMessage>
     {

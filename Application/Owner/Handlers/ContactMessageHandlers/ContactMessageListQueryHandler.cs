@@ -26,12 +26,20 @@ namespace Application.Owner.Handlers.ContactMessageHandlers
 
             var existingEntity = _context.ContactMessage
                 .AsNoTracking()
-                .Where(e => e.UserID == _currentUserService.UserID && e.IsDeleted == false)
-                .OrderByDescending(e => e.CreatedAt);
+                .Where(e => e.UserID == _currentUserService.UserID && e.IsDeleted == false);
 
-            response.Items = await _mapper.ProjectTo<CMLQ_ContactMessage>(existingEntity).ToListAsync(cancellationToken);
-            response.RowCount = response.Items.Count();
-            response.UnreadContactMessageCount = existingEntity.Count(cm => !cm.IsRead);
+            response.UnreadContactMessageCount = await existingEntity.CountAsync(cm => !cm.IsRead, cancellationToken);
+            response.RowCount = await existingEntity.CountAsync(cancellationToken);
+            var pageNumber = request.PageNumber;
+            var pageSize = request.PageSize;
+
+            response.Items =
+                await _mapper.ProjectTo<CMLQ_ContactMessage>(
+                    existingEntity
+                        .OrderByDescending(e => e.CreatedAt)
+                        .Skip(pageNumber * pageSize)
+                        .Take(pageSize)
+                ).ToListAsync(cancellationToken);
 
             return response;
         }
