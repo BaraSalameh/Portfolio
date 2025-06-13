@@ -2,8 +2,10 @@
 using Application.Owner.Queries.LKP_LanguageQuieries;
 using AutoMapper;
 using DataAccess.Interfaces;
+using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Application.Admin.Handlers.RoleHandlers
 {
@@ -22,11 +24,30 @@ namespace Application.Admin.Handlers.RoleHandlers
         public async Task<ListQueryResponse<LKP_LLQ_Response>> Handle(LKP_LanguageListQuery request, CancellationToken cancellationToken)
         {
             var response = new ListQueryResponse<LKP_LLQ_Response>();
+            Expression<Func<LKP_Language, bool>> Filter = f => true;
 
-            var existingEntity = _context.LKP_Language;
+            if (!string.IsNullOrEmpty(request.Search))
+            {
+                var search = request.Search.ToLower();
+                Filter = f =>
+                    f.Name.ToLower().Contains(search);
+            }
 
-            response.Items = await _mapper.ProjectTo<LKP_LLQ_Response>(existingEntity).ToListAsync(cancellationToken);
-            response.RowCount = response.Items.Count();
+            var existingEntity = _context.LKP_Language
+                .AsNoTracking()
+                .Where(Filter);
+
+            response.RowCount = await existingEntity.CountAsync(cancellationToken);
+            var pageNumber = request.PageNumber;
+            var pageSize = request.PageSize;
+
+            response.Items =
+                await _mapper.ProjectTo<LKP_LLQ_Response>(
+                    existingEntity
+                        .OrderBy(u => u.Name)
+                        .Skip(pageNumber * pageSize)
+                        .Take(pageSize)
+                ).ToListAsync(cancellationToken);
 
             return response;
         }
