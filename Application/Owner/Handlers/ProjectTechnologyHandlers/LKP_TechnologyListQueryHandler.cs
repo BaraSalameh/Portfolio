@@ -2,8 +2,10 @@
 using Application.Owner.Queries.ProjectTechnologyQueries;
 using AutoMapper;
 using DataAccess.Interfaces;
+using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Application.Owner.Handlers.ProjectTechnologyHandlers
 {
@@ -21,12 +23,30 @@ namespace Application.Owner.Handlers.ProjectTechnologyHandlers
         public async Task<ListQueryResponse<LKP_TLQ_Response>> Handle(LKP_TechnologyListQuery request, CancellationToken cancellationToken)
         {
             var response = new ListQueryResponse<LKP_TLQ_Response>();
+            Expression<Func<LKP_Technology, bool>> Filter = f => true;
+
+            if (!string.IsNullOrEmpty(request.Search))
+            {
+                var search = request.Search.ToLower();
+                Filter = f =>
+                    f.Name.ToLower().Contains(search);
+            }
 
             var existingEntity = _context.LKP_Technology
-                .AsNoTracking();
+                .AsNoTracking()
+                .Where(Filter);
 
-            response.Items = await _mapper.ProjectTo<LKP_TLQ_Response>(existingEntity).ToListAsync(cancellationToken);
-            response.RowCount = response.Items.Count();
+            response.RowCount = await existingEntity.CountAsync(cancellationToken);
+            var pageNumber = request.PageNumber;
+            var pageSize = request.PageSize;
+
+            response.Items =
+                await _mapper.ProjectTo<LKP_TLQ_Response>(
+                    existingEntity
+                        .OrderBy(u => u.Name)
+                        .Skip(pageNumber * pageSize)
+                        .Take(pageSize)
+                ).ToListAsync(cancellationToken);
 
             return response;
         }
