@@ -1,9 +1,8 @@
 ﻿using Application.Common.Entities;
-using MediatR;
 
 namespace Application.Owner.Queries.EducationQueries
 {
-    public class LKP_DegreeListQuery : IRequest<ListQueryResponse<LKP_DLQ_Response>> { }
+    public class LKP_DegreeListQuery : ListQuery<LKP_DLQ_Response> { }
 
     public class LKP_DLQ_Response
     {
