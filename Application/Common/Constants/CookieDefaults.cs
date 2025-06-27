@@ -11,7 +11,8 @@ namespace Application.Common.Constants
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.None,
-                Expires = expires
+                Expires = expires,
+                Path = "/"
             };
         }
     }
