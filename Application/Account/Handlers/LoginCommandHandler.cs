@@ -55,7 +55,7 @@ namespace Application.Account.Handlers
                 return response;
             }
 
-            _authService.AuthSetupAsync(existingEntity, request.RememberMe);
+            await _authService.AuthSetupAsync(existingEntity, request.RememberMe);
             await _context.SaveChangesAsync(cancellationToken);
 
             response.Data = new LC_Response

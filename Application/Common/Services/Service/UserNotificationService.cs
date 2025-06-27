@@ -1,7 +1,9 @@
 ﻿using Application.Client.Commands;
 using Application.Common.Services.Interface;
-using Domain.Entities;
+using Mailjet.Client;
+using Mailjet.Client.Resources;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
 
 namespace Application.Common.Services.Service
 {
@@ -14,6 +16,55 @@ namespace Application.Common.Services.Service
         {
             _emailService = emailService;
             _configuration = configuration;
+        }
+
+        public async Task SendEmailConfirmationMailjetAsync(Domain.Entities.User user)
+        {
+            var baseUrl = _configuration["App:FrontendUrl"];
+            var pendingEmailConfirmation = user.LstPendingEmailConfirmations.LastOrDefault();
+
+            var confirmationUrl = $"{baseUrl}/account/register/confirm-email/confirm?token={pendingEmailConfirmation!.Token}&email={pendingEmailConfirmation.Email}";
+            var resendUrl = $"{baseUrl}/account/register/confirm-email/resend?email={pendingEmailConfirmation.Email}";
+
+            var client = new MailjetClient(
+                _configuration["Email:Username"],
+                _configuration["Email:Password"]
+            );
+
+            var request = new MailjetRequest
+            {
+                Resource = SendV31.Resource,
+            }
+            .Property(Send.Messages, new JArray {
+                new JObject {
+                    {"From", new JObject {
+                        {"Email", _configuration["Email:From"]},
+                        {"Name", "YourAppName"}
+                    }},
+                    {"To", new JArray {
+                        new JObject {
+                            {"Email", pendingEmailConfirmation.Email},
+                            {"Name", user.Firstname}
+                        }
+                    }},
+                    {"TemplateID", 7102677},
+                    {"TemplateLanguage", true},
+                    {"Subject", "Please verify your email"},
+                    {"Variables", new JObject {
+                        {"firstname", user.Firstname},
+                        {"lastname", user.Lastname},
+                        {"confirmation_url", confirmationUrl},
+                        {"resend_url", resendUrl}
+                    }}
+                }
+            });
+
+            var response = await client.PostAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Failed to send email: {response.StatusCode} - {response.GetErrorMessage()}");
+            }
         }
 
         public async Task SendContactMessageNotificationEmail(SendEmailCommand contactMessage)
@@ -56,7 +107,7 @@ namespace Application.Common.Services.Service
             await _emailService.SendEmailAsync(contactMessage.EmailTo, "New contact message notification", body);
         }
 
-        public async Task SendEmailConfirmationAsync(User user)
+        public async Task SendEmailConfirmationAsync(Domain.Entities.User user)
         {
             var pendingEmailConfirmation = user.LstPendingEmailConfirmations.LastOrDefault();
             var baseUrl = _configuration["App:FrontendUrl"];

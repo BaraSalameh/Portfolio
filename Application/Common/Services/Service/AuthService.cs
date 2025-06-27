@@ -14,7 +14,7 @@ namespace Application.Common.Services.Service
             _cookieService = cookieService;
         }
 
-        public void AuthSetupAsync(User user, bool rememberMe)
+        public Task AuthSetupAsync(User user, bool rememberMe)
         {
             var accessToken = _tokenService.GenerateAccessToken(user);
             var refreshToken = _tokenService.GenerateRefreshToken(rememberMe);
@@ -23,6 +23,8 @@ namespace Application.Common.Services.Service
 
             _cookieService.SetAccessToken(accessToken);
             _cookieService.SetRefreshToken(refreshToken.Token);
+
+            return Task.CompletedTask;
         }
     }
 }

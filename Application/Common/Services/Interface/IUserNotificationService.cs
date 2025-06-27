@@ -7,5 +7,6 @@ namespace Application.Common.Services.Interface
     {
         Task SendContactMessageNotificationEmail(SendEmailCommand contactMessage);
         Task SendEmailConfirmationAsync(User user);
+        Task SendEmailConfirmationMailjetAsync(User user);
     }
 }
