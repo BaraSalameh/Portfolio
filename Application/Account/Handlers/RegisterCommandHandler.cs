@@ -2,7 +2,6 @@
 using Application.Common.Entities;
 using Application.Common.Functions;
 using Application.Common.Services.Interface;
-using Application.Common.Services.Service;
 using AutoMapper;
 using DataAccess.Interfaces;
 using Domain.Entities;
@@ -56,15 +55,10 @@ namespace Application.Account.Handlers
                 newEntity.Role = role;
                 newEntity.CreatedAt = _dateTimeProvider.UtcNow;
 
-                newEntity.IsConfirmed = true;
+                _pendingEmailConfirmationService.GenerateAsync(newEntity, request.RememberMe);
 
-
-                //_pendingEmailConfirmationService.GenerateAsync(newEntity, request.RememberMe);
-
+                //await _authService.AuthSetupAsync(newEntity, request.RememberMe);
                 await _context.User.AddAsync(newEntity, cancellationToken);
-                await _context.SaveChangesAsync(cancellationToken);
-
-                await _authService.AuthSetupAsync(newEntity, request.RememberMe);
                 await _context.SaveChangesAsync(cancellationToken);
 
                 response.Data = new RC_Response
@@ -73,9 +67,7 @@ namespace Application.Account.Handlers
                     Role = newEntity.Role.Name!
                 };
 
-                // choose one way for emailing when email structure is on
-                //await _userNotificationService.SendEmailConfirmationAsync(newEntity);
-                //await _userNotificationService.SendEmailConfirmationMailjetAsync(newEntity);
+                await _userNotificationService.SendEmailConfirmationMailjetAsync(newEntity);
             }
             catch (DbUpdateException dbEx)
             {
@@ -91,9 +83,3 @@ namespace Application.Account.Handlers
         }
     }
 }
-//TO_CHANGE:
-// 1- Line 59: delete
-// 2- Line 62: Uncomment
-// 3- Line 67: Move before the first saveAsync
-// 4- Line 68: delete
-// 5- Line 77, 78: Choose emailing structure

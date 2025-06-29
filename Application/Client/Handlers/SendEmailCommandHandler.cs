@@ -1,7 +1,6 @@
 ﻿using Application.Client.Commands;
 using Application.Common.Entities;
 using Application.Common.Services.Interface;
-using Application.Common.Services.Service;
 using AutoMapper;
 using DataAccess.Interfaces;
 using Domain.Entities;
@@ -44,7 +43,8 @@ namespace Application.Client.Handlers
                 await _context.ContactMessage.AddAsync(newEntity, cancellationToken);
                 await _context.SaveChangesAsync();
 
-                await _userNotificationService.SendContactMessageNotificationEmail(request);
+                //await _userNotificationService.SendContactMessageNotificationEmail(request);
+                await _userNotificationService.SendContactMessageMailjetAsync(request);
             }
             catch (DbUpdateException dbEx)
             {

@@ -44,7 +44,7 @@ namespace Application.Account.Handlers
             existingEntity.Token = null;
             existingEntity.User.IsConfirmed = true;
 
-            _authService.AuthSetupAsync(existingEntity.User, existingEntity.RememberMe);
+            await _authService.AuthSetupAsync(existingEntity.User, existingEntity.RememberMe);
             await _context.SaveChangesAsync(cancellationToken);
 
             return response;

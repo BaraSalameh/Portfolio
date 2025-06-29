@@ -1,5 +1,6 @@
 ﻿using Application.Client.Commands;
 using Application.Common.Services.Interface;
+using Domain.Entities;
 using Mailjet.Client;
 using Mailjet.Client.Resources;
 using Microsoft.Extensions.Configuration;
@@ -55,6 +56,52 @@ namespace Application.Common.Services.Service
                         {"lastname", user.Lastname},
                         {"confirmation_url", confirmationUrl},
                         {"resend_url", resendUrl}
+                    }}
+                }
+            });
+
+            var response = await client.PostAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Failed to send email: {response.StatusCode} - {response.GetErrorMessage()}");
+            }
+        }
+
+        public async Task SendContactMessageMailjetAsync(SendEmailCommand contactMessage)
+        {
+            var baseUrl = _configuration["App:FrontendUrl"];
+            var LoginPageUrl = $"{baseUrl}/account/login";
+
+            var client = new MailjetClient(
+                _configuration["Email:Username"],
+                _configuration["Email:Password"]
+            );
+
+            var request = new MailjetRequest
+            {
+                Resource = SendV31.Resource,
+            }
+            .Property(Send.Messages, new JArray {
+                new JObject {
+                    {"From", new JObject {
+                        {"Email", _configuration["Email:From"]},
+                        {"Name", "YourAppName"}
+                    }},
+                    {"To", new JArray {
+                        new JObject {
+                            {"Email", contactMessage.EmailTo},
+                            {"Name", contactMessage.Name}
+                        }
+                    }},
+                    {"TemplateID", 7113862},
+                    {"TemplateLanguage", true},
+                    {"Subject", "New contact message"},
+                    {"Variables", new JObject {
+                        {"email_to", contactMessage.EmailTo},
+                        {"name", contactMessage.Name},
+                        {"email", contactMessage.Email},
+                        {"login_page_url",LoginPageUrl}
                     }}
                 }
             });
