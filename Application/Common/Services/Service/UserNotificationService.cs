@@ -1,10 +1,6 @@
 ﻿using Application.Client.Commands;
 using Application.Common.Services.Interface;
-using Domain.Entities;
-using Mailjet.Client;
-using Mailjet.Client.Resources;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json.Linq;
 
 namespace Application.Common.Services.Service
 {
@@ -12,118 +8,26 @@ namespace Application.Common.Services.Service
     {
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
+        private readonly string _baseUrl;
+        private readonly string _logo;
 
         public UserNotificationService(IEmailService emailService, IConfiguration configuration)
         {
             _emailService = emailService;
             _configuration = configuration;
-        }
-
-        public async Task SendEmailConfirmationMailjetAsync(Domain.Entities.User user)
-        {
-            var baseUrl = _configuration["App:FrontendUrl"];
-            var pendingEmailConfirmation = user.LstPendingEmailConfirmations.LastOrDefault();
-
-            var confirmationUrl = $"{baseUrl}/account/register/confirm-email/confirm?token={pendingEmailConfirmation!.Token}&email={pendingEmailConfirmation.Email}";
-            var resendUrl = $"{baseUrl}/account/register/confirm-email/resend?email={pendingEmailConfirmation.Email}";
-
-            var client = new MailjetClient(
-                _configuration["Email:Username"],
-                _configuration["Email:Password"]
-            );
-
-            var request = new MailjetRequest
-            {
-                Resource = SendV31.Resource,
-            }
-            .Property(Send.Messages, new JArray {
-                new JObject {
-                    {"From", new JObject {
-                        {"Email", _configuration["Email:From"]},
-                        {"Name", "YourAppName"}
-                    }},
-                    {"To", new JArray {
-                        new JObject {
-                            {"Email", pendingEmailConfirmation.Email},
-                            {"Name", user.Firstname}
-                        }
-                    }},
-                    {"TemplateID", 7102677},
-                    {"TemplateLanguage", true},
-                    {"Subject", "Please verify your email"},
-                    {"Variables", new JObject {
-                        {"firstname", user.Firstname},
-                        {"lastname", user.Lastname},
-                        {"confirmation_url", confirmationUrl},
-                        {"resend_url", resendUrl}
-                    }}
-                }
-            });
-
-            var response = await client.PostAsync(request);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new Exception($"Failed to send email: {response.StatusCode} - {response.GetErrorMessage()}");
-            }
-        }
-
-        public async Task SendContactMessageMailjetAsync(SendEmailCommand contactMessage)
-        {
-            var baseUrl = _configuration["App:FrontendUrl"];
-            var LoginPageUrl = $"{baseUrl}/account/login";
-
-            var client = new MailjetClient(
-                _configuration["Email:Username"],
-                _configuration["Email:Password"]
-            );
-
-            var request = new MailjetRequest
-            {
-                Resource = SendV31.Resource,
-            }
-            .Property(Send.Messages, new JArray {
-                new JObject {
-                    {"From", new JObject {
-                        {"Email", _configuration["Email:From"]},
-                        {"Name", "YourAppName"}
-                    }},
-                    {"To", new JArray {
-                        new JObject {
-                            {"Email", contactMessage.EmailTo},
-                            {"Name", contactMessage.Name}
-                        }
-                    }},
-                    {"TemplateID", 7113862},
-                    {"TemplateLanguage", true},
-                    {"Subject", "New contact message"},
-                    {"Variables", new JObject {
-                        {"email_to", contactMessage.EmailTo},
-                        {"name", contactMessage.Name},
-                        {"email", contactMessage.Email},
-                        {"login_page_url",LoginPageUrl}
-                    }}
-                }
-            });
-
-            var response = await client.PostAsync(request);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new Exception($"Failed to send email: {response.StatusCode} - {response.GetErrorMessage()}");
-            }
+            _baseUrl = _configuration["App:FrontendUrl"]!;
+            _logo = _configuration["App:LogoUrl"]!;
         }
 
         public async Task SendContactMessageNotificationEmail(SendEmailCommand contactMessage)
         {
-            var baseUrl = _configuration["App:FrontendUrl"];
 
-            var LoginPageUrl = $"{baseUrl}/account/login";
+            var LoginPageUrl = $"{_baseUrl}/account/login";
             var body = $@"
                 <div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;'>
                     <!-- Header with Logo -->
                     <div style='background-color: #f8f9fa; padding: 20px; text-align: center;'>
-                        <img src='https://res.cloudinary.com/dxebzmnn9/image/upload/v1751208785/portfolio-logo_yywhz9.svg' alt='Company Logo' style='max-height: 60px;'>
+                        <img src='{_logo}' alt='Company Logo' style='max-height: 60px;'>
                     </div>
 
                     <!-- Email Body -->
@@ -156,16 +60,15 @@ namespace Application.Common.Services.Service
         public async Task SendEmailConfirmationAsync(Domain.Entities.User user)
         {
             var pendingEmailConfirmation = user.LstPendingEmailConfirmations.LastOrDefault();
-            var baseUrl = _configuration["App:FrontendUrl"];
 
-            var confirmationUrl = $"{baseUrl}/account/register/confirm-email/confirm?token={pendingEmailConfirmation!.Token}&email={pendingEmailConfirmation.Email}";
-            var resendUrl = $"{baseUrl}/account/register/confirm-email/resend?email={pendingEmailConfirmation.Email}";
+            var confirmationUrl = $"{_baseUrl}/account/register/confirm-email/confirm?token={pendingEmailConfirmation!.Token}&email={pendingEmailConfirmation.Email}";
+            var resendUrl = $"{_baseUrl}/account/register/confirm-email/resend?email={pendingEmailConfirmation.Email}";
 
             var body = $@"
                 <div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;'>
                     <!-- Header with Logo -->
                     <div style='background-color: #f8f9fa; padding: 20px; text-align: center;'>
-                        <img src='https://res.cloudinary.com/dxebzmnn9/image/upload/v1751208785/portfolio-logo_yywhz9.svg' alt='Company Logo' style='max-height: 60px;'>
+                        <img src='{_logo}' alt='Company Logo' style='max-height: 60px;'>
                     </div>
 
                     <!-- Email Body -->
