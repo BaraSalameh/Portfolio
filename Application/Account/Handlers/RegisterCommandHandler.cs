@@ -57,7 +57,6 @@ namespace Application.Account.Handlers
 
                 _pendingEmailConfirmationService.GenerateAsync(newEntity, request.RememberMe);
 
-                //await _authService.AuthSetupAsync(newEntity, request.RememberMe);
                 await _context.User.AddAsync(newEntity, cancellationToken);
                 await _context.SaveChangesAsync(cancellationToken);
 
@@ -67,7 +66,7 @@ namespace Application.Account.Handlers
                     Role = newEntity.Role.Name!
                 };
 
-                await _userNotificationService.SendEmailConfirmationMailjetAsync(newEntity);
+                await _userNotificationService.SendEmailConfirmationAsync(newEntity);
             }
             catch (DbUpdateException dbEx)
             {

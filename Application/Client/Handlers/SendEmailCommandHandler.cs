@@ -43,8 +43,7 @@ namespace Application.Client.Handlers
                 await _context.ContactMessage.AddAsync(newEntity, cancellationToken);
                 await _context.SaveChangesAsync();
 
-                //await _userNotificationService.SendContactMessageNotificationEmail(request);
-                await _userNotificationService.SendContactMessageMailjetAsync(request);
+                await _userNotificationService.SendContactMessageNotificationEmail(request);
             }
             catch (DbUpdateException dbEx)
             {

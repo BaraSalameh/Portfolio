@@ -51,8 +51,7 @@ namespace Application.Account.Handlers
 
                 response.ResultType = ResultType.Forbidden;
                 response.lstError.Add("User lacks confirmation.");
-                //await _userNotificationService.SendEmailConfirmationAsync(existingEntity);
-                await _userNotificationService.SendEmailConfirmationMailjetAsync(existingEntity);
+                await _userNotificationService.SendEmailConfirmationAsync(existingEntity);
                 return response;
             }
 
