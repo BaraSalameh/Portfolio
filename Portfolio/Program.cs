@@ -1,5 +1,7 @@
 using Application;
 using DataAccess;
+using DataAccess.DbContexts;
+using Microsoft.EntityFrameworkCore;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 
@@ -45,6 +47,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate(); // Applies any pending migrations
+}
 
 // Configure the HTTP request pipeline.
 app.UseCors("AllowFrontend");
