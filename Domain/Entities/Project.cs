@@ -4,10 +4,10 @@
     {
         public Guid ID { get; set; }
         public string Title { get; set; }
-        public string Description { get; set; }
-        public string LiveLink { get; set; }
-        public string SourceCode { get; set; }
-        public string ImageUrl { get; set; }
+        public string? Description { get; set; }
+        public string? LiveLink { get; set; }
+        public string? SourceCode { get; set; }
+        public string? ImageUrl { get; set; }
         public bool IsFeatured { get; set; }
         public int Order { get; set; }
         public Guid UserID { get; set; }
