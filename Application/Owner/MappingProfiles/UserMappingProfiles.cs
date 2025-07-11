@@ -36,7 +36,9 @@ namespace Application.Owner.MappingProfiles
                 .ForMember(dest => dest.LstBlogPosts,
                     opt => opt.MapFrom(src => src.LstBlogPosts.Where(p => p.IsDeleted == false)))
                 .ForMember(dest => dest.LstSocialLinks,
-                    opt => opt.MapFrom(src => src.LstSocialLinks.Where(l => l.IsDeleted == false)));
+                    opt => opt.MapFrom(src => src.LstSocialLinks.Where(l => l.IsDeleted == false)))
+                .ForMember(dest => dest.LstUserPreferences,
+                    opt => opt.MapFrom(src => src.LstUserPreferences.Where(up => up.IsDeleted == false)));
             CreateMap<User, UFIQ_User>();
             CreateMap<Project, UFIQ_Project>()
                 .ForMember(dest => dest.LstTechnologies,
@@ -76,6 +78,9 @@ namespace Application.Owner.MappingProfiles
                 .ForMember(dest => dest.LanguageProficiency, opt => opt.MapFrom(src => src.LKP_LanguageProficiency));
             CreateMap<LKP_Language, UFIQ_LKP_Language>();
             CreateMap<LKP_LanguageProficiency, UFIQ_LKP_Language_Proficiency>();
+            CreateMap<UserPreference, UFIQ_UserPreference>()
+                .ForMember(dest => dest.Preference, opt => opt.MapFrom(src => src.LKP_Preference));
+            CreateMap<LKP_Preference, UFIQ_LKP_Preference>();
 
         }
     }

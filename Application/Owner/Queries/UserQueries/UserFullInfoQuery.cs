@@ -16,6 +16,7 @@ namespace Application.Owner.Queries.UserQueries
         public List<UFIQ_BlogPost> LstBlogPosts { get; set; }
         public List<UFIQ_SocialLink> LstSocialLinks { get; set; }
         public List<UFIQ_UserLanguage> LstUserLanguages { get; set; }
+        public List<UFIQ_UserPreference> LstUserPreferences { get; set; }
     }
 
     public class UFIQ_User
@@ -153,5 +154,17 @@ namespace Application.Owner.Queries.UserQueries
     {
         public Guid ID { get; set; }
         public string Level { get; set; }
+    }
+
+    public class UFIQ_UserPreference
+    {
+        public UFIQ_LKP_Preference Preference { get; set; }
+        public string Value { get; set; }
+    }
+
+    public class UFIQ_LKP_Preference
+    {
+        public Guid ID { get; set; }
+        public string Name { get; set; }
     }
 }

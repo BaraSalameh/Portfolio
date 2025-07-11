@@ -3,6 +3,7 @@ using Application.Owner.Commands.BlogPostCommands;
 using Application.Owner.Commands.ContactMessageCommands;
 using Application.Owner.Commands.EducationCommands;
 using Application.Owner.Commands.ExperienceCommands;
+using Application.Owner.Commands.PreferenceCommands;
 using Application.Owner.Commands.Profile;
 using Application.Owner.Commands.ProjectTechnologyCommands;
 using Application.Owner.Commands.SkillCommands;
@@ -157,6 +158,11 @@ namespace Portfolio.Controllers
             => Result.HandleResult(await Mediator.Send(request));
         [HttpPost]
         public async Task<IActionResult> SortProject(SortProjectCommand request)
+            => Result.HandleResult(await Mediator.Send(request));
+
+        // UserPreferences
+        [HttpPost]
+        public async Task<IActionResult> EditUserPreference(EditUserPreferenceCommand request)
             => Result.HandleResult(await Mediator.Send(request));
     }
 }

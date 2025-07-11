@@ -1,5 +1,6 @@
 ﻿using Application.Admin.Commands.LKP_LanguageCommands;
 using Application.Admin.Commands.LKP_LanguageProficiencyCommands;
+using Application.Admin.Commands.LKP_PreferenceCommands;
 using Application.Admin.Commands.LKP_TechnologyCommands;
 using Application.Admin.Commands.RoleCommands;
 using Application.Common.Entities;
@@ -43,6 +44,14 @@ namespace Portfolio.Controllers
         
         [HttpDelete]
         public async Task<IActionResult> DeleteLKP_Technology(DeleteLKP_TechnologyCommand request)
+            => Result.HandleResult(await Mediator.Send(request));
+
+        [HttpPost]
+        public async Task<IActionResult> AddEditLKP_Preference(AddEditLKP_PreferenceCommand request)
+            => Result.HandleResult(await Mediator.Send(request));
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteLKP_Preference(DeleteLKP_PreferenceCommand request)
             => Result.HandleResult(await Mediator.Send(request));
     }
 }
