@@ -35,6 +35,8 @@ namespace DataAccess.DbContexts
         public DbSet<UserLanguage> UserLanguage { get; set; }
         public DbSet<LKP_Language> LKP_Language { get; set; }
         public DbSet<LKP_LanguageProficiency> LKP_LanguageProficiency { get; set; }
+        public DbSet<LKP_Preference> LKP_Preference { get; set; }
+        public DbSet<UserPreference> UserPreference { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -108,6 +110,7 @@ namespace DataAccess.DbContexts
             modelBuilder.Entity<ProjectTechnology>().HasKey(pt => new { pt.ProjectID, pt.LKP_TechnologyID });
             modelBuilder.Entity<BlogPostTag>().HasKey(pt => new { pt.BlogPostID, pt.TagId });
             modelBuilder.Entity<UserLanguage>().HasKey(pt => new { pt.UserID, pt.LKP_LanguageID });
+            modelBuilder.Entity<UserPreference>().HasKey(pt => new { pt.UserID, pt.LKP_PreferenceID });
             modelBuilder.Entity<User>().HasIndex(x => x.Email).IsUnique();
             modelBuilder.Entity<User>().HasIndex(x => x.Username).IsUnique();
             modelBuilder.Entity<User>().Property(x => x.IsConfirmed).HasDefaultValue(false);
@@ -239,6 +242,15 @@ namespace DataAccess.DbContexts
                 .HasOne(pt => pt.LKP_LanguageProficiency)
                 .WithMany(t => t.LstUsersAndLanguages)
                 .HasForeignKey(pt => pt.LKP_LanguageProficiencyID);
+
+            modelBuilder.Entity<UserPreference>()
+                .HasOne(pt => pt.User)
+                .WithMany(p => p.LstUserPreferences)
+                .HasForeignKey(pt => pt.UserID);
+            modelBuilder.Entity<UserPreference>()
+                .HasOne(pt => pt.LKP_Preference)
+                .WithMany(t => t.LstPreferenceUsers)
+                .HasForeignKey(pt => pt.LKP_PreferenceID);
 
             return modelBuilder;
         }

@@ -27,6 +27,8 @@ namespace DataAccess.Interfaces
         public DbSet<UserLanguage> UserLanguage { get; set; }
         public DbSet<LKP_Language> LKP_Language { get; set; }
         public DbSet<LKP_LanguageProficiency> LKP_LanguageProficiency { get; set; }
+        public DbSet<LKP_Preference> LKP_Preference { get; set; }
+        public DbSet<UserPreference> UserPreference { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken());
     }

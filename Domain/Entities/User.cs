@@ -29,6 +29,7 @@
         public List<SocialLink> LstSocialLinks { get; set; }
         public List<ContactMessage> LstContactMessages { get; set; }
         public List<UserLanguage> LstUserLanguages { get; set; }
+        public List<UserPreference> LstUserPreferences { get; set; }
         public List<RefreshToken> LstRefreshTokens { get; set; } = new List<RefreshToken>();
         public List<PendingEmailConfirmation> LstPendingEmailConfirmations { get; set; } = new List<PendingEmailConfirmation>();
     }
