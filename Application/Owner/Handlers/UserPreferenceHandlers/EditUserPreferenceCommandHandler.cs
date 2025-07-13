@@ -1,19 +1,13 @@
 ﻿using Application.Common.Entities;
 using Application.Common.Services.Interface;
-using Application.Owner.Commands.EducationCommands;
 using Application.Owner.Commands.PreferenceCommands;
 using AutoMapper;
 using DataAccess.Interfaces;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Application.Owner.Handlers.UserPreferenceCommandHandlers
+namespace Application.Owner.Handlers.UserPreferenceHandlers
 {
     public class EditUserPreferenceCommandHandler: IRequestHandler<EditUserPreferenceCommand, CommandResponse>
     {

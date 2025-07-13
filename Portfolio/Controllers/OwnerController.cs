@@ -15,6 +15,7 @@ using Application.Owner.Queries.ExperienceQueries;
 using Application.Owner.Queries.LKP_LanguageQuieries;
 using Application.Owner.Queries.ProjectTechnologyQueries;
 using Application.Owner.Queries.UserLanguageQueries;
+using Application.Owner.Queries.UserPreferenceQueries;
 using Application.Owner.Queries.UserQueries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -163,6 +164,14 @@ namespace Portfolio.Controllers
         // UserPreferences
         [HttpPost]
         public async Task<IActionResult> EditUserPreference(EditUserPreferenceCommand request)
+            => Result.HandleResult(await Mediator.Send(request));
+
+        [HttpGet]
+        public async Task<IActionResult> UserPreferenceList([FromQuery] UserPreferenceListQuery request)
+            => Result.HandleResult(await Mediator.Send(request));
+
+        [HttpGet]
+        public async Task<IActionResult> LKP_PreferenceList([FromQuery] LKP_PreferenceListQurery request)
             => Result.HandleResult(await Mediator.Send(request));
     }
 }
