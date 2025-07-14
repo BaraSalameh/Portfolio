@@ -19,6 +19,7 @@ namespace Application.Client.Queries
         public List<UBUQ_BlogPost> LstBlogPosts { get; set; }
         public List<UBUQ_SocialLink> LstSocialLinks { get; set; }
         public List<UBUQ_UserLanguage> LstUserLanguages { get; set; }
+        public List<UBUQ_UserPreference> LstUserPreferences { get; set; }
     }
 
     public class UBUQ_User
@@ -142,5 +143,16 @@ namespace Application.Client.Queries
     public class UBUQ_LKP_Language_Proficiency
     {
         public string Level { get; set; }
+    }
+
+    public class UBUQ_UserPreference
+    {
+        public UBUQ_LKP_Preference Preference { get; set; }
+        public string Value { get; set; }
+    }
+
+    public class UBUQ_LKP_Preference
+    {
+        public string Name { get; set; }
     }
 }

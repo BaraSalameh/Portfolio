@@ -1,5 +1,4 @@
 ﻿using Application.Client.Queries;
-using Application.Owner.Queries.UserQueries;
 using AutoMapper;
 using Domain.Entities;
 
@@ -33,7 +32,9 @@ namespace Application.Client.MappingProfiles
                 .ForMember(dest => dest.LstBlogPosts,
                     opt => opt.MapFrom(src => src.LstBlogPosts.Where(p => p.IsDeleted == false)))
                 .ForMember(dest => dest.LstSocialLinks,
-                    opt => opt.MapFrom(src => src.LstSocialLinks.Where(l => l.IsDeleted == false)));
+                    opt => opt.MapFrom(src => src.LstSocialLinks.Where(l => l.IsDeleted == false)))
+                .ForMember(dest => dest.LstUserPreferences,
+                    opt => opt.MapFrom(src => src.LstUserPreferences.Where(up => up.IsDeleted == false))); ;
             CreateMap<User, UBUQ_User>();
             CreateMap<Project, UBUQ_Project>()
                 .ForMember(dest => dest.LstTechnologies,
@@ -73,6 +74,9 @@ namespace Application.Client.MappingProfiles
                 .ForMember(dest => dest.LanguageProficiency, opt => opt.MapFrom(src => src.LKP_LanguageProficiency));
             CreateMap<LKP_Language, UBUQ_LKP_Language>();
             CreateMap<LKP_LanguageProficiency, UBUQ_LKP_Language_Proficiency>();
+            CreateMap<UserPreference, UBUQ_UserPreference>()
+                .ForMember(dest => dest.Preference, opt => opt.MapFrom(src => src.LKP_Preference));
+            CreateMap<LKP_Preference, UBUQ_LKP_Preference>();
 
         }
     }
