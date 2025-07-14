@@ -29,7 +29,7 @@ namespace Application.Account.Handlers
             var existingEntity = await _context.PendingEmailConfirmation
                .Include(pe => pe.User).ThenInclude(u => u.Role)
                .FirstOrDefaultAsync(pe =>
-                   pe.Email == request.Email &&
+                   pe.User.Username == request.Username &&
                    !pe.IsRevoked &&
                    !pe.IsEmailConfirmed,
                    cancellationToken

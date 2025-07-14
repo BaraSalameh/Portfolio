@@ -61,8 +61,7 @@ namespace Application.Common.Services.Service
         {
             var pendingEmailConfirmation = user.LstPendingEmailConfirmations.LastOrDefault();
 
-            var confirmationUrl = $"{_baseUrl}/account/register/confirm-email/confirm?token={pendingEmailConfirmation!.Token}&email={pendingEmailConfirmation.Email}";
-            var resendUrl = $"{_baseUrl}/account/register/confirm-email/resend?email={pendingEmailConfirmation.Email}";
+            var confirmationUrl = $"{_baseUrl}/account/register/confirm-email/{user.Username}/confirm?token={pendingEmailConfirmation!.Token}&email={pendingEmailConfirmation.Email}";
 
             var body = $@"
                 <div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;'>
@@ -79,12 +78,6 @@ namespace Application.Common.Services.Service
                         </p>
                         <p style='text-align: center; margin: 30px 0;'>
                             <a href='{confirmationUrl}' style='display: inline-block; padding: 12px 24px; color: white; background-color: #166534; text-decoration: none; border-radius: 4px;'>Confirm Email</a>
-                        </p>
-                        <p style='font-size: 14px; color: #555;'>
-                            Didn't receive the confirmation email or it expired? You can request another one below:
-                        </p>
-                        <p style='text-align: center;'>
-                            <a href='{resendUrl}' style='display: inline-block; padding: 10px 20px; color: white; background-color: #6c757d; text-decoration: none; border-radius: 4px;'>Resend Email</a>
                         </p>
                         <p style='font-size: 12px; color: #999; margin-top: 40px;'>
                             If you did not create an account, no further action is required.
