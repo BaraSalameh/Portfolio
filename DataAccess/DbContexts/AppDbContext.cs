@@ -123,6 +123,7 @@ namespace DataAccess.DbContexts
             modelBuilder.ApplyConfiguration(new DegreeSeedConfiguration());
             modelBuilder.ApplyConfiguration(new FieldOfStudySeedConfiguration());
             modelBuilder.ApplyConfiguration(new BlogPostStatusSeedConfiguration());
+            modelBuilder.ApplyConfiguration(new PreferencesSeedConfiguration());
 
 
             return modelBuilder;
