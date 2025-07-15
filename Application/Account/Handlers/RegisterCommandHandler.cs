@@ -13,17 +13,14 @@ namespace Application.Account.Handlers
 {
     public class RegisterCommandHandler : IRequestHandler<RegisterCommand, CommandResponse<RC_Response>>
     {
-        private readonly IAuthService _authService;
         private readonly IAppDbContext _context;
         private readonly IMapper _mapper;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IUserNotificationService _userNotificationService;
         private readonly IPendingEmailConfirmationService _pendingEmailConfirmationService;
 
-
-        public RegisterCommandHandler(IAuthService authService, IAppDbContext context, IMapper mapper, IDateTimeProvider dateTimeProvider, IUserNotificationService userNotificationService, IPendingEmailConfirmationService pendingEmailConfirmationService)
+        public RegisterCommandHandler(IAppDbContext context, IMapper mapper, IDateTimeProvider dateTimeProvider, IUserNotificationService userNotificationService, IPendingEmailConfirmationService pendingEmailConfirmationService)
         {
-            _authService = authService;
             _context = context;
             _mapper = mapper;
             _dateTimeProvider = dateTimeProvider;
