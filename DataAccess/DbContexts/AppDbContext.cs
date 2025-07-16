@@ -37,6 +37,9 @@ namespace DataAccess.DbContexts
         public DbSet<LKP_LanguageProficiency> LKP_LanguageProficiency { get; set; }
         public DbSet<LKP_Preference> LKP_Preference { get; set; }
         public DbSet<UserPreference> UserPreference { get; set; }
+        public DbSet<LKP_Widget> LKP_Widget { get; set; }
+        public DbSet<LKP_ChartType> LKP_ChartType { get; set; }
+        public DbSet<UserChartPreference> UserChartPreference { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -111,6 +114,7 @@ namespace DataAccess.DbContexts
             modelBuilder.Entity<BlogPostTag>().HasKey(pt => new { pt.BlogPostID, pt.TagId });
             modelBuilder.Entity<UserLanguage>().HasKey(pt => new { pt.UserID, pt.LKP_LanguageID });
             modelBuilder.Entity<UserPreference>().HasKey(pt => new { pt.UserID, pt.LKP_PreferenceID });
+            modelBuilder.Entity<UserChartPreference>().HasKey(ucp => new { ucp.UserID, ucp.LKP_WidgetID, ucp.LKP_ChartTypeID });
             modelBuilder.Entity<User>().HasIndex(x => x.Email).IsUnique();
             modelBuilder.Entity<User>().HasIndex(x => x.Username).IsUnique();
             modelBuilder.Entity<User>().Property(x => x.IsConfirmed).HasDefaultValue(false);
@@ -124,7 +128,8 @@ namespace DataAccess.DbContexts
             modelBuilder.ApplyConfiguration(new FieldOfStudySeedConfiguration());
             modelBuilder.ApplyConfiguration(new BlogPostStatusSeedConfiguration());
             modelBuilder.ApplyConfiguration(new PreferencesSeedConfiguration());
-
+            modelBuilder.ApplyConfiguration(new WidgetSeedConfiguration());
+            modelBuilder.ApplyConfiguration(new ChartTypeSeedConfiguration());
 
             return modelBuilder;
         }
@@ -252,6 +257,19 @@ namespace DataAccess.DbContexts
                 .HasOne(pt => pt.LKP_Preference)
                 .WithMany(t => t.LstPreferenceUsers)
                 .HasForeignKey(pt => pt.LKP_PreferenceID);
+
+            modelBuilder.Entity<UserChartPreference>()
+                .HasOne(pt => pt.User)
+                .WithMany(p => p.LstUserChartPreferences)
+                .HasForeignKey(pt => pt.UserID);
+            modelBuilder.Entity<UserChartPreference>()
+                .HasOne(pt => pt.LKP_Widget)
+                .WithMany(t => t.LstWidgetPreferences)
+                .HasForeignKey(pt => pt.LKP_WidgetID);
+            modelBuilder.Entity<UserChartPreference>()
+                .HasOne(pt => pt.LKP_ChartType)
+                .WithMany(t => t.LstChartPreferences)
+                .HasForeignKey(pt => pt.LKP_ChartTypeID);
 
             return modelBuilder;
         }

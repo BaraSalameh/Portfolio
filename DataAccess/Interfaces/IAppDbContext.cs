@@ -29,6 +29,9 @@ namespace DataAccess.Interfaces
         public DbSet<LKP_LanguageProficiency> LKP_LanguageProficiency { get; set; }
         public DbSet<LKP_Preference> LKP_Preference { get; set; }
         public DbSet<UserPreference> UserPreference { get; set; }
+        public DbSet<LKP_Widget> LKP_Widget { get; set; }
+        public DbSet<LKP_ChartType> LKP_ChartType { get; set; }
+        public DbSet<UserChartPreference> UserChartPreference { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken());
     }
