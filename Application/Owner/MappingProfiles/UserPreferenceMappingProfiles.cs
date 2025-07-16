@@ -1,4 +1,4 @@
-﻿using Application.Owner.Commands.PreferenceCommands;
+﻿using Application.Owner.Commands.UserPreferenceCommands;
 using Application.Owner.Queries.UserPreferenceQueries;
 using AutoMapper;
 using Domain.Entities;

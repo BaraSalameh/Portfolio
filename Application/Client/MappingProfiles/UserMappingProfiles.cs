@@ -34,7 +34,9 @@ namespace Application.Client.MappingProfiles
                 .ForMember(dest => dest.LstSocialLinks,
                     opt => opt.MapFrom(src => src.LstSocialLinks.Where(l => l.IsDeleted == false)))
                 .ForMember(dest => dest.LstUserPreferences,
-                    opt => opt.MapFrom(src => src.LstUserPreferences.Where(up => up.IsDeleted == false))); ;
+                    opt => opt.MapFrom(src => src.LstUserPreferences.Where(up => up.IsDeleted == false)))
+                .ForMember(dest => dest.LstUserChartPreferences,
+                    opt => opt.MapFrom(src => src.LstUserChartPreferences.Where(ucp => ucp.IsDeleted == false)));
             CreateMap<User, UBUQ_User>();
             CreateMap<Project, UBUQ_Project>()
                 .ForMember(dest => dest.LstTechnologies,
@@ -77,6 +79,11 @@ namespace Application.Client.MappingProfiles
             CreateMap<UserPreference, UBUQ_UserPreference>()
                 .ForMember(dest => dest.Preference, opt => opt.MapFrom(src => src.LKP_Preference));
             CreateMap<LKP_Preference, UBUQ_LKP_Preference>();
+            CreateMap<UserChartPreference, UBUQ_UserChartPreference>()
+                .ForMember(dest => dest.Widget, opt => opt.MapFrom(src => src.LKP_Widget))
+                .ForMember(dest => dest.ChartType, opt => opt.MapFrom(src => src.LKP_ChartType));
+            CreateMap<LKP_Widget, UBUQ_LKP_Widget>();
+            CreateMap<LKP_ChartType, UBUQ_LKP_ChartType>();
 
         }
     }

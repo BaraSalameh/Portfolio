@@ -1,5 +1,4 @@
 ﻿using Application.Common.Entities;
-using Application.Owner.Queries.UserQueries;
 using MediatR;
 
 namespace Application.Client.Queries
@@ -20,6 +19,7 @@ namespace Application.Client.Queries
         public List<UBUQ_SocialLink> LstSocialLinks { get; set; }
         public List<UBUQ_UserLanguage> LstUserLanguages { get; set; }
         public List<UBUQ_UserPreference> LstUserPreferences { get; set; }
+        public List<UBUQ_UserChartPreference> LstUserChartPreferences { get; set; }
     }
 
     public class UBUQ_User
@@ -152,6 +152,24 @@ namespace Application.Client.Queries
     }
 
     public class UBUQ_LKP_Preference
+    {
+        public string Name { get; set; }
+    }
+
+    public class UBUQ_UserChartPreference
+    {
+        public UBUQ_LKP_Widget Widget { get; set; }
+        public UBUQ_LKP_ChartType ChartType { get; set; }
+        public string GroupBy { get; set; }
+        public string? ValueSource { get; set; }
+    }
+
+    public class UBUQ_LKP_Widget
+    {
+        public string Name { get; set; }
+    }
+
+    public class UBUQ_LKP_ChartType
     {
         public string Name { get; set; }
     }

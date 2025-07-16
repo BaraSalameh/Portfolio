@@ -1,7 +1,7 @@
 ﻿using Application.Common.Entities;
 using MediatR;
 
-namespace Application.Owner.Commands.PreferenceCommands
+namespace Application.Owner.Commands.UserPreferenceCommands
 {
     public class EditUserPreferenceCommand : IRequest<CommandResponse>
     {

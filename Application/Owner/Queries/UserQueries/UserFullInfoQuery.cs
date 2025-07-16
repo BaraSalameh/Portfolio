@@ -17,6 +17,7 @@ namespace Application.Owner.Queries.UserQueries
         public List<UFIQ_SocialLink> LstSocialLinks { get; set; }
         public List<UFIQ_UserLanguage> LstUserLanguages { get; set; }
         public List<UFIQ_UserPreference> LstUserPreferences { get; set; }
+        public List<UFIQ_UserChartPreference> LstUserChartPreferences { get; set; }
     }
 
     public class UFIQ_User
@@ -163,6 +164,26 @@ namespace Application.Owner.Queries.UserQueries
     }
 
     public class UFIQ_LKP_Preference
+    {
+        public Guid ID { get; set; }
+        public string Name { get; set; }
+    }
+
+    public class UFIQ_UserChartPreference
+    {
+        public UFIQ_LKP_Widget Widget { get; set; }
+        public UFIQ_LKP_ChartType ChartType { get; set; }
+        public string GroupBy { get; set; }
+        public string? ValueSource { get; set; }
+    }
+
+    public class UFIQ_LKP_Widget
+    {
+        public Guid ID { get; set; }
+        public string Name { get; set; }
+    }
+
+    public class UFIQ_LKP_ChartType
     {
         public Guid ID { get; set; }
         public string Name { get; set; }

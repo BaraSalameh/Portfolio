@@ -3,17 +3,19 @@ using Application.Owner.Commands.BlogPostCommands;
 using Application.Owner.Commands.ContactMessageCommands;
 using Application.Owner.Commands.EducationCommands;
 using Application.Owner.Commands.ExperienceCommands;
-using Application.Owner.Commands.PreferenceCommands;
 using Application.Owner.Commands.Profile;
 using Application.Owner.Commands.ProjectTechnologyCommands;
 using Application.Owner.Commands.SkillCommands;
 using Application.Owner.Commands.SocialLinkCommands;
+using Application.Owner.Commands.UserChartPreferenceCommands;
 using Application.Owner.Commands.UserLanguageCommands;
+using Application.Owner.Commands.UserPreferenceCommands;
 using Application.Owner.Queries.ContactMessageQueries;
 using Application.Owner.Queries.EducationQueries;
 using Application.Owner.Queries.ExperienceQueries;
 using Application.Owner.Queries.LKP_LanguageQuieries;
 using Application.Owner.Queries.ProjectTechnologyQueries;
+using Application.Owner.Queries.UserChartPreferenceQueries;
 using Application.Owner.Queries.UserLanguageQueries;
 using Application.Owner.Queries.UserPreferenceQueries;
 using Application.Owner.Queries.UserQueries;
@@ -172,6 +174,23 @@ namespace Portfolio.Controllers
 
         [HttpGet]
         public async Task<IActionResult> LKP_PreferenceList([FromQuery] LKP_PreferenceListQurery request)
+            => Result.HandleResult(await Mediator.Send(request));
+
+        // UserChartPreferences
+        [HttpPost]
+        public async Task<IActionResult> EditUserChartPreference(EditUserChartPreferenceCommand request)
+            => Result.HandleResult(await Mediator.Send(request));
+
+        [HttpGet]
+        public async Task<IActionResult> UserChartPreferenceList([FromQuery] UserChartPreferenceListQuery request)
+            => Result.HandleResult(await Mediator.Send(request));
+
+        [HttpGet]
+        public async Task<IActionResult> LKP_WidgetList([FromQuery] LKP_WidgetListQuery request)
+            => Result.HandleResult(await Mediator.Send(request));
+
+        [HttpGet]
+        public async Task<IActionResult> LKP_ChartTypeList([FromQuery] LKP_ChartTypeListQuery request)
             => Result.HandleResult(await Mediator.Send(request));
     }
 }
