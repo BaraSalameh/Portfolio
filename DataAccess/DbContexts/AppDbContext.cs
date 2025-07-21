@@ -18,6 +18,8 @@ namespace DataAccess.DbContexts
         public DbSet<Role> Role { get; set; }
         public DbSet<User> User { get; set; }
         public DbSet<Skill> Skill { get; set; }
+        public DbSet<LKP_Skill> LKP_Skill { get; set; }
+        public DbSet<LKP_SkillCategory> LKP_SkillCategory { get; set; }
         public DbSet<Education> Education { get; set; }
         public DbSet<LKP_Institution> LKP_Institution { get; set; }
         public DbSet<LKP_Degree> LKP_Degree { get; set; }
@@ -113,6 +115,7 @@ namespace DataAccess.DbContexts
             modelBuilder.Entity<ProjectTechnology>().HasKey(pt => new { pt.ProjectID, pt.LKP_TechnologyID });
             modelBuilder.Entity<BlogPostTag>().HasKey(pt => new { pt.BlogPostID, pt.TagId });
             modelBuilder.Entity<UserLanguage>().HasKey(pt => new { pt.UserID, pt.LKP_LanguageID });
+            modelBuilder.Entity<Skill>().HasKey(s => new { s.UserID, s.LKP_SkillID });
             modelBuilder.Entity<UserPreference>().HasKey(pt => new { pt.UserID, pt.LKP_PreferenceID });
             modelBuilder.Entity<UserChartPreference>().HasKey(ucp => new { ucp.UserID, ucp.LKP_WidgetID, ucp.LKP_ChartTypeID });
             modelBuilder.Entity<User>().HasIndex(x => x.Email).IsUnique();
@@ -130,6 +133,8 @@ namespace DataAccess.DbContexts
             modelBuilder.ApplyConfiguration(new PreferencesSeedConfiguration());
             modelBuilder.ApplyConfiguration(new WidgetSeedConfiguration());
             modelBuilder.ApplyConfiguration(new ChartTypeSeedConfiguration());
+            modelBuilder.ApplyConfiguration(new SkillCategorySeedConfiguration());
+            modelBuilder.ApplyConfiguration(new SkillSeedConfiguration());
 
             return modelBuilder;
         }
@@ -176,6 +181,15 @@ namespace DataAccess.DbContexts
                 .HasOne(p => p.Experience)
                 .WithMany(u => u.LstSkills)
                 .HasForeignKey(p => p.ExperienceID);
+            modelBuilder.Entity<Skill>()
+                .HasOne(p => p.LKP_Skill)
+                .WithMany(u => u.LstSkills)
+                .HasForeignKey(p => p.LKP_SkillID);
+
+            modelBuilder.Entity<LKP_Skill>()
+                .HasOne(p => p.LKP_SkillCategory)
+                .WithMany(u => u.LstSkillCategorySkills)
+                .HasForeignKey(p => p.LKP_SkillCategoryID);
 
             modelBuilder.Entity<Education>()
                 .HasOne(e => e.User)

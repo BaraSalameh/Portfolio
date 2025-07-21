@@ -1,5 +1,5 @@
 ﻿using Application.Common.Entities;
-using Application.Owner.Queries.LKP_LanguageQuieries;
+using Application.Owner.Queries.SkillQueries;
 using AutoMapper;
 using DataAccess.Interfaces;
 using Domain.Entities;
@@ -7,24 +7,23 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace Application.Admin.Handlers.RoleHandlers
+namespace Application.Owner.Handlers.SkillHandlers
 {
-    public class LKP_LanguageListQueryHandler : IRequestHandler<LKP_LanguageListQuery, ListQueryResponse<LKP_LLQ_Response>>
+    public class LKP_SkillListQueryHandler : IRequestHandler<LKP_SkillListQuery, ListQueryResponse<LKP_SLQ_Response>>
     {
-
         private readonly IAppDbContext _context;
         private readonly IMapper _mapper;
 
-        public LKP_LanguageListQueryHandler(IAppDbContext context, IMapper mapper)
+        public LKP_SkillListQueryHandler(IAppDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
         }
 
-        public async Task<ListQueryResponse<LKP_LLQ_Response>> Handle(LKP_LanguageListQuery request, CancellationToken cancellationToken)
+        public async Task<ListQueryResponse<LKP_SLQ_Response>> Handle(LKP_SkillListQuery request, CancellationToken cancellationToken)
         {
-            var response = new ListQueryResponse<LKP_LLQ_Response>();
-            Expression<Func<LKP_Language, bool>> Filter = f => true;
+            var response = new ListQueryResponse<LKP_SLQ_Response>();
+            Expression<Func<LKP_Skill, bool>> Filter = f => true;
 
             if (!string.IsNullOrEmpty(request.Search))
             {
@@ -33,7 +32,7 @@ namespace Application.Admin.Handlers.RoleHandlers
                     f.Name.ToLower().Contains(search);
             }
 
-            var existingEntity = _context.LKP_Language
+            var existingEntity = _context.LKP_Skill
                 .AsNoTracking()
                 .Where(Filter);
 
@@ -42,7 +41,7 @@ namespace Application.Admin.Handlers.RoleHandlers
             var pageSize = request.PageSize;
 
             response.Items =
-                await _mapper.ProjectTo<LKP_LLQ_Response>(
+                await _mapper.ProjectTo<LKP_SLQ_Response>(
                     existingEntity
                         .OrderBy(u => u.Name)
                         .Skip(pageNumber * pageSize)

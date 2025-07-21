@@ -3,13 +3,12 @@ using Application.Common.Services.Interface;
 using Application.Owner.Commands.SkillCommands;
 using AutoMapper;
 using DataAccess.Interfaces;
-using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Owner.Handlers.SkillHandlers
 {
-    public class AddEditSkillCommandHandler : IRequestHandler<AddEditSkillCommand, CommandResponse>
+    public class AddEditSkillCommandHandler : IRequestHandler<EditDeleteSkillCommand, CommandResponse>
     {
         private readonly ICurrentUserService _currentUser;
         private readonly IAppDbContext _context;
@@ -22,47 +21,54 @@ namespace Application.Owner.Handlers.SkillHandlers
             _mapper = mapper;
         }
 
-        public async Task<CommandResponse> Handle(AddEditSkillCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(EditDeleteSkillCommand request, CancellationToken cancellationToken)
         {
             var response = new CommandResponse();
 
+            if (request.LstSkills == null)
+            {
+                response.lstError.Add("Skill list can't be null.");
+                return response;
+            }
+
             try
             {
-                if (request.ID == null)
-                {
-                    var newEntity = _mapper.Map<Skill>(request);
-                    newEntity.UserID = _currentUser.UserID!.Value;
-                    await _context.Skill.AddAsync(newEntity, cancellationToken);
-                }
-                else
-                {
-                    var existingEntity = await _context.Skill
-                        .FirstOrDefaultAsync(x =>
-                            x.UserID == _currentUser.UserID!.Value &&
-                            x.ID == request.ID &&
-                            x.IsDeleted == false,
-                            cancellationToken
-                        );
 
-                    if (existingEntity == null)
-                    {
-                        response.lstError.Add("Skill not found.");
-                        return response;
-                    }
+                var existingEntity = await _context.User
+                    .Include(y => y.LstSkills)
+                    .FirstOrDefaultAsync(u => u.ID == _currentUser.UserID!.Value, cancellationToken);
 
-                    _mapper.Map(request, existingEntity);
-                    existingEntity.UpdatedAt = DateTime.UtcNow;
+                if (existingEntity == null)
+                {
+                    response.lstError.Add("User not found.");
+                    return response;
                 }
+
+                var RequestedSkills = request.LstSkills.Select(x => x.LKP_SkillID).ToList();
+
+                var LKP_SkillIDs = await _context.LKP_Skill
+                    .AsNoTracking()
+                    .Where(l => RequestedSkills.Contains(l.ID))
+                    .Select(l => l.ID)
+                    .ToListAsync(cancellationToken);
+
+                if (RequestedSkills.Count != LKP_SkillIDs.Count)
+                {
+                    response.lstError.Add("Wrong Skills Entry.");
+                    return response;
+                }
+
+                _mapper.Map(request, existingEntity);
 
                 await _context.SaveChangesAsync(cancellationToken);
             }
             catch (DbUpdateException dbEx)
             {
-                response.lstError.Add("Error while adding/updating the Skill.");
+                response.lstError.Add("Error while editting/deleting the Skill.");
             }
             catch (Exception ex)
             {
-                response.lstError.Add("Unexpected error occurred.");
+                response.lstError.Add("Unexpected error occurred");
             }
 
             return response;

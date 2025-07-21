@@ -4,6 +4,7 @@ using DataAccess.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250721170840_Removing ID preoperty from Skill entity")]
+    partial class RemovingIDpreopertyfromSkillentity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2165,9 +2168,6 @@ namespace DataAccess.Migrations
                     b.Property<int>("Proficiency")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("ProjectID")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -2178,8 +2178,6 @@ namespace DataAccess.Migrations
                     b.HasIndex("ExperienceID");
 
                     b.HasIndex("LKP_SkillID");
-
-                    b.HasIndex("ProjectID");
 
                     b.ToTable("Skill");
                 });
@@ -2602,10 +2600,6 @@ namespace DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectID");
-
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("LstSkills")
                         .HasForeignKey("UserID")
@@ -2617,8 +2611,6 @@ namespace DataAccess.Migrations
                     b.Navigation("Experience");
 
                     b.Navigation("LKP_Skill");
-
-                    b.Navigation("Project");
 
                     b.Navigation("User");
                 });

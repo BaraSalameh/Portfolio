@@ -4,6 +4,7 @@ using DataAccess.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250721163959_Updaing Skill entity structure")]
+    partial class UpdaingSkillentitystructure
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2134,11 +2137,10 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Domain.Entities.Skill", b =>
                 {
-                    b.Property<Guid>("UserID")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("LKP_SkillID")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -2162,16 +2164,19 @@ namespace DataAccess.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<Guid>("LKP_SkillID")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("Proficiency")
                         .HasColumnType("int");
-
-                    b.Property<Guid?>("ProjectID")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("UserID", "LKP_SkillID");
+                    b.Property<Guid>("UserID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ID");
 
                     b.HasIndex("EducationID");
 
@@ -2179,7 +2184,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("LKP_SkillID");
 
-                    b.HasIndex("ProjectID");
+                    b.HasIndex("UserID");
 
                     b.ToTable("Skill");
                 });
@@ -2602,10 +2607,6 @@ namespace DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectID");
-
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("LstSkills")
                         .HasForeignKey("UserID")
@@ -2617,8 +2618,6 @@ namespace DataAccess.Migrations
                     b.Navigation("Experience");
 
                     b.Navigation("LKP_Skill");
-
-                    b.Navigation("Project");
 
                     b.Navigation("User");
                 });

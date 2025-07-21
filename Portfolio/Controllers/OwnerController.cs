@@ -15,6 +15,7 @@ using Application.Owner.Queries.EducationQueries;
 using Application.Owner.Queries.ExperienceQueries;
 using Application.Owner.Queries.LKP_LanguageQuieries;
 using Application.Owner.Queries.ProjectTechnologyQueries;
+using Application.Owner.Queries.SkillQueries;
 using Application.Owner.Queries.UserChartPreferenceQueries;
 using Application.Owner.Queries.UserLanguageQueries;
 using Application.Owner.Queries.UserPreferenceQueries;
@@ -82,11 +83,19 @@ namespace Portfolio.Controllers
 
         // Skill
         [HttpPost]
-        public async Task<IActionResult> AddEditSkill(AddEditSkillCommand request)
+        public async Task<IActionResult> EditDeleteSkill(EditDeleteSkillCommand request)
             => Result.HandleResult(await Mediator.Send(request));
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteSkill(DeleteSkillCommand request)
+        [HttpGet]
+        public async Task<IActionResult> SkillList([FromQuery] SkillListQuery request)
+            => Result.HandleResult(await Mediator.Send(request));
+
+        [HttpGet]
+        public async Task<IActionResult> LKP_SkillCategoryList([FromQuery] LKP_SkillCategoryListQuery request)
+            => Result.HandleResult(await Mediator.Send(request));
+
+        [HttpGet]
+        public async Task<IActionResult> LKP_Skill([FromQuery] LKP_SkillListQuery request)
             => Result.HandleResult(await Mediator.Send(request));
 
         // Experience
