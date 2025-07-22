@@ -61,6 +61,12 @@ namespace Application.Owner.Queries.UserQueries
         public string CompanyName { get; set; }
     }
 
+    public class UFIQ_S_Project
+    {
+        public Guid ID { get; set; }
+        public string Title { get; set; }
+    }
+
     public class UFIQ_LKP_Technology
     {
         public Guid ID { get; set; }
@@ -70,13 +76,26 @@ namespace Application.Owner.Queries.UserQueries
 
     public class UFIQ_Skill
     {
-        public Guid ID { get; set; }
-        public string Name { get; set; }
-        public string Category { get; set; }
+        public UFIQ_LKP_Skill Skill { get; set; }
         public int Proficiency { get; set; }
-        public string IconUrl { get; set; }
+        public string? Description { get; set; }
         public UFIQ_PS_Education Education { get; set; }
         public UFIQ_PS_Experience Experience { get; set; }
+        public UFIQ_S_Project Project { get; set; }
+    }
+
+    public class UFIQ_LKP_Skill
+    {
+        public Guid ID { get; set; }
+        public string Name { get; set; }
+        public string IconUrl { get; set; }
+        public UFIQ_LKP_SkillCategory SkillCategory { get; set; }
+    }
+
+    public class UFIQ_LKP_SkillCategory
+    {
+        public Guid ID { get; set; }
+        public string Name { get; set; }
     }
 
     public class UFIQ_Education

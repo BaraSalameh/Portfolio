@@ -95,7 +95,7 @@ namespace Portfolio.Controllers
             => Result.HandleResult(await Mediator.Send(request));
 
         [HttpGet]
-        public async Task<IActionResult> LKP_Skill([FromQuery] LKP_SkillListQuery request)
+        public async Task<IActionResult> LKP_SkillList([FromQuery] LKP_SkillListQuery request)
             => Result.HandleResult(await Mediator.Send(request));
 
         // Experience

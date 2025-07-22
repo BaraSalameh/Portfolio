@@ -68,12 +68,29 @@ namespace Application.Client.Queries
 
     public class UBUQ_Skill
     {
-        public string Name { get; set; }
-        public string Category { get; set; }
+        public UBUQ_LKP_Skill Skill { get; set; }
         public int Proficiency { get; set; }
-        public string IconUrl { get; set; }
+        public string? Description { get; set; }
         public UBUQ_PS_Education Education { get; set; }
         public UBUQ_PS_Experience Experience { get; set; }
+        public UBUQ_S_Project Project { get; set; }
+    }
+
+    public class UBUQ_LKP_Skill
+    {
+        public string Name { get; set; }
+        public string IconUrl { get; set; }
+        public UBUQ_LKP_SkillCategory SkillCategory { get; set; }
+    }
+
+    public class UBUQ_LKP_SkillCategory
+    {
+        public string Name { get; set; }
+    }
+
+    public class UBUQ_S_Project
+    {
+        public string Title { get; set; }
     }
 
     public class UBUQ_Education

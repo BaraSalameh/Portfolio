@@ -1,4 +1,5 @@
 ﻿using Application.Client.Queries;
+using Application.Owner.Queries.UserQueries;
 using AutoMapper;
 using Domain.Entities;
 
@@ -50,17 +51,29 @@ namespace Application.Client.MappingProfiles
                 );
             CreateMap<LKP_Technology, UBUQ_LKP_Technology>();
             CreateMap<Skill, UBUQ_Skill>()
+                .ForMember(dest => dest.Skill,
+                    opt => opt.MapFrom(src => src.LKP_Skill)
+                )
                 .ForMember(dest => dest.Education,
                     opt => opt.MapFrom(src => src.Education)
                 )
                 .ForMember(dest => dest.Experience,
                     opt => opt.MapFrom(src => src.Experience)
+                )
+                .ForMember(dest => dest.Project,
+                    opt => opt.MapFrom(src => src.Project)
                 );
+            CreateMap<LKP_Skill, UBUQ_LKP_Skill>()
+                .ForMember(dest => dest.SkillCategory,
+                    opt => opt.MapFrom(src => src.LKP_SkillCategory)
+                );
+            CreateMap<LKP_SkillCategory, UBUQ_LKP_SkillCategory>();
             CreateMap<Education, UBUQ_PS_Education>()
                 .ForMember(dest => dest.Institution,
                     opt => opt.MapFrom(src => src.LKP_Institution)
                 );
             CreateMap<Experience, UBUQ_PS_Experience>();
+            CreateMap<Project, UBUQ_S_Project>();
             CreateMap<Education, UBUQ_Education>()
                 .ForMember(dest => dest.Institution, opt => opt.MapFrom(src => src.LKP_Institution))
                 .ForMember(dest => dest.Degree, opt => opt.MapFrom(src => src.LKP_Degree))

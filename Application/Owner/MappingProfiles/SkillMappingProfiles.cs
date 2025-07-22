@@ -50,7 +50,11 @@ namespace Application.Owner.MappingProfiles
 
             CreateMap<LKP_SkillCategory, LKP_SCLQ_Response>();
 
-            CreateMap<LKP_Skill, LKP_SLQ_Response>();
+            CreateMap<LKP_Skill, LKP_SLQ_Response>()
+                .ForMember(dest => dest.SkillCategory,
+                    opt => opt.MapFrom(src => src.LKP_SkillCategory)
+                );
+            CreateMap<LKP_SkillCategory, LKP_SLQ_SkillCategory>();
         }
     }
 }
