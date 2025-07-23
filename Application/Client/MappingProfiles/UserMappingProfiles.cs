@@ -23,8 +23,8 @@ namespace Application.Client.MappingProfiles
                         .Where(e => e.IsDeleted == false)
                         .OrderBy(e => e.Order)
                     ))
-                .ForMember(dest => dest.LstSkills,
-                    opt => opt.MapFrom(src => src.LstSkills.Where(s => s.IsDeleted == false)))
+                .ForMember(dest => dest.LstUserSkills,
+                    opt => opt.MapFrom(src => src.LstUserSkills.Where(s => s.IsDeleted == false)))
                 .ForMember(dest => dest.LstProjects,
                     opt => opt.MapFrom(src => src.LstProjects
                         .Where(p => p.IsDeleted == false)
@@ -50,7 +50,7 @@ namespace Application.Client.MappingProfiles
                     opt => opt.MapFrom(src => src.Experience)
                 );
             CreateMap<LKP_Technology, UBUQ_LKP_Technology>();
-            CreateMap<Skill, UBUQ_Skill>()
+            CreateMap<UserSkill, UBUQ_UserSkill>()
                 .ForMember(dest => dest.Skill,
                     opt => opt.MapFrom(src => src.LKP_Skill)
                 )

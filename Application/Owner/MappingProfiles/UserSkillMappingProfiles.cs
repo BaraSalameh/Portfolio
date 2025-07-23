@@ -1,5 +1,5 @@
-﻿using Application.Owner.Commands.SkillCommands;
-using Application.Owner.Queries.SkillQueries;
+﻿using Application.Owner.Commands.UserSkillCommands;
+using Application.Owner.Queries.UserSkillQueries;
 using AutoMapper;
 using Domain.Entities;
 
@@ -9,7 +9,7 @@ namespace Application.Owner.MappingProfiles
     {
         public SkillMappingProfiles()
         {
-            CreateMap<Skill, SLQ_Response>()
+            CreateMap<UserSkill, USLQ_Response>()
                 .ForMember(dest => dest.Skill,
                     opt => opt.MapFrom(src => src.LKP_Skill)
                 )
@@ -22,22 +22,22 @@ namespace Application.Owner.MappingProfiles
                 .ForMember(dest => dest.Project,
                     opt => opt.MapFrom(src => src.Project)
                 );
-            CreateMap<LKP_Skill, SLQ_LKP_Skill>()
+            CreateMap<LKP_Skill, USLQ_LKP_Skill>()
                 .ForMember(dest => dest.SkillCategory,
                     opt => opt.MapFrom(src => src.LKP_SkillCategory)
                 );
-            CreateMap<Education, SLQ_PS_Education>()
+            CreateMap<Education, USLQ_PS_Education>()
                 .ForMember(dest => dest.Institution,
                     opt => opt.MapFrom(src => src.LKP_Institution)
                 );
-            CreateMap<Experience, SLQ_PS_Experience>();
-            CreateMap<Project, SLQ_Project>();
-            CreateMap<LKP_SkillCategory, SLQ_LKP_SkillCategory>();
-            CreateMap<LKP_Institution, SLQ_LKP_Institution>();
+            CreateMap<Experience, USLQ_PS_Experience>();
+            CreateMap<Project, USLQ_S_Project>();
+            CreateMap<LKP_SkillCategory, USLQ_LKP_SkillCategory>();
+            CreateMap<LKP_Institution, USLQ_LKP_Institution>();
 
-            CreateMap<EditDeleteSkillCommand, User>()
-                .ForMember(dest => dest.LstSkills, opt => opt.MapFrom(src =>
-                    (src.LstSkills ?? new List<EDSC_LKP_Skill>()).Select(id => new Skill
+            CreateMap<EditDeleteUserSkillCommand, User>()
+                .ForMember(dest => dest.LstUserSkills, opt => opt.MapFrom(src =>
+                    (src.LstUserSkills ?? new List<EDUSC_LKP_Skill>()).Select(id => new UserSkill
                     {
                         LKP_SkillID = id.LKP_SkillID,
                         Proficiency = id.Proficiency,

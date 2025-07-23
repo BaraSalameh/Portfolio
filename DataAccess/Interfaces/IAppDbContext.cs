@@ -9,7 +9,7 @@ namespace DataAccess.Interfaces
         public DbSet<PendingEmailConfirmation> PendingEmailConfirmation { get; set; }
         public DbSet<Role> Role { get; set; }
         public DbSet<User> User { get; set; }
-        public DbSet<Skill> Skill { get; set; }
+        public DbSet<UserSkill> UserSkill { get; set; }
         public DbSet<LKP_Skill> LKP_Skill { get; set; }
         public DbSet<LKP_SkillCategory> LKP_SkillCategory { get; set; }
         public DbSet<Education> Education { get; set; }

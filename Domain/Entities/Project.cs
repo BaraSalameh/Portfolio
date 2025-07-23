@@ -16,6 +16,7 @@
         public Education Education { get; set; }
         public Guid? ExperienceID { get; set; }
         public Experience Experience { get; set; }
+        public List<UserSkill> LstUserSkills { get; set; }
         public List<ProjectTechnology> LstProjectTechnologies { get; set; }
     }
 }

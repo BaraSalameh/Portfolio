@@ -17,7 +17,7 @@ namespace DataAccess.DbContexts
         public DbSet<PendingEmailConfirmation> PendingEmailConfirmation { get; set; }
         public DbSet<Role> Role { get; set; }
         public DbSet<User> User { get; set; }
-        public DbSet<Skill> Skill { get; set; }
+        public DbSet<UserSkill> UserSkill { get; set; }
         public DbSet<LKP_Skill> LKP_Skill { get; set; }
         public DbSet<LKP_SkillCategory> LKP_SkillCategory { get; set; }
         public DbSet<Education> Education { get; set; }
@@ -115,7 +115,7 @@ namespace DataAccess.DbContexts
             modelBuilder.Entity<ProjectTechnology>().HasKey(pt => new { pt.ProjectID, pt.LKP_TechnologyID });
             modelBuilder.Entity<BlogPostTag>().HasKey(pt => new { pt.BlogPostID, pt.TagId });
             modelBuilder.Entity<UserLanguage>().HasKey(pt => new { pt.UserID, pt.LKP_LanguageID });
-            modelBuilder.Entity<Skill>().HasKey(s => new { s.UserID, s.LKP_SkillID });
+            modelBuilder.Entity<UserSkill>().HasKey(s => new { s.UserID, s.LKP_SkillID });
             modelBuilder.Entity<UserPreference>().HasKey(pt => new { pt.UserID, pt.LKP_PreferenceID });
             modelBuilder.Entity<UserChartPreference>().HasKey(ucp => new { ucp.UserID, ucp.LKP_WidgetID, ucp.LKP_ChartTypeID });
             modelBuilder.Entity<User>().HasIndex(x => x.Email).IsUnique();
@@ -169,21 +169,25 @@ namespace DataAccess.DbContexts
                 .WithMany(u => u.LstProjects)
                 .HasForeignKey(p => p.ExperienceID);
 
-            modelBuilder.Entity<Skill>()
+            modelBuilder.Entity<UserSkill>()
                 .HasOne(s => s.User)
-                .WithMany(u => u.LstSkills)
+                .WithMany(u => u.LstUserSkills)
                 .HasForeignKey(s => s.UserID);
-            modelBuilder.Entity<Skill>()
+            modelBuilder.Entity<UserSkill>()
                 .HasOne(p => p.Education)
-                .WithMany(u => u.LstSkills)
+                .WithMany(u => u.LstUserSkills)
                 .HasForeignKey(p => p.EducationID);
-            modelBuilder.Entity<Skill>()
+            modelBuilder.Entity<UserSkill>()
                 .HasOne(p => p.Experience)
-                .WithMany(u => u.LstSkills)
+                .WithMany(u => u.LstUserSkills)
                 .HasForeignKey(p => p.ExperienceID);
-            modelBuilder.Entity<Skill>()
+            modelBuilder.Entity<UserSkill>()
+                .HasOne(p => p.Project)
+                .WithMany(u => u.LstUserSkills)
+                .HasForeignKey(p => p.ProjectID);
+            modelBuilder.Entity<UserSkill>()
                 .HasOne(p => p.LKP_Skill)
-                .WithMany(u => u.LstSkills)
+                .WithMany(u => u.LstSkillUsers)
                 .HasForeignKey(p => p.LKP_SkillID);
 
             modelBuilder.Entity<LKP_Skill>()

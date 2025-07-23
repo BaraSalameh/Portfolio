@@ -10,7 +10,7 @@ namespace Application.Owner.Queries.UserQueries
         public UFIQ_User User { get; set; }
         public int UnreadContactMessageCount { get; set; }
         public List<UFIQ_Project> LstProjects { get; set; }
-        public List<UFIQ_Skill> LstSkills { get; set; }
+        public List<UFIQ_UserSkill> LstUserSkills { get; set; }
         public List<UFIQ_Education> LstEducations { get; set; }
         public List<UFIQ_Experience> LstExperiences { get; set; }
         public List<UFIQ_BlogPost> LstBlogPosts { get; set; }
@@ -74,14 +74,14 @@ namespace Application.Owner.Queries.UserQueries
         public string IconUrl { get; set; }
     }
 
-    public class UFIQ_Skill
+    public class UFIQ_UserSkill
     {
         public UFIQ_LKP_Skill Skill { get; set; }
-        public int Proficiency { get; set; }
-        public string? Description { get; set; }
         public UFIQ_PS_Education Education { get; set; }
         public UFIQ_PS_Experience Experience { get; set; }
         public UFIQ_S_Project Project { get; set; }
+        public int Proficiency { get; set; }
+        public string? Description { get; set; }
     }
 
     public class UFIQ_LKP_Skill

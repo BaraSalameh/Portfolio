@@ -7,6 +7,6 @@
         public string IconUrl { get; set; }
         public Guid LKP_SkillCategoryID { get; set; }
         public LKP_SkillCategory LKP_SkillCategory { get; set; }
-        public List<Skill> LstSkills { get; set; }
+        public List<UserSkill> LstSkillUsers { get; set; }
     }
 }

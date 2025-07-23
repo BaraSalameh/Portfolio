@@ -26,8 +26,8 @@ namespace Application.Owner.MappingProfiles
                         .Where(e => e.IsDeleted == false)
                         .OrderBy(e => e.Order)
                     ))
-                .ForMember(dest => dest.LstSkills,
-                    opt => opt.MapFrom(src => src.LstSkills.Where(s => s.IsDeleted == false)))
+                .ForMember(dest => dest.LstUserSkills,
+                    opt => opt.MapFrom(src => src.LstUserSkills.Where(s => s.IsDeleted == false)))
                 .ForMember(dest => dest.LstProjects,
                     opt => opt.MapFrom(src => src.LstProjects
                         .Where(p => p.IsDeleted == false)
@@ -53,7 +53,7 @@ namespace Application.Owner.MappingProfiles
                     opt => opt.MapFrom(src => src.Experience)
                 );
             CreateMap<LKP_Technology, UFIQ_LKP_Technology>();
-            CreateMap<Skill, UFIQ_Skill>()
+            CreateMap<UserSkill, UFIQ_UserSkill>()
                 .ForMember(dest => dest.Skill,
                     opt => opt.MapFrom(src => src.LKP_Skill)
                 )

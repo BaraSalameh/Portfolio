@@ -12,7 +12,7 @@ namespace Application.Client.Queries
     {
         public UBUQ_User User { get; set; }
         public List<UBUQ_Project> LstProjects { get; set; }
-        public List<UBUQ_Skill> LstSkills { get; set; }
+        public List<UBUQ_UserSkill> LstUserSkills { get; set; }
         public List<UBUQ_Education> LstEducations { get; set; }
         public List<UBUQ_Experience> LstExperiences { get; set; }
         public List<UBUQ_BlogPost> LstBlogPosts { get; set; }
@@ -66,14 +66,14 @@ namespace Application.Client.Queries
         public string IconUrl { get; set; }
     }
 
-    public class UBUQ_Skill
+    public class UBUQ_UserSkill
     {
         public UBUQ_LKP_Skill Skill { get; set; }
-        public int Proficiency { get; set; }
-        public string? Description { get; set; }
         public UBUQ_PS_Education Education { get; set; }
         public UBUQ_PS_Experience Experience { get; set; }
         public UBUQ_S_Project Project { get; set; }
+        public int Proficiency { get; set; }
+        public string? Description { get; set; }
     }
 
     public class UBUQ_LKP_Skill

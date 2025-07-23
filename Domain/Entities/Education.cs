@@ -16,6 +16,6 @@
         public Guid UserID { get; set; }
         public User User { get; set; }
         public List<Project> LstProjects { get; set; }
-        public List<Skill> LstSkills { get; set; }
+        public List<UserSkill> LstUserSkills { get; set; }
     }
 }

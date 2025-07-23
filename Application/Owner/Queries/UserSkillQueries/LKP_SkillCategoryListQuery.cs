@@ -1,6 +1,6 @@
 ﻿using Application.Common.Entities;
 
-namespace Application.Owner.Queries.SkillQueries
+namespace Application.Owner.Queries.UserSkillQueries
 {
     public class LKP_SkillCategoryListQuery : ListQuery<LKP_SCLQ_Response> { }
 
