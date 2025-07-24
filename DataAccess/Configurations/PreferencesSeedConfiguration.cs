@@ -34,7 +34,11 @@ namespace DataAccess.Configurations
                 new LKP_Preference { ID = Guid.Parse("6d83cb36-fd8e-4fd2-87d2-4d4d9b9e4f27"), Name = "show-experience-bar-chart" },
                 new LKP_Preference { ID = Guid.Parse("3f87d7a5-5ab8-4ea6-85c7-eed6bb83dcb0"), Name = "show-education-radar-chart" },
                 new LKP_Preference { ID = Guid.Parse("8e4d5b5f-3f44-49a8-83c2-d4c3c5155e63"), Name = "show-birthdate" },
-                new LKP_Preference { ID = Guid.Parse("d05c7c4e-c3bb-4422-8ad2-3d10ec961a49"), Name = "show-project-pie-chart" }
+                new LKP_Preference { ID = Guid.Parse("d05c7c4e-c3bb-4422-8ad2-3d10ec961a49"), Name = "show-project-pie-chart" },
+                new LKP_Preference { ID = Guid.Parse("b10f6ef7-35cc-44a3-81b4-d78cc8f5aaf1"), Name = "show-skill-widget" },
+                new LKP_Preference { ID = Guid.Parse("c14d3b4f-62a2-4db1-897c-f3cb3eae3122"), Name = "show-skill-bar-chart" },
+                new LKP_Preference { ID = Guid.Parse("9d7a1776-99d6-4206-8d0d-1a22365b8a97"), Name = "show-skill-pie-chart" },
+                new LKP_Preference { ID = Guid.Parse("fb91d22c-b6cd-4f09-b9a0-7a9633027f49"), Name = "show-skill-radar-chart" }
             );
         }
     }
