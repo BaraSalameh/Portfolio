@@ -9,12 +9,5 @@ namespace Application.Owner.Queries.UserSkillQueries
         public Guid ID { get; set; }
         public string Name { get; set; }
         public string IconUrl { get; set; }
-        public LKP_SLQ_SkillCategory SkillCategory { get; set; }
-    }
-
-    public class LKP_SLQ_SkillCategory
-    {
-        public Guid ID { get; set; }
-        public string Name { get; set; }
     }
 }

@@ -24,6 +24,7 @@
         public List<Project> LstProjects { get; set; }
         public List<UserSkill> LstUserSkills { get; set; }
         public List<Education> LstEducations { get; set; }
+        public List<Certificate> LstCertificates { get; set; }
         public List<Experience> LstExperiences { get; set; }
         public List<BlogPost> LstBlogPosts { get; set; }
         public List<SocialLink> LstSocialLinks { get; set; }

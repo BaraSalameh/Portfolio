@@ -65,18 +65,22 @@ namespace Application.Owner.MappingProfiles
                 )
                 .ForMember(dest => dest.Project,
                     opt => opt.MapFrom(src => src.Project)
+                )
+                .ForMember(dest => dest.Certificate,
+                    opt => opt.MapFrom(src => src.Certificate)
                 );
-            CreateMap<LKP_Skill, UFIQ_LKP_Skill>()
-                .ForMember(dest => dest.SkillCategory,
-                    opt => opt.MapFrom(src => src.LKP_SkillCategory)
-                );
-            CreateMap<LKP_SkillCategory, UFIQ_LKP_SkillCategory>();
+            CreateMap<LKP_Skill, UFIQ_LKP_Skill>();
             CreateMap<Education, UFIQ_PS_Education>()
                 .ForMember(dest => dest.Institution,
                     opt => opt.MapFrom(src => src.LKP_Institution)
                 );
             CreateMap<Experience, UFIQ_PS_Experience>();
             CreateMap<Project, UFIQ_S_Project>();
+            CreateMap<Certificate, UFIQ_S_Certificate>()
+                .ForMember(dest => dest.LKP_Certificate,
+                    opt => opt.MapFrom(src => src.LKP_Certificate)
+                );
+            CreateMap<LKP_Certificate, UFIQ_LKP_Certificate>();
             CreateMap<Education, UFIQ_Education>()
                 .ForMember(dest => dest.Institution, opt => opt.MapFrom(src => src.LKP_Institution))
                 .ForMember(dest => dest.Degree, opt => opt.MapFrom(src => src.LKP_Degree))

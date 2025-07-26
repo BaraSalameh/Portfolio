@@ -19,7 +19,6 @@ namespace DataAccess.DbContexts
         public DbSet<User> User { get; set; }
         public DbSet<UserSkill> UserSkill { get; set; }
         public DbSet<LKP_Skill> LKP_Skill { get; set; }
-        public DbSet<LKP_SkillCategory> LKP_SkillCategory { get; set; }
         public DbSet<Education> Education { get; set; }
         public DbSet<LKP_Institution> LKP_Institution { get; set; }
         public DbSet<LKP_Degree> LKP_Degree { get; set; }
@@ -42,6 +41,9 @@ namespace DataAccess.DbContexts
         public DbSet<LKP_Widget> LKP_Widget { get; set; }
         public DbSet<LKP_ChartType> LKP_ChartType { get; set; }
         public DbSet<UserChartPreference> UserChartPreference { get; set; }
+        public DbSet<Certificate> Certificate { get; set; }
+        public DbSet<CertificateMedia> CertificateMedia { get; set; }
+        public DbSet<LKP_Certificate> LKP_Certificate { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -133,8 +135,8 @@ namespace DataAccess.DbContexts
             modelBuilder.ApplyConfiguration(new PreferencesSeedConfiguration());
             modelBuilder.ApplyConfiguration(new WidgetSeedConfiguration());
             modelBuilder.ApplyConfiguration(new ChartTypeSeedConfiguration());
-            modelBuilder.ApplyConfiguration(new SkillCategorySeedConfiguration());
             modelBuilder.ApplyConfiguration(new SkillSeedConfiguration());
+            modelBuilder.ApplyConfiguration(new CertificateSeedConfiguration());
 
             return modelBuilder;
         }
@@ -186,14 +188,13 @@ namespace DataAccess.DbContexts
                 .WithMany(u => u.LstUserSkills)
                 .HasForeignKey(p => p.ProjectID);
             modelBuilder.Entity<UserSkill>()
+                .HasOne(p => p.Certificate)
+                .WithMany(u => u.LstUserSkills)
+                .HasForeignKey(p => p.CertificateID);
+            modelBuilder.Entity<UserSkill>()
                 .HasOne(p => p.LKP_Skill)
                 .WithMany(u => u.LstSkillUsers)
                 .HasForeignKey(p => p.LKP_SkillID);
-
-            modelBuilder.Entity<LKP_Skill>()
-                .HasOne(p => p.LKP_SkillCategory)
-                .WithMany(u => u.LstSkillCategorySkills)
-                .HasForeignKey(p => p.LKP_SkillCategoryID);
 
             modelBuilder.Entity<Education>()
                 .HasOne(e => e.User)
@@ -288,6 +289,20 @@ namespace DataAccess.DbContexts
                 .HasOne(pt => pt.LKP_ChartType)
                 .WithMany(t => t.LstChartPreferences)
                 .HasForeignKey(pt => pt.LKP_ChartTypeID);
+
+            modelBuilder.Entity<Certificate>()
+                .HasOne(pt => pt.User)
+                .WithMany(p => p.LstCertificates)
+                .HasForeignKey(pt => pt.UserID);
+            modelBuilder.Entity<Certificate>()
+                .HasOne(pt => pt.LKP_Certificate)
+                .WithMany(p => p.LstCertificates)
+                .HasForeignKey(pt => pt.LKP_CertificateID);
+
+            modelBuilder.Entity<CertificateMedia>()
+                .HasOne(pt => pt.Certificate)
+                .WithMany(p => p.LstCertificateMedias)
+                .HasForeignKey(pt => pt.CertificateID);
 
             return modelBuilder;
         }

@@ -14,7 +14,7 @@ namespace Application.Owner.Commands.UserSkillCommands
         public Guid? EducationID { get; set; }
         public Guid? ExperienceID { get; set; }
         public Guid? ProjectID { get; set; }
-        public int Proficiency { get; set; }
-        public string? Description { get; set; }
+        public Guid? CertificateID { get; set; }
+
     }
 }

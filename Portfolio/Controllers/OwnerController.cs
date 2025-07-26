@@ -1,25 +1,27 @@
 ﻿using Application.Common.Entities;
 using Application.Owner.Commands.BlogPostCommands;
+using Application.Owner.Commands.CertificaeCommands;
 using Application.Owner.Commands.ContactMessageCommands;
 using Application.Owner.Commands.EducationCommands;
 using Application.Owner.Commands.ExperienceCommands;
 using Application.Owner.Commands.Profile;
 using Application.Owner.Commands.ProjectTechnologyCommands;
-using Application.Owner.Commands.UserSkillCommands;
 using Application.Owner.Commands.SocialLinkCommands;
 using Application.Owner.Commands.UserChartPreferenceCommands;
 using Application.Owner.Commands.UserLanguageCommands;
 using Application.Owner.Commands.UserPreferenceCommands;
+using Application.Owner.Commands.UserSkillCommands;
+using Application.Owner.Queries.CertificateQueries;
 using Application.Owner.Queries.ContactMessageQueries;
 using Application.Owner.Queries.EducationQueries;
 using Application.Owner.Queries.ExperienceQueries;
 using Application.Owner.Queries.LKP_LanguageQuieries;
 using Application.Owner.Queries.ProjectTechnologyQueries;
-using Application.Owner.Queries.UserSkillQueries;
 using Application.Owner.Queries.UserChartPreferenceQueries;
 using Application.Owner.Queries.UserLanguageQueries;
 using Application.Owner.Queries.UserPreferenceQueries;
 using Application.Owner.Queries.UserQueries;
+using Application.Owner.Queries.UserSkillQueries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -91,10 +93,6 @@ namespace Portfolio.Controllers
             => Result.HandleResult(await Mediator.Send(request));
 
         [HttpGet]
-        public async Task<IActionResult> LKP_SkillCategoryList([FromQuery] LKP_SkillCategoryListQuery request)
-            => Result.HandleResult(await Mediator.Send(request));
-
-        [HttpGet]
         public async Task<IActionResult> LKP_SkillList([FromQuery] LKP_SkillListQuery request)
             => Result.HandleResult(await Mediator.Send(request));
 
@@ -142,6 +140,25 @@ namespace Portfolio.Controllers
 
         [HttpPost]
         public async Task<IActionResult> ReOrderEducation(ReOrderEducationCommand request)
+            => Result.HandleResult(await Mediator.Send(request));
+
+        // Certificate
+        [HttpGet]
+        public async Task<IActionResult> CertificateList([FromQuery] CertificateListQuery request)
+            => Result.HandleResult(await Mediator.Send(request));
+        [HttpGet]
+        public async Task<IActionResult> LKP_CertificateList([FromQuery] LKP_CertificateListQuery request)
+            => Result.HandleResult(await Mediator.Send(request));
+
+        [HttpPost]
+        public async Task<IActionResult> AddEditDeleteCertificate(AddEditDeleteCertificateCommand request)
+            => Result.HandleResult(await Mediator.Send(request));
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteCertificate(DeleteCertificateCommand request)
+            => Result.HandleResult(await Mediator.Send(request));
+        [HttpPost]
+        public async Task<IActionResult> SortCertificate(SortCertificateCommand request)
             => Result.HandleResult(await Mediator.Send(request));
 
         // BlogPost

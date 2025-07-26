@@ -21,40 +21,38 @@ namespace Application.Owner.MappingProfiles
                 )
                 .ForMember(dest => dest.Project,
                     opt => opt.MapFrom(src => src.Project)
+                )
+                .ForMember(dest => dest.Certificate,
+                    opt => opt.MapFrom(src => src.Certificate)
                 );
-            CreateMap<LKP_Skill, USLQ_LKP_Skill>()
-                .ForMember(dest => dest.SkillCategory,
-                    opt => opt.MapFrom(src => src.LKP_SkillCategory)
-                );
+            CreateMap<LKP_Skill, USLQ_LKP_Skill>();
             CreateMap<Education, USLQ_PS_Education>()
                 .ForMember(dest => dest.Institution,
                     opt => opt.MapFrom(src => src.LKP_Institution)
                 );
             CreateMap<Experience, USLQ_PS_Experience>();
             CreateMap<Project, USLQ_S_Project>();
-            CreateMap<LKP_SkillCategory, USLQ_LKP_SkillCategory>();
+            CreateMap<Certificate, USLQ_S_Certificate>()
+                .ForMember(dest => dest.LKP_Certificate,
+                    opt => opt.MapFrom(src => src.LKP_Certificate)
+                );
             CreateMap<LKP_Institution, USLQ_LKP_Institution>();
+            CreateMap<LKP_Certificate, USLQ_LKP_Certificate>();
+
 
             CreateMap<EditDeleteUserSkillCommand, User>()
                 .ForMember(dest => dest.LstUserSkills, opt => opt.MapFrom(src =>
                     (src.LstUserSkills ?? new List<EDUSC_LKP_Skill>()).Select(id => new UserSkill
                     {
                         LKP_SkillID = id.LKP_SkillID,
-                        Proficiency = id.Proficiency,
                         EducationID = id.EducationID,
                         ExperienceID = id.ExperienceID,
                         ProjectID = id.ProjectID,
-                        Description = id.Description
+                        CertificateID = id.CertificateID
                     }).ToList()
                 ));
 
-            CreateMap<LKP_SkillCategory, LKP_SCLQ_Response>();
-
-            CreateMap<LKP_Skill, LKP_SLQ_Response>()
-                .ForMember(dest => dest.SkillCategory,
-                    opt => opt.MapFrom(src => src.LKP_SkillCategory)
-                );
-            CreateMap<LKP_SkillCategory, LKP_SLQ_SkillCategory>();
+            CreateMap<LKP_Skill, LKP_SLQ_Response>();
         }
     }
 }

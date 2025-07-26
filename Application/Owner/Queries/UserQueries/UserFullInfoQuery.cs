@@ -1,4 +1,5 @@
 ﻿using Application.Common.Entities;
+using Application.Owner.Queries.UserSkillQueries;
 using MediatR;
 
 namespace Application.Owner.Queries.UserQueries
@@ -80,8 +81,19 @@ namespace Application.Owner.Queries.UserQueries
         public UFIQ_PS_Education Education { get; set; }
         public UFIQ_PS_Experience Experience { get; set; }
         public UFIQ_S_Project Project { get; set; }
-        public int Proficiency { get; set; }
-        public string? Description { get; set; }
+        public UFIQ_S_Certificate Certificate { get; set; }
+
+    }
+
+    public class UFIQ_S_Certificate
+    {
+        public UFIQ_LKP_Certificate LKP_Certificate { get; set; }
+    }
+
+    public class UFIQ_LKP_Certificate
+    {
+        public Guid ID { get; set; }
+        public string Name { get; set; }
     }
 
     public class UFIQ_LKP_Skill
@@ -89,13 +101,6 @@ namespace Application.Owner.Queries.UserQueries
         public Guid ID { get; set; }
         public string Name { get; set; }
         public string IconUrl { get; set; }
-        public UFIQ_LKP_SkillCategory SkillCategory { get; set; }
-    }
-
-    public class UFIQ_LKP_SkillCategory
-    {
-        public Guid ID { get; set; }
-        public string Name { get; set; }
     }
 
     public class UFIQ_Education

@@ -11,7 +11,6 @@ namespace DataAccess.Interfaces
         public DbSet<User> User { get; set; }
         public DbSet<UserSkill> UserSkill { get; set; }
         public DbSet<LKP_Skill> LKP_Skill { get; set; }
-        public DbSet<LKP_SkillCategory> LKP_SkillCategory { get; set; }
         public DbSet<Education> Education { get; set; }
         public DbSet<LKP_Institution> LKP_Institution { get; set; }
         public DbSet<LKP_Degree> LKP_Degree { get; set; }
@@ -34,6 +33,9 @@ namespace DataAccess.Interfaces
         public DbSet<LKP_Widget> LKP_Widget { get; set; }
         public DbSet<LKP_ChartType> LKP_ChartType { get; set; }
         public DbSet<UserChartPreference> UserChartPreference { get; set; }
+        public DbSet<Certificate> Certificate { get; set; }
+        public DbSet<CertificateMedia> CertificateMedia { get; set; }
+        public DbSet<LKP_Certificate> LKP_Certificate { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken());
     }

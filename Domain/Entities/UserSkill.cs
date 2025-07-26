@@ -12,7 +12,7 @@
         public Experience Experience { get; set; }
         public Guid? ProjectID { get; set; }
         public Project Project { get; set; }
-        public int Proficiency { get; set; }
-        public string? Description { get; set; }
+        public Guid? CertificateID { get; set; }
+        public Certificate Certificate { get; set; }
     }
 }
