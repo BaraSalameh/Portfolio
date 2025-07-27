@@ -1,5 +1,4 @@
 ﻿using Application.Common.Entities;
-using Application.Owner.Queries.UserSkillQueries;
 using MediatR;
 
 namespace Application.Owner.Queries.UserQueries
@@ -13,6 +12,7 @@ namespace Application.Owner.Queries.UserQueries
         public List<UFIQ_Project> LstProjects { get; set; }
         public List<UFIQ_UserSkill> LstUserSkills { get; set; }
         public List<UFIQ_Education> LstEducations { get; set; }
+        public List<UFIQ_Certificate> LstCertificates { get; set; }
         public List<UFIQ_Experience> LstExperiences { get; set; }
         public List<UFIQ_BlogPost> LstBlogPosts { get; set; }
         public List<UFIQ_SocialLink> LstSocialLinks { get; set; }
@@ -56,16 +56,17 @@ namespace Application.Owner.Queries.UserQueries
         public UFIQ_LKP_Institution Institution { get; set; }
     }
 
+    public class UFIQ_LKP_Institution
+    {
+        public Guid ID { get; set; }
+        public string Name { get; set; }
+        public string? Logo { get; set; }
+    }
+
     public class UFIQ_PS_Experience
     {
         public Guid ID { get; set; }
         public string CompanyName { get; set; }
-    }
-
-    public class UFIQ_S_Project
-    {
-        public Guid ID { get; set; }
-        public string Title { get; set; }
     }
 
     public class UFIQ_LKP_Technology
@@ -85,6 +86,19 @@ namespace Application.Owner.Queries.UserQueries
 
     }
 
+    public class UFIQ_LKP_Skill
+    {
+        public Guid ID { get; set; }
+        public string Name { get; set; }
+        public string IconUrl { get; set; }
+    }
+
+    public class UFIQ_S_Project
+    {
+        public Guid ID { get; set; }
+        public string Title { get; set; }
+    }
+
     public class UFIQ_S_Certificate
     {
         public UFIQ_LKP_Certificate LKP_Certificate { get; set; }
@@ -94,13 +108,6 @@ namespace Application.Owner.Queries.UserQueries
     {
         public Guid ID { get; set; }
         public string Name { get; set; }
-    }
-
-    public class UFIQ_LKP_Skill
-    {
-        public Guid ID { get; set; }
-        public string Name { get; set; }
-        public string IconUrl { get; set; }
     }
 
     public class UFIQ_Education
@@ -114,13 +121,6 @@ namespace Application.Owner.Queries.UserQueries
         public string Description { get; set; }
     }
 
-    public class UFIQ_LKP_Institution
-    {
-        public Guid ID { get; set; }
-        public string Name { get; set; }
-        public string? Logo { get; set; }
-    }
-
     public class UFIQ_LKP_Degree
     {
         public Guid ID { get; set; }
@@ -132,6 +132,29 @@ namespace Application.Owner.Queries.UserQueries
     {
         public Guid ID { get; set; }
         public string Name { get; set; }
+    }
+
+    public class UFIQ_Certificate
+    {
+        public Guid ID { get; set; }
+        public UFIQ_LKP_Certificate Certificate { get; set; }
+        public DateOnly? IssueDate { get; set; }
+        public DateOnly? ExpirationDate { get; set; }
+        public string? CredintialID { get; set; }
+        public string? CredintialUrl { get; set; }
+        public List<UFIQ_C_UserSkill> LstSkills { get; set; }
+        public List<UFIQ_CertificateMedia> LstCertificateMedias { get; set; }
+    }
+
+    public class UFIQ_C_UserSkill
+    {
+        public UFIQ_LKP_Skill Skill { get; set; }
+    }
+
+    public class UFIQ_CertificateMedia
+    {
+        public Guid ID { get; set; }
+        public string Url { get; set; }
     }
 
     public class UFIQ_Experience

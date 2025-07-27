@@ -1,5 +1,4 @@
 ﻿using Application.Common.Entities;
-using Application.Owner.Queries.UserQueries;
 using MediatR;
 
 namespace Application.Client.Queries
@@ -15,6 +14,7 @@ namespace Application.Client.Queries
         public List<UBUQ_Project> LstProjects { get; set; }
         public List<UBUQ_UserSkill> LstUserSkills { get; set; }
         public List<UBUQ_Education> LstEducations { get; set; }
+        public List<UBUQ_Certificate> LstCertificates { get; set; }
         public List<UBUQ_Experience> LstExperiences { get; set; }
         public List<UBUQ_BlogPost> LstBlogPosts { get; set; }
         public List<UBUQ_SocialLink> LstSocialLinks { get; set; }
@@ -56,6 +56,12 @@ namespace Application.Client.Queries
         public UBUQ_LKP_Institution Institution { get; set; }
     }
 
+    public class UBUQ_LKP_Institution
+    {
+        public string Name { get; set; }
+        public string? Logo { get; set; }
+    }
+
     public class UBUQ_PS_Experience
     {
         public string CompanyName { get; set; }
@@ -76,16 +82,6 @@ namespace Application.Client.Queries
         public UBUQ_S_Certificate Certificate { get; set; }
     }
 
-    public class UBUQ_S_Certificate
-    {
-        public UBUQ_LKP_Certificate LKP_Certificate { get; set; }
-    }
-
-    public class UBUQ_LKP_Certificate
-    {
-        public string Name { get; set; }
-    }
-
     public class UBUQ_LKP_Skill
     {
         public string Name { get; set; }
@@ -95,6 +91,16 @@ namespace Application.Client.Queries
     public class UBUQ_S_Project
     {
         public string Title { get; set; }
+    }
+
+    public class UBUQ_S_Certificate
+    {
+        public UBUQ_LKP_Certificate LKP_Certificate { get; set; }
+    }
+
+    public class UBUQ_LKP_Certificate
+    {
+        public string Name { get; set; }
     }
 
     public class UBUQ_Education
@@ -107,21 +113,36 @@ namespace Application.Client.Queries
         public string Description { get; set; }
     }
 
-    public class UBUQ_LKP_FieldOfStudy
-    {
-        public string Name { get; set; }
-    }
-
     public class UBUQ_LKP_Degree
     {
         public string Name { get; set; }
         public string? Abbreviation { get; set; }
     }
 
-    public class UBUQ_LKP_Institution
+    public class UBUQ_LKP_FieldOfStudy
     {
         public string Name { get; set; }
-        public string? Logo { get; set; }
+    }
+
+    public class UBUQ_Certificate
+    {
+        public UBUQ_LKP_Certificate Certificate { get; set; }
+        public DateOnly? IssueDate { get; set; }
+        public DateOnly? ExpirationDate { get; set; }
+        public string? CredintialID { get; set; }
+        public string? CredintialUrl { get; set; }
+        public List<UBUQ_C_UserSkill> LstSkills { get; set; }
+        public List<UBUQ_CertificateMedia> LstCertificateMedias { get; set; }
+    }
+
+    public class UBUQ_C_UserSkill
+    {
+        public UBUQ_LKP_Skill Skill { get; set; }
+    }
+
+    public class UBUQ_CertificateMedia
+    {
+        public string Url { get; set; }
     }
 
     public class UBUQ_Experience
