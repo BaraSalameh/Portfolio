@@ -13,7 +13,7 @@ namespace Application.Owner.Queries.CertificateQueries
         public DateOnly? ExpirationDate { get; set; }
         public string? CredintialID { get; set; }
         public string? CredintialUrl { get; set; }
-        public List<CLQ_UserSkill> LstUserSkills { get; set; }
+        public List<CLQ_Skill> LstSkills { get; set; }
         public List<CLQ_CertificateMedia> LstCertificateMedias { get; set; }
     }
 
@@ -23,12 +23,7 @@ namespace Application.Owner.Queries.CertificateQueries
         public string Name { get; set; }
     }
 
-    public class CLQ_UserSkill
-    {
-        public CLQ_LKP_Skill Skill { get; set; }
-    }
-
-    public class CLQ_LKP_Skill
+    public class CLQ_Skill
     {
         public Guid ID { get; set; }
         public string Name { get; set; }

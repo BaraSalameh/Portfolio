@@ -79,7 +79,7 @@ namespace Application.Client.Queries
         public UBUQ_PS_Education Education { get; set; }
         public UBUQ_PS_Experience Experience { get; set; }
         public UBUQ_S_Project Project { get; set; }
-        public UBUQ_S_Certificate Certificate { get; set; }
+        public UBUQC_Certificate Certificate { get; set; }
     }
 
     public class UBUQ_LKP_Skill
@@ -93,9 +93,9 @@ namespace Application.Client.Queries
         public string Title { get; set; }
     }
 
-    public class UBUQ_S_Certificate
+    public class UBUQC_Certificate
     {
-        public UBUQ_LKP_Certificate LKP_Certificate { get; set; }
+        public UBUQ_LKP_Certificate Certificate { get; set; }
     }
 
     public class UBUQ_LKP_Certificate
@@ -131,13 +131,14 @@ namespace Application.Client.Queries
         public DateOnly? ExpirationDate { get; set; }
         public string? CredintialID { get; set; }
         public string? CredintialUrl { get; set; }
-        public List<UBUQ_C_UserSkill> LstSkills { get; set; }
+        public List<UBUQC_Skill> LstSkills { get; set; }
         public List<UBUQ_CertificateMedia> LstCertificateMedias { get; set; }
     }
 
-    public class UBUQ_C_UserSkill
+    public class UBUQC_Skill
     {
-        public UBUQ_LKP_Skill Skill { get; set; }
+        public string Name { get; set; }
+        public string IconUrl { get; set; }
     }
 
     public class UBUQ_CertificateMedia

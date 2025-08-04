@@ -13,12 +13,19 @@ namespace Application.Owner.Queries.UserSkillQueries
         public USLQ_PS_Education Education { get; set; }
         public USLQ_PS_Experience Experience { get; set; }
         public USLQ_S_Project Project { get; set; }
-        public USLQ_S_Certificate Certificate { get; set; }
+        public USLQC_Certificate Certificate { get; set; }
     }
 
-    public class USLQ_S_Certificate
+    public class USLQC_Certificate
     {
-        public USLQ_LKP_Certificate LKP_Certificate { get; set; }
+        public Guid ID { get; set; }
+        public USLQCC_Certificate Certificate { get; set; }
+    }
+
+    public class USLQCC_Certificate
+    {
+        public Guid ID { get; set; }
+        public string Name { get; set; }
     }
 
     public class USLQ_LKP_Certificate

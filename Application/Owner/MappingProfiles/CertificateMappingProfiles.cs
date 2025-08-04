@@ -10,12 +10,7 @@ namespace Application.Owner.MappingProfiles
         public CertificateMappingProfiles()
         {
             CreateMap<AddEditDeleteCertificateCommand, Certificate>()
-                .ForMember(dest => dest.LstUserSkills, opt => opt.MapFrom(src =>
-                    (src.LstSkills ?? new List<Guid>()).Select(id => new UserSkill
-                    {
-                        CertificateID = id
-                    }).ToList()
-                ))
+                .ForMember(dest => dest.LstUserSkills, opt => opt.Ignore())
                 .ForMember(dest => dest.LstCertificateMedias, opt => opt.MapFrom(src =>
                     (src.LstCertificateMedias ?? new List<string>()).Select(url => new CertificateMedia
                     {
@@ -24,8 +19,12 @@ namespace Application.Owner.MappingProfiles
                 ));
 
             CreateMap<Certificate, CLQ_Response>()
-                .ForMember(dest => dest.Certificate, opt => opt.MapFrom(src => src.LKP_Certificate));
+                .ForMember(dest => dest.Certificate, opt => opt.MapFrom(src => src.LKP_Certificate))
+                .ForMember(dest => dest.LstSkills, opt => opt.MapFrom(src => src.LstUserSkills.Select(us => us.LKP_Skill)))
+                .ForMember(dest => dest.LstCertificateMedias, opt => opt.MapFrom(src => src.LstCertificateMedias));
             CreateMap<LKP_Certificate, CLQ_LKP_Certificate>();
+            CreateMap<LKP_Skill, CLQ_Skill>();
+            CreateMap<CertificateMedia, CLQ_CertificateMedia>();
 
             CreateMap<LKP_Certificate, LKP_CLQ_Response>();
         }

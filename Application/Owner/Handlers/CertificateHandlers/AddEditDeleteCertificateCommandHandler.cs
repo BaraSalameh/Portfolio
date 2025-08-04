@@ -7,78 +7,128 @@ using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Owner.Handlers.CertificateHandlers
+namespace Application.Owner.Handlers.CertificateHandlers;
+public class AddEditDeleteCertificateCommandHandler : IRequestHandler<AddEditDeleteCertificateCommand, CommandResponse>
 {
-    public class AddEditDeleteCertificateCommandHandler : IRequestHandler<AddEditDeleteCertificateCommand, CommandResponse>
+    private readonly ICurrentUserService _currentUser;
+    private readonly IAppDbContext _context;
+    private readonly IMapper _mapper;
+
+    public AddEditDeleteCertificateCommandHandler(IAppDbContext context, ICurrentUserService currentUser, IMapper mapper)
     {
-        private readonly ICurrentUserService _currentUser;
-        private readonly IAppDbContext _context;
-        private readonly IMapper _mapper;
+        _context = context;
+        _currentUser = currentUser;
+        _mapper = mapper;
+    }
 
-        public AddEditDeleteCertificateCommandHandler(IAppDbContext context, ICurrentUserService currentUser, IMapper mapper)
+    public async Task<CommandResponse> Handle(AddEditDeleteCertificateCommand request, CancellationToken cancellationToken)
+    {
+        var response = new CommandResponse();
+        var userId = _currentUser.UserID;
+        var isEdit = request.ID.HasValue;
+
+        if (isEdit)
         {
-            _context = context;
-            _currentUser = currentUser;
-            _mapper = mapper;
+            var existingEntity = await _context.Certificate
+                .Include(c => c.LstUserSkills)
+                .FirstOrDefaultAsync(c => c.ID == request.ID && c.UserID == userId, cancellationToken);
+
+            if (existingEntity == null)
+            {
+                response.lstError.Add("Certificate not found.");
+                return response;
+            }
+
+            _mapper.Map(request, existingEntity);
+            await UpdateCertificateSkillsAsync(existingEntity, request.LstSkills, userId!.Value, cancellationToken);
+        }
+        else
+        {
+            var newEntity = _mapper.Map<Certificate>(request);
+            newEntity.UserID = userId!.Value;
+            newEntity.LstUserSkills = await CreateUserSkillsAsync(request.LstSkills, userId!.Value, newEntity.ID, cancellationToken);
+
+            _context.Certificate.Add(newEntity);
         }
 
-        public async Task<CommandResponse> Handle(AddEditDeleteCertificateCommand request, CancellationToken cancellationToken)
+        await _context.SaveChangesAsync(cancellationToken);
+        return response;
+    }
+
+    private async Task UpdateCertificateSkillsAsync(Certificate cert, List<Guid> newSkillIds, Guid userId, CancellationToken cancellationToken)
+    {
+        var existingSkillIds = cert.LstUserSkills
+            .Where(us => us.CertificateID == cert.ID)
+            .Select(us => us.LKP_SkillID)
+            .ToHashSet();
+
+        var newSkillIdSet = newSkillIds.ToHashSet();
+
+        // Skills to detach (set CertificateID = null)
+        var toDetach = cert.LstUserSkills
+            .Where(us => !newSkillIdSet.Contains(us.LKP_SkillID))
+            .ToList();
+
+        foreach (var us in toDetach)
         {
-            var response = new CommandResponse();
-
-            try
-            {
-                var validIds = await _context.LKP_Technology
-                    .Where(t => (request.LstSkills ?? new List<Guid>()).Contains(t.ID))
-                    .Select(t => t.ID)
-                    .ToListAsync(cancellationToken);
-
-                if (validIds.Count != (request.LstSkills ?? []).Count)
-                {
-                    response.lstError.Add("Some Skills do not exist.");
-                    return response;
-                }
-
-                if (request.ID == null)
-                {
-                    var newEntity = _mapper.Map<Certificate>(request);
-                    newEntity.UserID = _currentUser.UserID!.Value;
-
-                    await _context.Certificate.AddAsync(newEntity, cancellationToken);
-                }
-                else
-                {
-                    var existingEntity = await _context.Certificate
-                        .Include(x => x.LstUserSkills)
-                        .FirstOrDefaultAsync(x =>
-                            x.UserID == _currentUser.UserID!.Value &&
-                            x.ID == request.ID &&
-                            x.IsDeleted == false,
-                            cancellationToken
-                        );
-
-                    if (existingEntity == null)
-                    {
-                        response.lstError.Add("Skill not found.");
-                        return response;
-                    }
-
-                    _mapper.Map(request, existingEntity);
-                    existingEntity.UpdatedAt = DateTime.UtcNow;
-                }
-
-                await _context.SaveChangesAsync(cancellationToken);
-            }
-            catch (DbUpdateException dbEx)
-            {
-                response.lstError.Add("Error while adding/updating/deleting the Certificate.");
-            }
-            catch (Exception ex)
-            {
-                response.lstError.Add("Unexpected error occurred");
-            }
-
-            return response;
+            us.CertificateID = null;
         }
+
+        // Skills to add (reattach or create)
+        var toAdd = newSkillIds.Except(existingSkillIds);
+
+        foreach (var skillId in toAdd)
+        {
+            var existingDetached = await _context.UserSkill.FirstOrDefaultAsync(us =>
+                us.UserID == userId &&
+                us.LKP_SkillID == skillId &&
+                us.CertificateID == null,
+                cancellationToken);
+
+            if (existingDetached != null)
+            {
+                existingDetached.CertificateID = cert.ID;
+            }
+            else
+            {
+                cert.LstUserSkills.Add(new UserSkill
+                {
+                    UserID = userId,
+                    LKP_SkillID = skillId,
+                    CertificateID = cert.ID
+                });
+            }
+        }
+    }
+
+    private async Task<List<UserSkill>> CreateUserSkillsAsync(List<Guid> skillIds, Guid userId, Guid certificateId, CancellationToken cancellationToken)
+    {
+        var userSkills = new List<UserSkill>();
+
+        foreach (var skillId in skillIds)
+        {
+            var existingDetached = await _context.UserSkill.FirstOrDefaultAsync(us =>
+                us.UserID == userId &&
+                us.LKP_SkillID == skillId &&
+                us.CertificateID == null,
+                cancellationToken);
+
+            if (existingDetached != null)
+            {
+                existingDetached.CertificateID = certificateId;
+                userSkills.Add(existingDetached);
+            }
+            else
+            {
+                userSkills.Add(new UserSkill
+                {
+                    UserID = userId,
+                    LKP_SkillID = skillId,
+                    CertificateID = certificateId
+                });
+            }
+        }
+
+        return userSkills;
     }
 }

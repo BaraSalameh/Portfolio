@@ -32,13 +32,11 @@ namespace Application.Owner.MappingProfiles
                 );
             CreateMap<Experience, USLQ_PS_Experience>();
             CreateMap<Project, USLQ_S_Project>();
-            CreateMap<Certificate, USLQ_S_Certificate>()
-                .ForMember(dest => dest.LKP_Certificate,
-                    opt => opt.MapFrom(src => src.LKP_Certificate)
-                );
+            CreateMap<LKP_Certificate, USLQC_Certificate>();
             CreateMap<LKP_Institution, USLQ_LKP_Institution>();
-            CreateMap<LKP_Certificate, USLQ_LKP_Certificate>();
-
+            CreateMap<Certificate, USLQC_Certificate>()
+                .ForMember(dest => dest.Certificate, opt => opt.MapFrom(src => src.LKP_Certificate));
+            CreateMap<LKP_Certificate, USLQCC_Certificate>();
 
             CreateMap<EditDeleteUserSkillCommand, User>()
                 .ForMember(dest => dest.LstUserSkills, opt => opt.MapFrom(src =>

@@ -2,6 +2,7 @@
 {
     public class UserSkill : AbstractEntity
     {
+        public Guid ID { get; set; }
         public Guid UserID { get; set; }
         public User User { get; set; }
         public Guid LKP_SkillID { get; set; }

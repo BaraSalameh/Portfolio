@@ -117,7 +117,10 @@ namespace DataAccess.DbContexts
             modelBuilder.Entity<ProjectTechnology>().HasKey(pt => new { pt.ProjectID, pt.LKP_TechnologyID });
             modelBuilder.Entity<BlogPostTag>().HasKey(pt => new { pt.BlogPostID, pt.TagId });
             modelBuilder.Entity<UserLanguage>().HasKey(pt => new { pt.UserID, pt.LKP_LanguageID });
-            modelBuilder.Entity<UserSkill>().HasKey(s => new { s.UserID, s.LKP_SkillID });
+            modelBuilder.Entity<UserSkill>().HasIndex(us => new { us.UserID, us.LKP_SkillID, us.EducationID }).IsUnique().HasFilter("[EducationID] IS NOT NULL");
+            modelBuilder.Entity<UserSkill>().HasIndex(us => new { us.UserID, us.LKP_SkillID, us.ExperienceID }).IsUnique().HasFilter("[ExperienceID] IS NOT NULL");
+            modelBuilder.Entity<UserSkill>().HasIndex(us => new { us.UserID, us.LKP_SkillID, us.ProjectID }).IsUnique().HasFilter("[ProjectID] IS NOT NULL");
+            modelBuilder.Entity<UserSkill>().HasIndex(us => new { us.UserID, us.LKP_SkillID, us.CertificateID }).IsUnique().HasFilter("[CertificateID] IS NOT NULL");
             modelBuilder.Entity<UserPreference>().HasKey(pt => new { pt.UserID, pt.LKP_PreferenceID });
             modelBuilder.Entity<UserChartPreference>().HasKey(ucp => new { ucp.UserID, ucp.LKP_WidgetID, ucp.LKP_ChartTypeID });
             modelBuilder.Entity<User>().HasIndex(x => x.Email).IsUnique();

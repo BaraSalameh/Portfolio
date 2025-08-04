@@ -82,7 +82,7 @@ namespace Application.Owner.Queries.UserQueries
         public UFIQ_PS_Education Education { get; set; }
         public UFIQ_PS_Experience Experience { get; set; }
         public UFIQ_S_Project Project { get; set; }
-        public UFIQ_S_Certificate Certificate { get; set; }
+        public UFIQC_Certificate Certificate { get; set; }
 
     }
 
@@ -99,9 +99,10 @@ namespace Application.Owner.Queries.UserQueries
         public string Title { get; set; }
     }
 
-    public class UFIQ_S_Certificate
+    public class UFIQC_Certificate
     {
-        public UFIQ_LKP_Certificate LKP_Certificate { get; set; }
+        public Guid ID { get; set; }
+        public UFIQ_LKP_Certificate Certificate { get; set; }
     }
 
     public class UFIQ_LKP_Certificate
@@ -142,13 +143,15 @@ namespace Application.Owner.Queries.UserQueries
         public DateOnly? ExpirationDate { get; set; }
         public string? CredintialID { get; set; }
         public string? CredintialUrl { get; set; }
-        public List<UFIQ_C_UserSkill> LstSkills { get; set; }
+        public List<UFIQC_Skill> LstSkills { get; set; }
         public List<UFIQ_CertificateMedia> LstCertificateMedias { get; set; }
     }
 
-    public class UFIQ_C_UserSkill
+    public class UFIQC_Skill
     {
-        public UFIQ_LKP_Skill Skill { get; set; }
+        public Guid ID { get; set; }
+        public string Name { get; set; }
+        public string IconUrl { get; set; }
     }
 
     public class UFIQ_CertificateMedia
