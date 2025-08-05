@@ -4,6 +4,7 @@ using DataAccess.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250804232544_Applying MAin UserSkill structure into Project and deleting LKP_Technology structure")]
+    partial class ApplyingMAinUserSkillstructureintoProjectanddeletingLKP_Technologystructure
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3058,18 +3061,15 @@ namespace DataAccess.Migrations
                 {
                     b.HasOne("Domain.Entities.Certificate", "Certificate")
                         .WithMany("LstUserSkills")
-                        .HasForeignKey("CertificateID")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("CertificateID");
 
                     b.HasOne("Domain.Entities.Education", "Education")
                         .WithMany("LstUserSkills")
-                        .HasForeignKey("EducationID")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("EducationID");
 
                     b.HasOne("Domain.Entities.Experience", "Experience")
                         .WithMany("LstUserSkills")
-                        .HasForeignKey("ExperienceID")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("ExperienceID");
 
                     b.HasOne("Domain.Entities.LKP_Skill", "LKP_Skill")
                         .WithMany("LstSkillUsers")
@@ -3079,8 +3079,7 @@ namespace DataAccess.Migrations
 
                     b.HasOne("Domain.Entities.Project", "Project")
                         .WithMany("LstUserSkills")
-                        .HasForeignKey("ProjectID")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("ProjectID");
 
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("LstUserSkills")

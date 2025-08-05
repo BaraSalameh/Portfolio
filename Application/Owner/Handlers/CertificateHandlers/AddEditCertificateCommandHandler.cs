@@ -8,7 +8,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Owner.Handlers.CertificateHandlers;
-public class AddEditDeleteCertificateCommandHandler : IRequestHandler<AddEditDeleteCertificateCommand, CommandResponse>
+public class AddEditDeleteCertificateCommandHandler : IRequestHandler<AddEditCertificateCommand, CommandResponse>
 {
     private readonly ICurrentUserService _currentUser;
     private readonly IAppDbContext _context;
@@ -21,7 +21,7 @@ public class AddEditDeleteCertificateCommandHandler : IRequestHandler<AddEditDel
         _mapper = mapper;
     }
 
-    public async Task<CommandResponse> Handle(AddEditDeleteCertificateCommand request, CancellationToken cancellationToken)
+    public async Task<CommandResponse> Handle(AddEditCertificateCommand request, CancellationToken cancellationToken)
     {
         var response = new CommandResponse();
         var userId = _currentUser.UserID;

@@ -23,8 +23,6 @@ namespace DataAccess.Interfaces
         public DbSet<SocialLink> SocialLink { get; set; }
         public DbSet<ContactMessage> ContactMessage { get; set; }
         public DbSet<Project> Project { get; set; }
-        public DbSet<ProjectTechnology> ProjectTechnology { get; set; }
-        public DbSet<LKP_Technology> LKP_Technology { get; set; }
         public DbSet<UserLanguage> UserLanguage { get; set; }
         public DbSet<LKP_Language> LKP_Language { get; set; }
         public DbSet<LKP_LanguageProficiency> LKP_LanguageProficiency { get; set; }

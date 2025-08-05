@@ -9,7 +9,7 @@ namespace Application.Owner.MappingProfiles
     {
         public CertificateMappingProfiles()
         {
-            CreateMap<AddEditDeleteCertificateCommand, Certificate>()
+            CreateMap<AddEditCertificateCommand, Certificate>()
                 .ForMember(dest => dest.LstUserSkills, opt => opt.Ignore())
                 .ForMember(dest => dest.LstCertificateMedias, opt => opt.MapFrom(src =>
                     (src.LstCertificateMedias ?? new List<string>()).Select(url => new CertificateMedia

@@ -1,11 +1,11 @@
 ﻿using Application.Common.Entities;
 using Application.Common.Services.Interface;
-using Application.Owner.Commands.ProjectTechnologyCommands;
+using Application.Owner.Commands.ProjectCommands;
 using DataAccess.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Owner.Handlers.ProjectTechnologyHandlers
+namespace Application.Owner.Handlers.ProjectHandlers
 {
     public class DeleteProjectCommandHandler : IRequestHandler<DeleteProjectCommand, CommandResponse>
     {
@@ -25,6 +25,7 @@ namespace Application.Owner.Handlers.ProjectTechnologyHandlers
             try
             {
                 var existingEntity = await _context.Project
+                    .Include(p => p.LstUserSkills)
                     .FirstOrDefaultAsync(p =>
                         p.UserID == _currentUser.UserID!.Value &&
                         p.ID == request.ID &&
@@ -40,6 +41,7 @@ namespace Application.Owner.Handlers.ProjectTechnologyHandlers
 
                 existingEntity.IsDeleted = true;
                 existingEntity.DeletedAt = DateTime.UtcNow;
+                existingEntity.LstUserSkills.ForEach(us => us.ProjectID = null);
                 await _context.SaveChangesAsync(cancellationToken);
             }
             catch (DbUpdateException dbEx)

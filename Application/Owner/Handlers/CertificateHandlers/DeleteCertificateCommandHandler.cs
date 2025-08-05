@@ -25,6 +25,7 @@ namespace Application.Owner.Handlers.CertificateHandlers
             try
             {
                 var existingEntity = await _context.Certificate
+                    .Include(c => c.LstUserSkills)
                     .FirstOrDefaultAsync(x =>
                         x.UserID == _currentUser.UserID!.Value &&
                         x.ID == request.ID &&
@@ -40,6 +41,7 @@ namespace Application.Owner.Handlers.CertificateHandlers
 
                 existingEntity.IsDeleted = true;
                 existingEntity.DeletedAt = DateTime.UtcNow;
+                existingEntity.LstUserSkills.ForEach(us => us.CertificateID = null);
                 await _context.SaveChangesAsync(cancellationToken);
             }
             catch (DbUpdateException dbEx)

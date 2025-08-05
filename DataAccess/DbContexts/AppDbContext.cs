@@ -31,8 +31,6 @@ namespace DataAccess.DbContexts
         public DbSet<SocialLink> SocialLink { get; set; }
         public DbSet<ContactMessage> ContactMessage { get; set; }
         public DbSet<Project> Project { get; set; }
-        public DbSet<ProjectTechnology> ProjectTechnology { get; set; }
-        public DbSet<LKP_Technology> LKP_Technology { get; set; }
         public DbSet<UserLanguage> UserLanguage { get; set; }
         public DbSet<LKP_Language> LKP_Language { get; set; }
         public DbSet<LKP_LanguageProficiency> LKP_LanguageProficiency { get; set; }
@@ -114,7 +112,6 @@ namespace DataAccess.DbContexts
             }
 
             modelBuilder.Entity<PendingEmailConfirmation>().HasIndex(p => new { p.Email, p.Token });
-            modelBuilder.Entity<ProjectTechnology>().HasKey(pt => new { pt.ProjectID, pt.LKP_TechnologyID });
             modelBuilder.Entity<BlogPostTag>().HasKey(pt => new { pt.BlogPostID, pt.TagId });
             modelBuilder.Entity<UserLanguage>().HasKey(pt => new { pt.UserID, pt.LKP_LanguageID });
             modelBuilder.Entity<UserSkill>().HasIndex(us => new { us.UserID, us.LKP_SkillID, us.EducationID }).IsUnique().HasFilter("[EducationID] IS NOT NULL");
@@ -127,7 +124,6 @@ namespace DataAccess.DbContexts
             modelBuilder.Entity<User>().HasIndex(x => x.Username).IsUnique();
             modelBuilder.Entity<User>().Property(x => x.IsConfirmed).HasDefaultValue(false);
             modelBuilder.Entity<LKP_Language>().HasIndex(x => x.Name).IsUnique();
-            modelBuilder.Entity<LKP_Technology>().HasIndex(x => x.Name).IsUnique();
             modelBuilder.Entity<LKP_LanguageProficiency>().HasIndex(x => x.Level).IsUnique();
 
             modelBuilder.ApplyConfiguration(new RoleSeedConfiguration());
@@ -248,15 +244,6 @@ namespace DataAccess.DbContexts
                 .HasOne(c => c.User)
                 .WithMany(u => u.LstContactMessages)
                 .HasForeignKey(c => c.UserID);
-           
-            modelBuilder.Entity<ProjectTechnology>()
-                .HasOne(pt => pt.Project)
-                .WithMany(p => p.LstProjectTechnologies)
-                .HasForeignKey(pt => pt.ProjectID);
-            modelBuilder.Entity<ProjectTechnology>()
-                .HasOne(pt => pt.LKP_Technology)
-                .WithMany(t => t.LstTechnologyProjects)
-                .HasForeignKey(pt => pt.LKP_TechnologyID);
 
             modelBuilder.Entity<UserLanguage>()
                 .HasOne(pt => pt.User)

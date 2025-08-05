@@ -93,17 +93,13 @@ namespace Application.Client.MappingProfiles
                 .ForMember(dest => dest.Education, opt => opt.MapFrom(src => src.Education))
                 // -> LstProjects -> Experience
                 .ForMember(dest => dest.Experience, opt => opt.MapFrom(src => src.Experience))
-                // -> LstProjects -> LstTechnologies
-                .ForMember(dest => dest.LstTechnologies,
-                    opt => opt.MapFrom(src => src.LstProjectTechnologies
-                        .Select(pt => pt.LKP_Technology)
-                    )
-                );
+                // -> LstProjects -> LstSkills
+                .ForMember(dest => dest.LstSkills, opt => opt.MapFrom(src => src.LstUserSkills.Select(pt => pt.LKP_Skill)));
             // -> LstProjects -> Education (Already defined)
             // -> LstProjects -> Experience
             CreateMap<Experience, UBUQ_PS_Experience>();
-            // -> LstProjects -> LstTechnologies
-            CreateMap<LKP_Technology, UBUQ_LKP_Technology>();
+            // -> LstProjects -> LstSkills (Already defined)
+
 
 
             // -> LstUserSkills
@@ -118,8 +114,7 @@ namespace Application.Client.MappingProfiles
                 .ForMember(dest => dest.Project, opt => opt.MapFrom(src => src.Project))
                 // -> LstUserSkills -> Certificate
                 .ForMember(dest => dest.Certificate, opt => opt.MapFrom(src => src.Certificate.LKP_Certificate));
-            // -> LstUserSkills -> Skill
-            CreateMap<LKP_Skill, UBUQ_LKP_Skill>();
+            // -> LstUserSkills -> Skill (Already defined)
             // -> LstUserSkills -> Education
             CreateMap<Education, UBUQ_PS_Education>()
                 // -> LstUserSkills -> Education -> Institution
@@ -171,7 +166,7 @@ namespace Application.Client.MappingProfiles
             // -> LstCertificates -> Certificate
             CreateMap<LKP_Certificate, UBUQ_LKP_Certificate>();
             // -> LstCertificates -> LstSkills
-            CreateMap<LKP_Skill, UBUQC_Skill>();
+            CreateMap<LKP_Skill, UBUQ_Skill>();
             // -> LstCertificates -> LstCertificateMedias
             CreateMap<CertificateMedia, UBUQ_CertificateMedia>();
 

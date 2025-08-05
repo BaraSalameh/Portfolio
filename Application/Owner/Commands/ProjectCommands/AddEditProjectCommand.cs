@@ -1,9 +1,9 @@
 ﻿using Application.Common.Entities;
 using MediatR;
 
-namespace Application.Owner.Commands.ProjectTechnologyCommands
+namespace Application.Owner.Commands.ProjectCommands
 {
-    public class AddEditDeleteProjectTechnologyCommand : IRequest<CommandResponse>
+    public class AddEditProjectCommand : IRequest<CommandResponse>
     {
         public Guid? ID { get; set; }
         public string Title { get; set; }
@@ -14,6 +14,6 @@ namespace Application.Owner.Commands.ProjectTechnologyCommands
         public bool IsFeatured { get; set; }
         public Guid? EducationID { get; set; }
         public Guid? ExperienceID { get; set; }
-        public List<Guid>? LstTechnologies { get; set; }
+        public List<Guid>? LstSkills { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Application.Common.Entities;
 using MediatR;
 
-namespace Application.Owner.Commands.ProjectTechnologyCommands
+namespace Application.Owner.Commands.ProjectCommands
 {
     public class SortProjectCommand : IRequest<CommandResponse>
     {

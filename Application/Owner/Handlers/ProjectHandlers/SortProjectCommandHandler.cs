@@ -1,11 +1,11 @@
 ﻿using Application.Common.Entities;
 using Application.Common.Services.Interface;
-using Application.Owner.Commands.ProjectTechnologyCommands;
+using Application.Owner.Commands.ProjectCommands;
 using DataAccess.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Owner.Handlers.ProjectTechnologyHandlers
+namespace Application.Owner.Handlers.ProjectHandlers
 {
     public class SortProjectCommandHandler : IRequestHandler<SortProjectCommand, CommandResponse>
     {

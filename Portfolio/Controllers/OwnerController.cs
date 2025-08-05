@@ -5,7 +5,7 @@ using Application.Owner.Commands.ContactMessageCommands;
 using Application.Owner.Commands.EducationCommands;
 using Application.Owner.Commands.ExperienceCommands;
 using Application.Owner.Commands.Profile;
-using Application.Owner.Commands.ProjectTechnologyCommands;
+using Application.Owner.Commands.ProjectCommands;
 using Application.Owner.Commands.SocialLinkCommands;
 using Application.Owner.Commands.UserChartPreferenceCommands;
 using Application.Owner.Commands.UserLanguageCommands;
@@ -16,7 +16,7 @@ using Application.Owner.Queries.ContactMessageQueries;
 using Application.Owner.Queries.EducationQueries;
 using Application.Owner.Queries.ExperienceQueries;
 using Application.Owner.Queries.LKP_LanguageQuieries;
-using Application.Owner.Queries.ProjectTechnologyQueries;
+using Application.Owner.Queries.ProjectQueries;
 using Application.Owner.Queries.UserChartPreferenceQueries;
 using Application.Owner.Queries.UserLanguageQueries;
 using Application.Owner.Queries.UserPreferenceQueries;
@@ -151,7 +151,7 @@ namespace Portfolio.Controllers
             => Result.HandleResult(await Mediator.Send(request));
 
         [HttpPost]
-        public async Task<IActionResult> AddEditDeleteCertificate(AddEditDeleteCertificateCommand request)
+        public async Task<IActionResult> AddEditCertificate(AddEditCertificateCommand request)
             => Result.HandleResult(await Mediator.Send(request));
 
         [HttpDelete]
@@ -170,16 +170,13 @@ namespace Portfolio.Controllers
         public async Task<IActionResult> DeleteBlogPost(DeleteBlogPostCommand request)
             => Result.HandleResult(await Mediator.Send(request));
 
-        // ProjectTechnology
+        // Project
         [HttpGet]
-        public async Task<IActionResult> ProjectTechnologyList([FromQuery] ProjectTechnologyListQuery request)
-            => Result.HandleResult(await Mediator.Send(request));
-        [HttpGet]
-        public async Task<IActionResult> LKP_TechnologyList([FromQuery] LKP_TechnologyListQuery request)
+        public async Task<IActionResult> ProjectList([FromQuery] ProjectListQuery request)
             => Result.HandleResult(await Mediator.Send(request));
 
         [HttpPost]
-        public async Task<IActionResult> AddEditDeleteProjectTechnology(AddEditDeleteProjectTechnologyCommand request)
+        public async Task<IActionResult> AddEditProject(AddEditProjectCommand request)
             => Result.HandleResult(await Mediator.Send(request));
 
         [HttpDelete]

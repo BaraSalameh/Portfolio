@@ -102,17 +102,13 @@ namespace Application.Owner.MappingProfiles
                 .ForMember(dest => dest.Education, opt => opt.MapFrom(src => src.Education))
                 // -> LstProjects -> Experience
                 .ForMember(dest => dest.Experience, opt => opt.MapFrom(src => src.Experience))
-                // -> LstProjects -> LstTechnologies
-                .ForMember(dest => dest.LstTechnologies,
-                    opt => opt.MapFrom(src => src.LstProjectTechnologies
-                        .Select(pt => pt.LKP_Technology)
-                    )
-                );
+                // -> LstProjects -> LstSkills
+                .ForMember(dest => dest.LstSkills, opt => opt.MapFrom(src => src.LstUserSkills.Select(us => us.LKP_Skill)));
             // -> LstProjects -> Education (Already defined)
             // -> LstProjects -> Experience
             CreateMap<Experience, UFIQ_PS_Experience>();
-            // -> LstProjects -> LstTechnologies
-            CreateMap<LKP_Technology, UFIQ_LKP_Technology>();
+            // -> LstProjects -> LstSkills
+            CreateMap<LKP_Skill, UFIQ_Skill>();
 
 
             // -> LstUserSkills
@@ -127,8 +123,7 @@ namespace Application.Owner.MappingProfiles
                 .ForMember(dest => dest.Project, opt => opt.MapFrom(src => src.Project))
                 // -> LstUserSkills -> Certificate
                 .ForMember(dest => dest.Certificate, opt => opt.MapFrom(src => src.Certificate));
-            // -> LstUserSkills -> Skill
-            CreateMap<LKP_Skill, UFIQ_LKP_Skill>();
+            // -> LstUserSkills -> Skill (Already defined)
             // -> LstUserSkills -> Education
             CreateMap<Education, UFIQ_PS_Education>()
                 // -> LstUserSkills -> Education -> Institution
@@ -171,8 +166,7 @@ namespace Application.Owner.MappingProfiles
                 .ForMember(dest => dest.LstCertificateMedias, opt => opt.MapFrom(src => src.LstCertificateMedias));
             // -> LstCertificates -> Certificate
             CreateMap<LKP_Certificate, UFIQ_LKP_Certificate>();
-            // -> LstCertificates -> LstSkills
-            CreateMap<LKP_Skill, UFIQC_Skill>();
+            // -> LstCertificates -> LstSkills (Already defined)
             // -> LstCertificates -> LstCertificateMedias
             CreateMap<CertificateMedia, UFIQ_CertificateMedia>();
 
