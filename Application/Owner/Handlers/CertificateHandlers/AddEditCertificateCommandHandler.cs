@@ -8,13 +8,13 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Owner.Handlers.CertificateHandlers;
-public class AddEditDeleteCertificateCommandHandler : IRequestHandler<AddEditCertificateCommand, CommandResponse>
+public class AddEditCertificateCommandHandler : IRequestHandler<AddEditCertificateCommand, CommandResponse>
 {
     private readonly ICurrentUserService _currentUser;
     private readonly IAppDbContext _context;
     private readonly IMapper _mapper;
 
-    public AddEditDeleteCertificateCommandHandler(IAppDbContext context, ICurrentUserService currentUser, IMapper mapper)
+    public AddEditCertificateCommandHandler(IAppDbContext context, ICurrentUserService currentUser, IMapper mapper)
     {
         _context = context;
         _currentUser = currentUser;
@@ -46,7 +46,11 @@ public class AddEditDeleteCertificateCommandHandler : IRequestHandler<AddEditCer
         {
             var newEntity = _mapper.Map<Certificate>(request);
             newEntity.UserID = userId!.Value;
-            newEntity.LstUserSkills = await CreateUserSkillsAsync(request.LstSkills, userId!.Value, newEntity.ID, cancellationToken);
+
+            if (request.LstSkills != null && request.LstSkills.Any())
+            {
+                newEntity.LstUserSkills = await CreateUserSkillsAsync(request.LstSkills, userId!.Value, newEntity.ID, cancellationToken);
+            }
 
             _context.Certificate.Add(newEntity);
         }

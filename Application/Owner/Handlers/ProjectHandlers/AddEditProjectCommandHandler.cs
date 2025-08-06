@@ -47,7 +47,11 @@ namespace Application.Owner.Handlers.ProjectHandlers
             {
                 var newEntity = _mapper.Map<Project>(request);
                 newEntity.UserID = userId!.Value;
-                newEntity.LstUserSkills = await CreateUserSkillsAsync(request.LstSkills, userId!.Value, newEntity.ID, cancellationToken);
+
+                if (request.LstSkills != null && request.LstSkills.Any())
+                {
+                    newEntity.LstUserSkills = await CreateUserSkillsAsync(request.LstSkills, userId!.Value, newEntity.ID, cancellationToken);
+                }
 
                 _context.Project.Add(newEntity);
             }
