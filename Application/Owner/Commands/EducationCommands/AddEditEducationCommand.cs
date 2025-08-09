@@ -13,5 +13,6 @@ namespace Application.Owner.Commands.EducationCommands
         public DateOnly StartDate { get; set; }
         public DateOnly? EndDate { get; set; }
         public string? Description { get; set; }
+        public List<Guid>? LstSkills { get; set; }
     }
 }

@@ -18,6 +18,10 @@ namespace DataAccess.DbContexts
         public DbSet<Role> Role { get; set; }
         public DbSet<User> User { get; set; }
         public DbSet<UserSkill> UserSkill { get; set; }
+        public DbSet<UserSkillEducation> UserSkillEducation { get; set; }
+        public DbSet<UserSkillExperience> UserSkillExperience { get; set; }
+        public DbSet<UserSkillProject> UserSkillProject { get; set; }
+        public DbSet<UserSkillCertificate> UserSkillCertificate { get; set; }
         public DbSet<LKP_Skill> LKP_Skill { get; set; }
         public DbSet<Education> Education { get; set; }
         public DbSet<LKP_Institution> LKP_Institution { get; set; }
@@ -114,10 +118,10 @@ namespace DataAccess.DbContexts
             modelBuilder.Entity<PendingEmailConfirmation>().HasIndex(p => new { p.Email, p.Token });
             modelBuilder.Entity<BlogPostTag>().HasKey(pt => new { pt.BlogPostID, pt.TagId });
             modelBuilder.Entity<UserLanguage>().HasKey(pt => new { pt.UserID, pt.LKP_LanguageID });
-            modelBuilder.Entity<UserSkill>().HasIndex(us => new { us.UserID, us.LKP_SkillID, us.EducationID }).IsUnique().HasFilter("[EducationID] IS NOT NULL");
-            modelBuilder.Entity<UserSkill>().HasIndex(us => new { us.UserID, us.LKP_SkillID, us.ExperienceID }).IsUnique().HasFilter("[ExperienceID] IS NOT NULL");
-            modelBuilder.Entity<UserSkill>().HasIndex(us => new { us.UserID, us.LKP_SkillID, us.ProjectID }).IsUnique().HasFilter("[ProjectID] IS NOT NULL");
-            modelBuilder.Entity<UserSkill>().HasIndex(us => new { us.UserID, us.LKP_SkillID, us.CertificateID }).IsUnique().HasFilter("[CertificateID] IS NOT NULL");
+            modelBuilder.Entity<UserSkillEducation>().HasKey(use => new { use.UserSkillID, use.EducationID });
+            modelBuilder.Entity<UserSkillExperience>().HasKey(use => new { use.UserSkillID, use.ExperienceID });
+            modelBuilder.Entity<UserSkillProject>().HasKey(use => new { use.UserSkillID, use.ProjectID });
+            modelBuilder.Entity<UserSkillCertificate>().HasKey(use => new { use.UserSkillID, use.CertificateID });
             modelBuilder.Entity<UserPreference>().HasKey(pt => new { pt.UserID, pt.LKP_PreferenceID });
             modelBuilder.Entity<UserChartPreference>().HasKey(ucp => new { ucp.UserID, ucp.LKP_WidgetID, ucp.LKP_ChartTypeID });
             modelBuilder.Entity<User>().HasIndex(x => x.Email).IsUnique();
@@ -175,25 +179,53 @@ namespace DataAccess.DbContexts
                 .WithMany(u => u.LstUserSkills)
                 .HasForeignKey(s => s.UserID);
             modelBuilder.Entity<UserSkill>()
-                .HasOne(p => p.Education)
-                .WithMany(u => u.LstUserSkills)
-                .HasForeignKey(p => p.EducationID);
-            modelBuilder.Entity<UserSkill>()
-                .HasOne(p => p.Experience)
-                .WithMany(u => u.LstUserSkills)
-                .HasForeignKey(p => p.ExperienceID);
-            modelBuilder.Entity<UserSkill>()
-                .HasOne(p => p.Project)
-                .WithMany(u => u.LstUserSkills)
-                .HasForeignKey(p => p.ProjectID);
-            modelBuilder.Entity<UserSkill>()
-                .HasOne(p => p.Certificate)
-                .WithMany(u => u.LstUserSkills)
-                .HasForeignKey(p => p.CertificateID);
-            modelBuilder.Entity<UserSkill>()
                 .HasOne(p => p.LKP_Skill)
                 .WithMany(u => u.LstSkillUsers)
                 .HasForeignKey(p => p.LKP_SkillID);
+
+            modelBuilder.Entity<UserSkillEducation>()
+                .HasOne(usp => usp.UserSkill)
+                .WithMany(us => us.LstEducations)
+                .HasForeignKey(usp => usp.UserSkillID)
+                .OnDelete(DeleteBehavior.ClientCascade);
+            modelBuilder.Entity<UserSkillEducation>()
+                .HasOne(usp => usp.Education)
+                .WithMany(p => p.LstUserSkillEducations)
+                .HasForeignKey(usp => usp.EducationID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserSkillExperience>()
+                .HasOne(usp => usp.UserSkill)
+                .WithMany(us => us.LstExperiences)
+                .HasForeignKey(usp => usp.UserSkillID)
+                .OnDelete(DeleteBehavior.ClientCascade);
+            modelBuilder.Entity<UserSkillExperience>()
+                .HasOne(usp => usp.Experience)
+                .WithMany(p => p.LstUserSkillExperiences)
+                .HasForeignKey(usp => usp.ExperienceID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserSkillProject>()
+                .HasOne(usp => usp.UserSkill)
+                .WithMany(us => us.LstProjects)
+                .HasForeignKey(usp => usp.UserSkillID)
+                .OnDelete(DeleteBehavior.ClientCascade);
+            modelBuilder.Entity<UserSkillProject>()
+                .HasOne(usp => usp.Project)
+                .WithMany(p => p.LstUserSkillProjects)
+                .HasForeignKey(usp => usp.ProjectID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserSkillCertificate>()
+                .HasOne(usc => usc.UserSkill)
+                .WithMany(us => us.LstCertificates)
+                .HasForeignKey(usc => usc.UserSkillID)
+                .OnDelete(DeleteBehavior.ClientCascade);
+            modelBuilder.Entity<UserSkillCertificate>()
+                .HasOne(usc => usc.Certificate)
+                .WithMany(us => us.LstUserSkillCertificates)
+                .HasForeignKey(usc => usc.CertificateID)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Education>()
                 .HasOne(e => e.User)

@@ -35,7 +35,10 @@ namespace Application.Owner.Handlers.UserSkillHandlers
             {
 
                 var existingEntity = await _context.User
-                    .Include(y => y.LstUserSkills)
+                    .Include(y => y.LstUserSkills).ThenInclude(us => us.LstEducations)
+                    .Include(y => y.LstUserSkills).ThenInclude(us => us.LstExperiences)
+                    .Include(y => y.LstUserSkills).ThenInclude(us => us.LstProjects)
+                    .Include(y => y.LstUserSkills).ThenInclude(us => us.LstCertificates)
                     .FirstOrDefaultAsync(u => u.ID == _currentUser.UserID!.Value, cancellationToken);
 
                 if (existingEntity == null)

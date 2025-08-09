@@ -14,5 +14,13 @@ namespace Application.Owner.Queries.ExperienceQueries
         public DateOnly? EndDate { get; set; }
         public string Location { get; set; }
         public string? Description { get; set; }
+        public List<ELQ_LKP_Skill> LstSkills { get; set; }
+    }
+
+    public class ELQ_LKP_Skill
+    {
+        public Guid ID { get; set; }
+        public string Name { get; set; }
+        public string IconUrl { get; set; }
     }
 }

@@ -46,12 +46,12 @@ namespace Application.Client.Queries
         public string SourceCode { get; set; }
         public string ImageUrl { get; set; }
         public bool IsFeatured { get; set; }
-        public UBUQ_PS_Education Education { get; set; }
-        public UBUQ_PS_Experience Experience { get; set; }
-        public List<UBUQ_Skill> LstSkills { get; set; }
+        public UBUQ_Shared_Education Education { get; set; }
+        public UBUQ_Shared_Experience Experience { get; set; }
+        public List<UBUQ_LKP_Skill> LstSkills { get; set; }
     }
 
-    public class UBUQ_PS_Education
+    public class UBUQ_Shared_Education
     {
         public UBUQ_LKP_Institution Institution { get; set; }
     }
@@ -62,12 +62,12 @@ namespace Application.Client.Queries
         public string? Logo { get; set; }
     }
 
-    public class UBUQ_PS_Experience
+    public class UBUQ_Shared_Experience
     {
         public string CompanyName { get; set; }
     }
 
-    public class UBUQ_LKP_Technology
+    public class UBUQ_LKP_Skill
     {
         public string Name { get; set; }
         public string IconUrl { get; set; }
@@ -75,25 +75,19 @@ namespace Application.Client.Queries
 
     public class UBUQ_UserSkill
     {
-        public UBUQ_Skill Skill { get; set; }
-        public UBUQ_PS_Education Education { get; set; }
-        public UBUQ_PS_Experience Experience { get; set; }
-        public UBUQ_S_Project Project { get; set; }
-        public UBUQC_Certificate Certificate { get; set; }
+        public UBUQ_LKP_Skill Skill { get; set; }
+        public List<UBUQ_Shared_Education> LstEducations { get; set; }
+        public List<UBUQ_Shared_Experience> LstExperiences { get; set; }
+        public List<UBUQ_Shared_Project> LstProjects { get; set; }
+        public List<UBUQ_Shared_Certificate> LstCertificates { get; set; }
     }
 
-    public class UBUQ_Skill
-    {
-        public string Name { get; set; }
-        public string IconUrl { get; set; }
-    }
-
-    public class UBUQ_S_Project
+    public class UBUQ_Shared_Project
     {
         public string Title { get; set; }
     }
 
-    public class UBUQC_Certificate
+    public class UBUQ_Shared_Certificate
     {
         public UBUQ_LKP_Certificate Certificate { get; set; }
     }
@@ -111,6 +105,8 @@ namespace Application.Client.Queries
         public DateOnly StartDate { get; set; }
         public DateOnly? EndDate { get; set; }
         public string Description { get; set; }
+        public List<UBUQ_Shared_Project> LstProjects { get; set; }
+        public List<UBUQ_LKP_Skill> LstSkills { get; set; }
     }
 
     public class UBUQ_LKP_Degree
@@ -131,7 +127,7 @@ namespace Application.Client.Queries
         public DateOnly? ExpirationDate { get; set; }
         public string? CredintialID { get; set; }
         public string? CredintialUrl { get; set; }
-        public List<UBUQ_Skill> LstSkills { get; set; }
+        public List<UBUQ_LKP_Skill> LstSkills { get; set; }
         public List<UBUQ_CertificateMedia> LstCertificateMedias { get; set; }
     }
 
@@ -148,6 +144,7 @@ namespace Application.Client.Queries
         public DateOnly? EndDate { get; set; }
         public string Location { get; set; }
         public string? Description { get; set; }
+        public List<UBUQ_LKP_Skill> LstSkills { get; set; }
     }
 
     public class UBUQ_BlogPost

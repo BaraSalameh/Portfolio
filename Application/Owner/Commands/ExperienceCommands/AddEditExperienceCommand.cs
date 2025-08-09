@@ -12,5 +12,6 @@ namespace Application.Owner.Commands.ExperienceCommands
         public DateOnly? EndDate { get; set; }
         public string Location { get; set; }
         public string? Description { get; set; }
+        public List<Guid>? LstSkills { get; set; }
     }
 }

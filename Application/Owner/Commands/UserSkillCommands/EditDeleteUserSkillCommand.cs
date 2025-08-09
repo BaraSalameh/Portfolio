@@ -5,16 +5,15 @@ namespace Application.Owner.Commands.UserSkillCommands
 {
     public class EditDeleteUserSkillCommand : IRequest<CommandResponse>
     {
-        public List<EDUSC_LKP_Skill>? LstUserSkills { get; set; }
+        public List<EDUSC_UserSkill>? LstUserSkills { get; set; }
     }
 
-    public class EDUSC_LKP_Skill
+    public class EDUSC_UserSkill
     {
         public Guid LKP_SkillID { get; set; }
-        public Guid? EducationID { get; set; }
-        public Guid? ExperienceID { get; set; }
-        public Guid? ProjectID { get; set; }
-        public Guid? CertificateID { get; set; }
-
+        public List<Guid>? EducationIDs { get; set; }
+        public List<Guid>? ExperienceIDs { get; set; }
+        public List<Guid>? ProjectIDs { get; set; }
+        public List<Guid>? CertificateIDs { get; set; }
     }
 }

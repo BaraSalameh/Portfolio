@@ -12,7 +12,7 @@
         public int Order { get; set; }
         public Guid UserID { get; set; }
         public User User { get; set; }
-        public List<UserSkill> LstUserSkills { get; set; }
+        public List<UserSkillCertificate> LstUserSkillCertificates { get; set; } = new List<UserSkillCertificate>();
         public List<CertificateMedia> LstCertificateMedias { get; set; }
     }
 }

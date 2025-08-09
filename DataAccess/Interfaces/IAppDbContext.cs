@@ -10,6 +10,10 @@ namespace DataAccess.Interfaces
         public DbSet<Role> Role { get; set; }
         public DbSet<User> User { get; set; }
         public DbSet<UserSkill> UserSkill { get; set; }
+        public DbSet<UserSkillEducation> UserSkillEducation { get; set; }
+        public DbSet<UserSkillExperience> UserSkillExperience { get; set; }
+        public DbSet<UserSkillProject> UserSkillProject { get; set; }
+        public DbSet<UserSkillCertificate> UserSkillCertificate { get; set; }
         public DbSet<LKP_Skill> LKP_Skill { get; set; }
         public DbSet<Education> Education { get; set; }
         public DbSet<LKP_Institution> LKP_Institution { get; set; }

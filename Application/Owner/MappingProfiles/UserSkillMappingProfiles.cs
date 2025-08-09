@@ -13,40 +13,60 @@ namespace Application.Owner.MappingProfiles
                 .ForMember(dest => dest.Skill,
                     opt => opt.MapFrom(src => src.LKP_Skill)
                 )
-                .ForMember(dest => dest.Education,
-                    opt => opt.MapFrom(src => src.Education)
+                .ForMember(dest => dest.LstEducations,
+                    opt => opt.MapFrom(src => src.LstEducations.Select(use => use.Education))
                 )
-                .ForMember(dest => dest.Experience,
-                    opt => opt.MapFrom(src => src.Experience)
+                .ForMember(dest => dest.LstExperiences,
+                    opt => opt.MapFrom(src => src.LstExperiences.Select(use => use.Experience))
                 )
-                .ForMember(dest => dest.Project,
-                    opt => opt.MapFrom(src => src.Project)
+                .ForMember(dest => dest.LstProjects,
+                    opt => opt.MapFrom(src => src.LstProjects.Select(usp => usp.Project))
                 )
-                .ForMember(dest => dest.Certificate,
-                    opt => opt.MapFrom(src => src.Certificate)
+                .ForMember(dest => dest.LstCertificates,
+                    opt => opt.MapFrom(src => src.LstCertificates.Select(usc => usc.Certificate))
                 );
             CreateMap<LKP_Skill, USLQ_LKP_Skill>();
-            CreateMap<Education, USLQ_PS_Education>()
+            CreateMap<Education, USLQ_Education>()
                 .ForMember(dest => dest.Institution,
                     opt => opt.MapFrom(src => src.LKP_Institution)
                 );
-            CreateMap<Experience, USLQ_PS_Experience>();
-            CreateMap<Project, USLQ_S_Project>();
-            CreateMap<LKP_Certificate, USLQC_Certificate>();
+            CreateMap<Experience, USLQ_Experience>();
+            CreateMap<Project, USLQ_Project>();
+            CreateMap<LKP_Certificate, USLQ_Certificate>();
             CreateMap<LKP_Institution, USLQ_LKP_Institution>();
-            CreateMap<Certificate, USLQC_Certificate>()
+            CreateMap<Certificate, USLQ_Certificate>()
                 .ForMember(dest => dest.Certificate, opt => opt.MapFrom(src => src.LKP_Certificate));
-            CreateMap<LKP_Certificate, USLQCC_Certificate>();
+            CreateMap<LKP_Certificate, USLQ_LKP_Certificate>();
 
             CreateMap<EditDeleteUserSkillCommand, User>()
                 .ForMember(dest => dest.LstUserSkills, opt => opt.MapFrom(src =>
-                    (src.LstUserSkills ?? new List<EDUSC_LKP_Skill>()).Select(id => new UserSkill
+                    (src.LstUserSkills ?? new List<EDUSC_UserSkill>()).Select(skill => new UserSkill
                     {
-                        LKP_SkillID = id.LKP_SkillID,
-                        EducationID = id.EducationID,
-                        ExperienceID = id.ExperienceID,
-                        ProjectID = id.ProjectID,
-                        CertificateID = id.CertificateID
+                        LKP_SkillID = skill.LKP_SkillID,
+
+                        LstEducations = (skill.EducationIDs ?? new List<Guid>())
+                        .Select(eid => new UserSkillEducation
+                        {
+                            EducationID = eid
+                        }).ToList(),
+
+                        LstExperiences = (skill.ExperienceIDs ?? new List<Guid>())
+                        .Select(eid => new UserSkillExperience
+                        {
+                            ExperienceID = eid
+                        }).ToList(),
+
+                        LstProjects = (skill.ProjectIDs ?? new List<Guid>())
+                        .Select(pid => new UserSkillProject
+                        {
+                            ProjectID = pid
+                        }).ToList(),
+
+                        LstCertificates = (skill.CertificateIDs ?? new List<Guid>())
+                        .Select(cid => new UserSkillCertificate
+                        {
+                            CertificateID = cid
+                        }).ToList(),
                     }).ToList()
                 ));
 

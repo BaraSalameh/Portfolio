@@ -94,11 +94,12 @@ namespace Application.Client.MappingProfiles
                 // -> LstProjects -> Experience
                 .ForMember(dest => dest.Experience, opt => opt.MapFrom(src => src.Experience))
                 // -> LstProjects -> LstSkills
-                .ForMember(dest => dest.LstSkills, opt => opt.MapFrom(src => src.LstUserSkills.Select(pt => pt.LKP_Skill)));
+                .ForMember(dest => dest.LstSkills, opt => opt.MapFrom(src => src.LstUserSkillProjects.Select(usp => usp.UserSkill).Select(us => us.LKP_Skill)));
             // -> LstProjects -> Education (Already defined)
             // -> LstProjects -> Experience
-            CreateMap<Experience, UBUQ_PS_Experience>();
-            // -> LstProjects -> LstSkills (Already defined)
+            CreateMap<Experience, UBUQ_Shared_Experience>();
+            // -> LstProjects -> LstSkills
+            CreateMap<LKP_Skill, UBUQ_LKP_Skill>();
 
 
 
@@ -107,24 +108,24 @@ namespace Application.Client.MappingProfiles
                 // -> LstUserSkills -> Skill
                 .ForMember(dest => dest.Skill, opt => opt.MapFrom(src => src.LKP_Skill))
                 // -> LstUserSkills -> Education
-                .ForMember(dest => dest.Education, opt => opt.MapFrom(src => src.Education))
+                .ForMember(dest => dest.LstEducations, opt => opt.MapFrom(src => src.LstEducations.Select(us => us.Education)))
                 // -> LstUserSkills -> Experience
-                .ForMember(dest => dest.Experience, opt => opt.MapFrom(src => src.Experience))
+                .ForMember(dest => dest.LstExperiences, opt => opt.MapFrom(src => src.LstExperiences.Select(us => us.Experience)))
                 // -> LstUserSkills -> Project
-                .ForMember(dest => dest.Project, opt => opt.MapFrom(src => src.Project))
+                .ForMember(dest => dest.LstProjects, opt => opt.MapFrom(src => src.LstProjects.Select(us => us.Project)))
                 // -> LstUserSkills -> Certificate
-                .ForMember(dest => dest.Certificate, opt => opt.MapFrom(src => src.Certificate.LKP_Certificate));
+                .ForMember(dest => dest.LstCertificates, opt => opt.MapFrom(src => src.LstCertificates.Select(us => us.Certificate)));
             // -> LstUserSkills -> Skill (Already defined)
             // -> LstUserSkills -> Education
-            CreateMap<Education, UBUQ_PS_Education>()
+            CreateMap<Education, UBUQ_Shared_Education>()
                 // -> LstUserSkills -> Education -> Institution
                 .ForMember(dest => dest.Institution, opt => opt.MapFrom(src => src.LKP_Institution));
             // -> LstUserSkills -> Experience (Already defined)
             // -> LstUserSkills -> Project
-            CreateMap<Project, UBUQ_S_Project>();
+            CreateMap<Project, UBUQ_Shared_Project>();
             // -> LstUserSkills -> Certificate
-            CreateMap<Certificate, UBUQC_Certificate>()
-                // ->LstUserSkills->Certificate->LKP_Certificate
+            CreateMap<Certificate, UBUQ_Shared_Certificate>()
+                // -> LstUserSkills -> Certificate -> LKP_Certificate
                 .ForMember(dest => dest.Certificate, opt => opt.MapFrom(src => src.LKP_Certificate));
             // -> LstUserSkills -> Education -> Institution (Already defined)
             // -> LstUserSkills -> Certificate -> LKP_Certificate
@@ -138,13 +139,19 @@ namespace Application.Client.MappingProfiles
                 // -> LstEducations -> Degree
                 .ForMember(dest => dest.Degree, opt => opt.MapFrom(src => src.LKP_Degree))
                 // -> LstEducations -> FieldOfStudy
-                .ForMember(dest => dest.FieldOfStudy, opt => opt.MapFrom(src => src.LKP_FieldOfStudy));
+                .ForMember(dest => dest.FieldOfStudy, opt => opt.MapFrom(src => src.LKP_FieldOfStudy))
+                // -> LstEducations -> LstProjects
+                .ForMember(dest => dest.LstProjects, opt => opt.MapFrom(src => src.LstProjects))
+                // -> LstEducations -> LstSkills
+                .ForMember(dest => dest.LstSkills, opt => opt.MapFrom(src => src.LstUserSkillEducations.Select(use => use.UserSkill).Select(us => us.LKP_Skill)));
             // -> LstEducations -> Institution
             CreateMap<LKP_Institution, UBUQ_LKP_Institution>();
             // -> LstEducations -> Degree
             CreateMap<LKP_Degree, UBUQ_LKP_Degree>();
             // -> LstEducations -> FieldOfStudy
             CreateMap<LKP_FieldOfStudy, UBUQ_LKP_FieldOfStudy>();
+            // -> LstEducations -> LstProjects (Already defined)
+            // -> LstEducations -> LstSkills (Already defined)
 
 
             // -> LstCertificates
@@ -152,27 +159,21 @@ namespace Application.Client.MappingProfiles
                 // -> LstCertificates -> Certificate
                 .ForMember(dest => dest.Certificate, opt => opt.MapFrom(src => src.LKP_Certificate))
                 // -> LstCertificates -> LstSkills
-                .ForMember(dest => dest.LstSkills,
-                    opt => opt.MapFrom(src => src.LstUserSkills
-                        .Select(pt => pt.LKP_Skill)
-                    )
-                )
+                .ForMember(dest => dest.LstSkills, opt => opt.MapFrom(src => src.LstUserSkillCertificates.Select(usc => usc.UserSkill).Select(us => us.LKP_Skill)))
                 // -> LstCertificates -> LstCertificateMedias
-                .ForMember(dest => dest.LstCertificateMedias,
-                    opt => opt.MapFrom(src => src.LstCertificateMedias
-                        .Select(pt => pt.Certificate)
-                    )
-                );
+                .ForMember(dest => dest.LstCertificateMedias, opt => opt.MapFrom(src => src.LstCertificateMedias));
             // -> LstCertificates -> Certificate
             CreateMap<LKP_Certificate, UBUQ_LKP_Certificate>();
-            // -> LstCertificates -> LstSkills
-            CreateMap<LKP_Skill, UBUQ_Skill>();
+            // -> LstCertificates -> LstSkills (Already defined)
             // -> LstCertificates -> LstCertificateMedias
             CreateMap<CertificateMedia, UBUQ_CertificateMedia>();
 
 
             // -> LstExperiences
-            CreateMap<Experience, UBUQ_Experience>();
+            CreateMap<Experience, UBUQ_Experience>()
+                // -> LstExperiences -> LstSkills
+                .ForMember(dest => dest.LstSkills, opt => opt.MapFrom(src => src.LstUserSkillExperiences.Select(use => use.UserSkill).Select(us => us.LKP_Skill)));
+            // -> LstExperiences -> LstSkills (Already defined)
 
 
             // -> LstBlogPosts (Not yet built)

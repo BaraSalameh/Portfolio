@@ -9,8 +9,12 @@ namespace Application.Owner.MappingProfiles
     {
         public ExperienceMappingProfiles()
         {
-            CreateMap<Experience, ELQ_Response>();
-            CreateMap<AddEditExperienceCommand, Experience>();
+            CreateMap<AddEditExperienceCommand, Experience>()
+                .ForMember(dest => dest.LstUserSkillExperiences, opt => opt.Ignore());
+
+            CreateMap<Experience, ELQ_Response>()
+                .ForMember(dest => dest.LstSkills, opt => opt.MapFrom(src => src.LstUserSkillExperiences.Select(use => use.UserSkill).Select(us => us.LKP_Skill)));
+            CreateMap<LKP_Skill, ELQ_LKP_Skill>();
         }
     }
 }

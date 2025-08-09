@@ -14,6 +14,7 @@ namespace Application.Owner.Queries.EducationQueries
         public DateOnly StartDate { get; set; }
         public DateOnly? EndDate { get; set; }
         public string? Description { get; set; }
+        public List<ELQ_Skill> LstSkills { get; set; }
     }
 
     public class ELQ_LKP_Institution
@@ -34,5 +35,12 @@ namespace Application.Owner.Queries.EducationQueries
     {
         public Guid ID { get; set; }
         public string Name { get; set; }
+    }
+
+    public class ELQ_Skill
+    {
+        public Guid ID { get; set; }
+        public string Name { get; set; }
+        public string IconUrl { get; set; }
     }
 }

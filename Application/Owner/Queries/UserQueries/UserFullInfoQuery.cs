@@ -45,12 +45,12 @@ namespace Application.Owner.Queries.UserQueries
         public string SourceCode { get; set; }
         public string ImageUrl { get; set; }
         public bool IsFeatured { get; set; }
-        public UFIQ_PS_Education Education { get; set; }
-        public UFIQ_PS_Experience Experience { get; set; }
-        public List<UFIQ_Skill> LstSkills { get; set; }
+        public UFIQ_Shared_Education Education { get; set; }
+        public UFIQ_Shared_Experience Experience { get; set; }
+        public List<UFIQ_LKP_Skill> LstSkills { get; set; }
     }
 
-    public class UFIQ_PS_Education
+    public class UFIQ_Shared_Education
     {
         public Guid ID { get; set; }
         public UFIQ_LKP_Institution Institution { get; set; }
@@ -63,13 +63,13 @@ namespace Application.Owner.Queries.UserQueries
         public string? Logo { get; set; }
     }
 
-    public class UFIQ_PS_Experience
+    public class UFIQ_Shared_Experience
     {
         public Guid ID { get; set; }
         public string CompanyName { get; set; }
     }
 
-    public class UFIQ_Skill
+    public class UFIQ_LKP_Skill
     {
         public Guid ID { get; set; }
         public string Name { get; set; }
@@ -78,21 +78,22 @@ namespace Application.Owner.Queries.UserQueries
 
     public class UFIQ_UserSkill
     {
-        public UFIQ_Skill Skill { get; set; }
-        public UFIQ_PS_Education Education { get; set; }
-        public UFIQ_PS_Experience Experience { get; set; }
-        public UFIQ_S_Project Project { get; set; }
-        public UFIQC_Certificate Certificate { get; set; }
+        public Guid ID { get; set; }
+        public UFIQ_LKP_Skill Skill { get; set; }
+        public List<UFIQ_Shared_Education> LstEducations { get; set; }
+        public List<UFIQ_Shared_Experience> LstExperiences { get; set; }
+        public List<UFIQ_Shared_Project> LstProjects { get; set; }
+        public List<UFIQ_Shared_Certificate> LstCertificates { get; set; }
 
     }
 
-    public class UFIQ_S_Project
+    public class UFIQ_Shared_Project
     {
         public Guid ID { get; set; }
         public string Title { get; set; }
     }
 
-    public class UFIQC_Certificate
+    public class UFIQ_Shared_Certificate
     {
         public Guid ID { get; set; }
         public UFIQ_LKP_Certificate Certificate { get; set; }
@@ -113,6 +114,8 @@ namespace Application.Owner.Queries.UserQueries
         public DateOnly StartDate { get; set; }
         public DateOnly? EndDate { get; set; }
         public string Description { get; set; }
+        public List<UFIQ_Shared_Project> LstProjects { get; set; }
+        public List<UFIQ_LKP_Skill> LstSkills { get; set; }
     }
 
     public class UFIQ_LKP_Degree
@@ -136,7 +139,7 @@ namespace Application.Owner.Queries.UserQueries
         public DateOnly? ExpirationDate { get; set; }
         public string? CredintialID { get; set; }
         public string? CredintialUrl { get; set; }
-        public List<UFIQ_Skill> LstSkills { get; set; }
+        public List<UFIQ_LKP_Skill> LstSkills { get; set; }
         public List<UFIQ_CertificateMedia> LstCertificateMedias { get; set; }
     }
 
@@ -155,6 +158,7 @@ namespace Application.Owner.Queries.UserQueries
         public DateOnly? EndDate { get; set; }
         public string Location { get; set; }
         public string? Description { get; set; }
+        public List<UFIQ_LKP_Skill> LstSkills { get; set; }
     }
 
     public class UFIQ_BlogPost

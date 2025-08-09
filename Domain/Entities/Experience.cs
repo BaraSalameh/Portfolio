@@ -13,6 +13,6 @@
         public Guid UserID { get; set; }
         public User User { get; set; }
         public List<Project> LstProjects { get; set; }
-        public List<UserSkill> LstUserSkills { get; set; }
+        public List<UserSkillExperience> LstUserSkillExperiences { get; set; } = new List<UserSkillExperience>();
     }
 }

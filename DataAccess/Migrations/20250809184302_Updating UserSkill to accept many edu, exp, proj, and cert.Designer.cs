@@ -4,6 +4,7 @@ using DataAccess.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250809184302_Updating UserSkill to accept many edu, exp, proj, and cert")]
+    partial class UpdatingUserSkilltoacceptmanyeduexpprojandcert
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3110,7 +3113,7 @@ namespace DataAccess.Migrations
                     b.HasOne("Domain.Entities.UserSkill", "UserSkill")
                         .WithMany("LstCertificates")
                         .HasForeignKey("UserSkillID")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Certificate");
@@ -3129,7 +3132,7 @@ namespace DataAccess.Migrations
                     b.HasOne("Domain.Entities.UserSkill", "UserSkill")
                         .WithMany("LstEducations")
                         .HasForeignKey("UserSkillID")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Education");
@@ -3148,7 +3151,7 @@ namespace DataAccess.Migrations
                     b.HasOne("Domain.Entities.UserSkill", "UserSkill")
                         .WithMany("LstExperiences")
                         .HasForeignKey("UserSkillID")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Experience");
@@ -3167,7 +3170,7 @@ namespace DataAccess.Migrations
                     b.HasOne("Domain.Entities.UserSkill", "UserSkill")
                         .WithMany("LstProjects")
                         .HasForeignKey("UserSkillID")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Project");

@@ -30,7 +30,7 @@ public class AddEditCertificateCommandHandler : IRequestHandler<AddEditCertifica
         if (isEdit)
         {
             var existingEntity = await _context.Certificate
-                .Include(c => c.LstUserSkills)
+                //.Include(c => c.LstUserSkills)
                 .FirstOrDefaultAsync(c => c.ID == request.ID && c.UserID == userId, cancellationToken);
 
             if (existingEntity == null)
@@ -40,7 +40,7 @@ public class AddEditCertificateCommandHandler : IRequestHandler<AddEditCertifica
             }
 
             _mapper.Map(request, existingEntity);
-            await UpdateCertificateSkillsAsync(existingEntity, request.LstSkills, userId!.Value, cancellationToken);
+            //await UpdateCertificateSkillsAsync(existingEntity, request.LstSkills, userId!.Value, cancellationToken);
         }
         else
         {
@@ -49,7 +49,7 @@ public class AddEditCertificateCommandHandler : IRequestHandler<AddEditCertifica
 
             if (request.LstSkills != null && request.LstSkills.Any())
             {
-                newEntity.LstUserSkills = await CreateUserSkillsAsync(request.LstSkills, userId!.Value, newEntity.ID, cancellationToken);
+                //newEntity.LstUserSkills = await CreateUserSkillsAsync(request.LstSkills, userId!.Value, newEntity.ID, cancellationToken);
             }
 
             _context.Certificate.Add(newEntity);
@@ -59,80 +59,80 @@ public class AddEditCertificateCommandHandler : IRequestHandler<AddEditCertifica
         return response;
     }
 
-    private async Task UpdateCertificateSkillsAsync(Certificate cert, List<Guid> newSkillIds, Guid userId, CancellationToken cancellationToken)
-    {
-        var existingSkillIds = cert.LstUserSkills
-            .Where(us => us.CertificateID == cert.ID)
-            .Select(us => us.LKP_SkillID)
-            .ToHashSet();
+    //private async Task UpdateCertificateSkillsAsync(Certificate cert, List<Guid> newSkillIds, Guid userId, CancellationToken cancellationToken)
+    //{
+    //    var existingSkillIds = cert.LstUserSkills
+    //        .Where(us => us.CertificateID == cert.ID)
+    //        .Select(us => us.LKP_SkillID)
+    //        .ToHashSet();
 
-        var newSkillIdSet = newSkillIds.ToHashSet();
+    //    var newSkillIdSet = newSkillIds.ToHashSet();
 
-        // Skills to detach (set CertificateID = null)
-        var toDetach = cert.LstUserSkills
-            .Where(us => !newSkillIdSet.Contains(us.LKP_SkillID))
-            .ToList();
+    //    // Skills to detach (set CertificateID = null)
+    //    var toDetach = cert.LstUserSkills
+    //        .Where(us => !newSkillIdSet.Contains(us.LKP_SkillID))
+    //        .ToList();
 
-        foreach (var us in toDetach)
-        {
-            us.CertificateID = null;
-        }
+    //    foreach (var us in toDetach)
+    //    {
+    //        us.CertificateID = null;
+    //    }
 
-        // Skills to add (reattach or create)
-        var toAdd = newSkillIds.Except(existingSkillIds);
+    //    // Skills to add (reattach or create)
+    //    var toAdd = newSkillIds.Except(existingSkillIds);
 
-        foreach (var skillId in toAdd)
-        {
-            var existingDetached = await _context.UserSkill.FirstOrDefaultAsync(us =>
-                us.UserID == userId &&
-                us.LKP_SkillID == skillId &&
-                us.CertificateID == null,
-                cancellationToken);
+    //    foreach (var skillId in toAdd)
+    //    {
+    //        var existingDetached = await _context.UserSkill.FirstOrDefaultAsync(us =>
+    //            us.UserID == userId &&
+    //            us.LKP_SkillID == skillId &&
+    //            us.CertificateID == null,
+    //            cancellationToken);
 
-            if (existingDetached != null)
-            {
-                existingDetached.CertificateID = cert.ID;
-            }
-            else
-            {
-                cert.LstUserSkills.Add(new UserSkill
-                {
-                    UserID = userId,
-                    LKP_SkillID = skillId,
-                    CertificateID = cert.ID
-                });
-            }
-        }
-    }
+    //        if (existingDetached != null)
+    //        {
+    //            existingDetached.CertificateID = cert.ID;
+    //        }
+    //        else
+    //        {
+    //            cert.LstUserSkills.Add(new UserSkill
+    //            {
+    //                UserID = userId,
+    //                LKP_SkillID = skillId,
+    //                CertificateID = cert.ID
+    //            });
+    //        }
+    //    }
+    //}
 
-    private async Task<List<UserSkill>> CreateUserSkillsAsync(List<Guid> skillIds, Guid userId, Guid certificateId, CancellationToken cancellationToken)
-    {
-        var userSkills = new List<UserSkill>();
+    //private async Task<List<UserSkill>> CreateUserSkillsAsync(List<Guid> skillIds, Guid userId, Guid certificateId, CancellationToken cancellationToken)
+    //{
+    //    var userSkills = new List<UserSkill>();
 
-        foreach (var skillId in skillIds)
-        {
-            var existingDetached = await _context.UserSkill.FirstOrDefaultAsync(us =>
-                us.UserID == userId &&
-                us.LKP_SkillID == skillId &&
-                us.CertificateID == null,
-                cancellationToken);
+    //    foreach (var skillId in skillIds)
+    //    {
+    //        var existingDetached = await _context.UserSkill.FirstOrDefaultAsync(us =>
+    //            us.UserID == userId &&
+    //            us.LKP_SkillID == skillId &&
+    //            us.CertificateID == null,
+    //            cancellationToken);
 
-            if (existingDetached != null)
-            {
-                existingDetached.CertificateID = certificateId;
-                userSkills.Add(existingDetached);
-            }
-            else
-            {
-                userSkills.Add(new UserSkill
-                {
-                    UserID = userId,
-                    LKP_SkillID = skillId,
-                    CertificateID = certificateId
-                });
-            }
-        }
+    //        if (existingDetached != null)
+    //        {
+    //            existingDetached.CertificateID = certificateId;
+    //            userSkills.Add(existingDetached);
+    //        }
+    //        else
+    //        {
+    //            userSkills.Add(new UserSkill
+    //            {
+    //                UserID = userId,
+    //                LKP_SkillID = skillId,
+    //                CertificateID = certificateId
+    //            });
+    //        }
+    //    }
 
-        return userSkills;
-    }
+    //    return userSkills;
+    //}
 }
