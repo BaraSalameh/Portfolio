@@ -25,6 +25,7 @@ namespace Application.Owner.Handlers.ExperienceHandlers
             try
             {
                 var existingEntity = await _context.Experience
+                    .Include(e => e.LstUserSkillExperiences)
                     .FirstOrDefaultAsync(x =>
                         x.UserID == _currentUser.UserID!.Value &&
                         x.ID == request.ID &&
@@ -40,6 +41,7 @@ namespace Application.Owner.Handlers.ExperienceHandlers
 
                 existingEntity.IsDeleted = true;
                 existingEntity.DeletedAt = DateTime.UtcNow;
+                existingEntity.LstUserSkillExperiences.Clear();
                 await _context.SaveChangesAsync(cancellationToken);
             }
             catch (DbUpdateException dbEx)

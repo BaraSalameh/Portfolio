@@ -39,6 +39,7 @@ namespace DataAccess.Interfaces
         public DbSet<CertificateMedia> CertificateMedia { get; set; }
         public DbSet<LKP_Certificate> LKP_Certificate { get; set; }
 
+        DbSet<TEntity> Set<TEntity>() where TEntity : class;
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken());
     }
 }

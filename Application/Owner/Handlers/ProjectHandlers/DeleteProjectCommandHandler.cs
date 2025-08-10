@@ -25,7 +25,7 @@ namespace Application.Owner.Handlers.ProjectHandlers
             try
             {
                 var existingEntity = await _context.Project
-                    //.Include(p => p.LstUserSkills)
+                    .Include(p => p.LstUserSkillProjects)
                     .FirstOrDefaultAsync(p =>
                         p.UserID == _currentUser.UserID!.Value &&
                         p.ID == request.ID &&
@@ -41,7 +41,7 @@ namespace Application.Owner.Handlers.ProjectHandlers
 
                 existingEntity.IsDeleted = true;
                 existingEntity.DeletedAt = DateTime.UtcNow;
-                //existingEntity.LstUserSkills.ForEach(us => us.ProjectID = null);
+                existingEntity.LstUserSkillProjects.Clear();
                 await _context.SaveChangesAsync(cancellationToken);
             }
             catch (DbUpdateException dbEx)

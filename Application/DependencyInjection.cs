@@ -19,6 +19,7 @@ namespace Application
             services.AddScoped<ITokenRefreshService, TokenRefreshService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IUserNotificationService, UserNotificationService>();
+            services.AddScoped<IUserSkillRelationService, UserSkillRelationService>();
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddSingleton<IPendingEmailConfirmationService, PendingEmailConfirmationService>();
             services.AddHostedService<RefreshTokenCleanupService>();

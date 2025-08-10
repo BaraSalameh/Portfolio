@@ -25,6 +25,7 @@ namespace Application.Owner.Handlers.EducationHandlers
             try
             {
                 var existingEntity = await _context.Education
+                    .Include(e => e.LstUserSkillEducations)
                     .FirstOrDefaultAsync(x =>
                         x.UserID == _currentUser.UserID!.Value &&
                         x.ID == request.ID &&
@@ -40,6 +41,7 @@ namespace Application.Owner.Handlers.EducationHandlers
 
                 existingEntity.IsDeleted = true;
                 existingEntity.DeletedAt = DateTime.UtcNow;
+                existingEntity.LstUserSkillEducations.Clear();
                 await _context.SaveChangesAsync(cancellationToken);
             }
             catch (DbUpdateException dbEx)
