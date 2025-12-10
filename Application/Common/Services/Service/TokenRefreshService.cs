@@ -43,7 +43,7 @@ namespace Application.Common.Services.Service
             refreshToken.IsRevoked = true;
             refreshToken.RevokedAt = _dateTimeProvider.UtcNow;
 
-            _authService.AuthSetupAsync(refreshToken.User, refreshToken.RememberMe);
+            await _authService.AuthSetupAsync(refreshToken.User, refreshToken.RememberMe);
             await _context.SaveChangesAsync(cancellationToken);
 
             return refreshToken.User;
