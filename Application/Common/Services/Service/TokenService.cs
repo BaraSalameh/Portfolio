@@ -1,6 +1,7 @@
 ﻿using Application.Common.Constants;
 using Application.Common.Services.Interface;
 using Domain.Entities;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -15,6 +16,8 @@ namespace Application.Common.Services.Service
         private readonly IConfiguration _configuration;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly ICurrentUserService _currentUserService;
+
+        private const int TokenByteLength = 32;
 
         public TokenService(IConfiguration configuration, IDateTimeProvider dateTimeProvider, ICurrentUserService currentUserService)
         {
@@ -52,13 +55,11 @@ namespace Application.Common.Services.Service
 
         public RefreshToken GenerateRefreshToken(bool rememberMe)
         {
-            var randomBytes = new byte[64];
-            using var rng = RandomNumberGenerator.Create();
-            rng.GetBytes(randomBytes);
+            var rawToken = GenerateRawToken();
 
             return new RefreshToken
             {
-                Token = Convert.ToBase64String(randomBytes),
+                Token = rawToken,
                 ExpiresAt = rememberMe
                     ? _dateTimeProvider.UtcNow.Add(ExpirationTimes.RefreshTokenLifetime)
                     : _dateTimeProvider.UtcNow.Add(ExpirationTimes.AccessTokenLifetime),
@@ -67,6 +68,18 @@ namespace Application.Common.Services.Service
                 RememberMe = rememberMe
             };
         }
-    }
 
+        public string GenerateRawToken()
+        {
+            var bytes = RandomNumberGenerator.GetBytes(TokenByteLength);
+            return WebEncoders.Base64UrlEncode(bytes);
+        }
+
+        public string HashToken(string rawToken)
+        {
+            using var sha = SHA256.Create();
+            var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(rawToken));
+            return Convert.ToHexString(bytes);
+        }
+    }
 }

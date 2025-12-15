@@ -4,6 +4,6 @@ namespace Application.Common.Services.Interface
 {
     public interface IPendingEmailConfirmationService
     {
-        void GenerateAsync(User user, bool rememberMe);
+        string Create(User user, bool rememberMe);
     }
 }

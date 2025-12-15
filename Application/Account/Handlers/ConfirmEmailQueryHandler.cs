@@ -12,11 +12,20 @@ namespace Application.Account.Handlers
         private readonly IAppDbContext _context;
         private readonly IAuthService _authService;
         private readonly IDateTimeProvider _dateTimeProvider;
-        public ConfirmEmailQueryHandler(IAppDbContext context, IAuthService authService, IDateTimeProvider dateTimeProvider)
+        private readonly ITokenService _tokenService;
+
+
+        public ConfirmEmailQueryHandler(
+            IAppDbContext context,
+            IAuthService authService,
+            IDateTimeProvider dateTimeProvider,
+            ITokenService tokenService
+        )
         {
             _context = context;
             _authService = authService;
             _dateTimeProvider = dateTimeProvider;
+            _tokenService = tokenService;
         }
 
         public async Task<CommandResponse> Handle(ConfirmEmailQuery request, CancellationToken cancellationToken)
@@ -26,22 +35,19 @@ namespace Application.Account.Handlers
             var existingEntity = await _context.PendingEmailConfirmation
                 .Include(p => p.User).ThenInclude(u => u.Role)
                 .FirstOrDefaultAsync(
-                    pec => pec.Email == request.Email &&
-                    !pec.IsRevoked &&
-                    !pec.IsEmailConfirmed,
+                    pec => pec.TokenHash == _tokenService.HashToken(request.Token)
+                    && pec.RevokedAt == null
+                    && pec.ExpiresAt > _dateTimeProvider.UtcNow,
                     cancellationToken
                 );
 
-            if (existingEntity == null || existingEntity.Token != request.Token)
+            if (existingEntity == null)
             {
                 response.lstError.Add("Invalid confirmation link.");
                 return response;
             }
 
-            existingEntity.IsEmailConfirmed = true;
-            existingEntity.IsRevoked = true;
             existingEntity.RevokedAt = _dateTimeProvider.UtcNow;
-            existingEntity.Token = null;
             existingEntity.User.IsConfirmed = true;
 
             await _authService.AuthSetupAsync(existingEntity.User, existingEntity.RememberMe);

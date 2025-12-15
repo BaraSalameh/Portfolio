@@ -1,5 +1,6 @@
 ﻿using Application.Client.Commands;
 using Application.Common.Services.Interface;
+using Domain.Entities;
 using Microsoft.Extensions.Configuration;
 
 namespace Application.Common.Services.Service
@@ -22,7 +23,7 @@ namespace Application.Common.Services.Service
         public async Task SendContactMessageNotificationEmail(SendEmailCommand contactMessage)
         {
 
-            var LoginPageUrl = $"{_baseUrl}/account/login";
+            var LoginPageUrl = $"{_baseUrl}/auth/login";
             var body = $@"
                 <div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;'>
                     <!-- Header with Logo -->
@@ -57,11 +58,10 @@ namespace Application.Common.Services.Service
             await _emailService.SendEmailAsync(contactMessage.EmailTo, "New contact message notification", body);
         }
 
-        public async Task SendEmailConfirmationAsync(Domain.Entities.User user)
+        public async Task SendEmailConfirmationAsync(User user, string rawToken)
         {
-            var pendingEmailConfirmation = user.LstPendingEmailConfirmations.LastOrDefault();
 
-            var confirmationUrl = $"{_baseUrl}/account/register/confirm-email/{user.Username}/confirm?token={pendingEmailConfirmation!.Token}&email={pendingEmailConfirmation.Email}";
+            var confirmationUrl = $"{_baseUrl}/auth/email/confirm?token={rawToken}";
 
             var body = $@"
                 <div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;'>
@@ -92,7 +92,7 @@ namespace Application.Common.Services.Service
             ";
 
 
-            await _emailService.SendEmailAsync(pendingEmailConfirmation.Email, "Email confirmation", body);
+            await _emailService.SendEmailAsync(user.Email, "Email confirmation", body);
         }
     }
 

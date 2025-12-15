@@ -6,5 +6,7 @@ namespace Application.Common.Services.Interface
     {
         string GenerateAccessToken(User user);
         RefreshToken GenerateRefreshToken(bool rememberMe);
+        string GenerateRawToken();
+        string HashToken(string rawToken);
     }
 }

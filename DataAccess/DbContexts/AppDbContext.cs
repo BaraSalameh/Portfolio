@@ -115,7 +115,7 @@ namespace DataAccess.DbContexts
                 }
             }
 
-            modelBuilder.Entity<PendingEmailConfirmation>().HasIndex(p => new { p.Email, p.Token });
+            modelBuilder.Entity<PendingEmailConfirmation>().HasIndex(p => new { p.TokenHash });
             modelBuilder.Entity<BlogPostTag>().HasKey(pt => new { pt.BlogPostID, pt.TagId });
             modelBuilder.Entity<UserLanguage>().HasKey(pt => new { pt.UserID, pt.LKP_LanguageID });
             modelBuilder.Entity<UserSkillEducation>().HasKey(use => new { use.UserSkillID, use.EducationID });

@@ -30,8 +30,8 @@ namespace Application.Account.Handlers
                .Include(pe => pe.User).ThenInclude(u => u.Role)
                .FirstOrDefaultAsync(pe =>
                    pe.User.Username == request.Username &&
-                   !pe.IsRevoked &&
-                   !pe.IsEmailConfirmed,
+                   pe.RevokedAt == null &&
+                   pe.ExpiresAt < _dateTimeProvider.UtcNow,
                    cancellationToken
                );
 
@@ -41,12 +41,11 @@ namespace Application.Account.Handlers
                 return response;
             }
 
-            existingEntity.IsRevoked = true;
             existingEntity.RevokedAt = _dateTimeProvider.UtcNow;
 
-            _pendingEmailConfirmationService.GenerateAsync(existingEntity.User, existingEntity!.RememberMe);
+            var rawToken = _pendingEmailConfirmationService.Create(existingEntity.User, existingEntity!.RememberMe);
             await _context.SaveChangesAsync(cancellationToken);
-            await _UserNotificationService.SendEmailConfirmationAsync(existingEntity.User);
+            await _UserNotificationService.SendEmailConfirmationAsync(existingEntity.User, rawToken);
 
             return response;
         }

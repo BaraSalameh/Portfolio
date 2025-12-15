@@ -7,6 +7,7 @@ using DataAccess.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Account.Handlers
@@ -18,14 +19,23 @@ namespace Application.Account.Handlers
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IUserNotificationService _userNotificationService;
         private readonly IPendingEmailConfirmationService _pendingEmailConfirmationService;
+        private readonly IPasswordHasher<User> _passwordHasher;
 
-        public RegisterCommandHandler(IAppDbContext context, IMapper mapper, IDateTimeProvider dateTimeProvider, IUserNotificationService userNotificationService, IPendingEmailConfirmationService pendingEmailConfirmationService)
+        public RegisterCommandHandler(
+            IAppDbContext context,
+            IMapper mapper,
+            IDateTimeProvider dateTimeProvider,
+            IUserNotificationService userNotificationService,
+            IPendingEmailConfirmationService pendingEmailConfirmationService,
+            IPasswordHasher<User> passwordHasher
+        )
         {
             _context = context;
             _mapper = mapper;
             _dateTimeProvider = dateTimeProvider;
             _userNotificationService = userNotificationService;
             _pendingEmailConfirmationService = pendingEmailConfirmationService;
+            _passwordHasher = passwordHasher;
         }
 
         public async Task<CommandResponse<RC_Response>> Handle(RegisterCommand request, CancellationToken cancellationToken)
@@ -42,7 +52,6 @@ namespace Application.Account.Handlers
                     return response;
                 }
 
-                request.Password = request.Password!.Encrypt(true);
                 var baseUserName = $"{request.Firstname}-{request.Lastname}".ToLower().Replace(" ", "-");
                 var guidSuffix = Guid.NewGuid().ToString("N").Substring(0, 6);
 
@@ -51,19 +60,20 @@ namespace Application.Account.Handlers
                 newEntity.RoleID =  RoleIdentifiers.Owner;
                 newEntity.Role = role;
                 newEntity.CreatedAt = _dateTimeProvider.UtcNow;
+                newEntity.Password = _passwordHasher.HashPassword(newEntity, request.Password);
 
-                _pendingEmailConfirmationService.GenerateAsync(newEntity, request.RememberMe);
+                var rawToken = _pendingEmailConfirmationService.Create(newEntity, request.RememberMe ?? false);
 
                 await _context.User.AddAsync(newEntity, cancellationToken);
                 await _context.SaveChangesAsync(cancellationToken);
+
+                await _userNotificationService.SendEmailConfirmationAsync(newEntity, rawToken);
 
                 response.Data = new RC_Response
                 {
                     Username = newEntity.Username,
                     Role = newEntity.Role.Name!
                 };
-
-                await _userNotificationService.SendEmailConfirmationAsync(newEntity);
             }
             catch (DbUpdateException dbEx)
             {

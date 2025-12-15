@@ -7,24 +7,29 @@ namespace Application.Common.Services.Service
     public class PendingEmailConfirmationService : IPendingEmailConfirmationService
     {
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly ITokenService _tokenService;
 
-        public PendingEmailConfirmationService(IDateTimeProvider dateTimeProvider)
+        public PendingEmailConfirmationService(
+            IDateTimeProvider dateTimeProvider,
+            ITokenService tokenService
+        )
         {
             _dateTimeProvider = dateTimeProvider;
+            _tokenService = tokenService;
         }
 
-        public void GenerateAsync(User user, bool rememberMe)
+        public string Create(User user, bool rememberMe)
         {
-            var confirmationToken = Guid.NewGuid().ToString();
+            var rawToken = _tokenService.GenerateRawToken();
+
             var pendingEmail = new PendingEmailConfirmation {
-                Email = user.Email!,
                 RememberMe = rememberMe,
                 ExpiresAt = _dateTimeProvider.UtcNow.Add(ExpirationTimes.PendingEmailTokenLifeTime),
-                Token = confirmationToken,
-                IsEmailConfirmed = false
+                TokenHash = _tokenService.HashToken(rawToken),
             };
 
             user.LstPendingEmailConfirmations.Add(pendingEmail);
+            return rawToken;
         }
     }
 }

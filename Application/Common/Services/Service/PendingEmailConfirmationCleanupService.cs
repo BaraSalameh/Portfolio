@@ -28,7 +28,7 @@ namespace Application.Common.Services.Service
                 {
                     var now = DateTime.UtcNow;
                     var expiredOrRevokedEmailConfirmations = await dbContext.PendingEmailConfirmation
-                        .Where(rt => rt.ExpiresAt < now || rt.IsRevoked)
+                        .Where(rt => rt.ExpiresAt < now || rt.RevokedAt != null)
                         .ToListAsync(stoppingToken);
 
                     if (expiredOrRevokedEmailConfirmations.Any())

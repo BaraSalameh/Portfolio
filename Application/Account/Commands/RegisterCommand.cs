@@ -5,11 +5,11 @@ namespace Application.Account.Commands
 {
     public class RegisterCommand : IRequest<CommandResponse<RC_Response>>
     {
-        public string? Firstname { get; set; }
-        public string? Lastname { get; set; }
-        public string? Email { get; set; }
-        public string? Password { get; set; }
-        public bool RememberMe { get; set; } = false;
+        public string Firstname { get; set; }
+        public string Lastname { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public bool? RememberMe { get; set; } = false;
     }
 
     public class RC_Response

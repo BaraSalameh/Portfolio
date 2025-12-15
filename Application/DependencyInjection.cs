@@ -1,5 +1,7 @@
 ﻿using Application.Common.Services.Interface;
 using Application.Common.Services.Service;
+using Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -20,8 +22,9 @@ namespace Application
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IUserNotificationService, UserNotificationService>();
             services.AddScoped<IUserSkillRelationService, UserSkillRelationService>();
+            services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+            services.AddScoped<IPendingEmailConfirmationService, PendingEmailConfirmationService>();
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-            services.AddSingleton<IPendingEmailConfirmationService, PendingEmailConfirmationService>();
             services.AddHostedService<RefreshTokenCleanupService>();
             services.AddHostedService<PendingEmailConfirmationCleanupService>();
             return services;

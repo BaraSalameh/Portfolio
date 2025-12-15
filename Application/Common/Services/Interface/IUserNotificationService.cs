@@ -5,7 +5,7 @@ namespace Application.Common.Services.Interface
 {
     public interface IUserNotificationService
     {
-        Task SendEmailConfirmationAsync(User user);
+        Task SendEmailConfirmationAsync(User user, string rawToken);
         Task SendContactMessageNotificationEmail(SendEmailCommand contactMessage);
     }
 }
