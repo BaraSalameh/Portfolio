@@ -23,19 +23,23 @@ namespace Application.Client.Handlers
         public async Task<ListQueryResponse<ULQ_Response>> Handle(UserListQuery request, CancellationToken cancellationToken)
         {
             var response = new ListQueryResponse<ULQ_Response>();
-            Expression<Func<User, bool>> Filter = f => true;
+
+            var existingEntity = _context.User.Where(u => u.IsConfirmed);
 
             if (!string.IsNullOrEmpty(request.Search))
             {
-                var search = request.Search.ToLower();
-                Filter = f =>
-                    f.Username.ToLower().Contains(search) ||
-                    f.Email.ToLower().Contains(search) ||
-                    f.Firstname.ToLower().Contains(search) ||
-                    f.Lastname.ToLower().Contains(search);
-            }
+                var search = request.Search;
+                var terms = request.Search.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-            var existingEntity =_context.User.Where(Filter);
+                existingEntity = existingEntity.Where(u =>
+                    u.Username.Contains(search) ||
+                    u.Email.Contains(search) ||
+                    terms.All(t => 
+                        u.Firstname.Contains(t) || 
+                        u.Lastname.Contains(t)
+                    )
+                );
+            }
 
             response.RowCount = await existingEntity.CountAsync(cancellationToken);
             var pageNumber = request.PageNumber;
