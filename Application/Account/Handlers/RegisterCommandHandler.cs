@@ -1,6 +1,5 @@
 ﻿using Application.Account.Commands;
 using Application.Common.Entities;
-using Application.Common.Functions;
 using Application.Common.Services.Interface;
 using AutoMapper;
 using DataAccess.Interfaces;
@@ -12,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Account.Handlers
 {
-    public class RegisterCommandHandler : IRequestHandler<RegisterCommand, CommandResponse<RC_Response>>
+    public class RegisterCommandHandler : IRequestHandler<RegisterCommand, CommandResponse>
     {
         private readonly IAppDbContext _context;
         private readonly IMapper _mapper;
@@ -38,16 +37,15 @@ namespace Application.Account.Handlers
             _passwordHasher = passwordHasher;
         }
 
-        public async Task<CommandResponse<RC_Response>> Handle(RegisterCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
-            var response = new CommandResponse<RC_Response>();
+            var response = new CommandResponse();
 
             try
             {
                 var role = await _context.Role.FindAsync(RoleIdentifiers.Owner, cancellationToken);
                 if (role == null)
                 {
-                    response.ResultType = ResultType.ServerError;
                     response.lstError.Add("Default user role not found.");
                     return response;
                 }
@@ -69,15 +67,9 @@ namespace Application.Account.Handlers
 
                 await _userNotificationService.SendEmailConfirmationAsync(newEntity, rawToken);
 
-                response.Data = new RC_Response
-                {
-                    Username = newEntity.Username,
-                    Role = newEntity.Role.Name!
-                };
             }
             catch (DbUpdateException dbEx)
             {
-                response.ResultType = ResultType.Conflict;
                 response.lstError.Add("Email is already registered.");
             }
             catch (Exception ex)
