@@ -33,15 +33,9 @@ namespace Application.Account.Handlers
 
             var userID = _currentUserService.UserID.Value;
 
-            var existingEntity = await _context.User
-                .Include(u => u.LstRefreshTokens)
-                .FirstOrDefaultAsync(u => u.ID == userID, cancellationToken);
-
-            if (existingEntity != null)
-            {
-                existingEntity.LstRefreshTokens.Clear();
-                await _context.SaveChangesAsync(cancellationToken);
-            }
+            await _context.RefreshToken
+                .Where(t => t.UserID == userID)
+                .ExecuteDeleteAsync(cancellationToken);
 
             return response;
         }
