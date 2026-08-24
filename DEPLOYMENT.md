@@ -5,9 +5,13 @@
 Copy the variable names from `.env.example` into the Vercel project. Never commit
 their values. Neon supplies `DATABASE_URL`; use its pooled URL for the API.
 
-Rotate the JWT signing key and the previously committed SMTP credentials before
-deploying. Configure `CORS_ALLOWED_ORIGINS` as a comma-separated list of exact
-HTTPS origins. Set `EnableSwagger=true` only for a deliberately exposed environment.
+Use a newly generated JWT signing key. Configure `CORS_ALLOWED_ORIGINS` as a
+comma-separated list of exact HTTPS origins. Set `EnableSwagger=true` only for a
+deliberately exposed environment.
+
+SMTP configuration is optional for the initial deployment. Email-dependent flows
+remain unavailable until `Email__SmtpHost`, `Email__SmtpPort`, `Email__Username`,
+`Email__Password`, and `Email__From` are added to each applicable Vercel environment.
 
 ## Bootstrap order
 
