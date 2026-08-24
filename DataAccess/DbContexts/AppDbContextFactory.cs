@@ -9,7 +9,8 @@ public sealed class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbConte
     {
         var rawConnectionString = Environment.GetEnvironmentVariable("DATABASE_URL_UNPOOLED")
             ?? Environment.GetEnvironmentVariable("DATABASE_URL")
-            ?? "Host=localhost;Port=5432;Database=portfolio;Username=postgres;Password=postgres";
+            ?? throw new InvalidOperationException(
+                "DATABASE_URL_UNPOOLED or DATABASE_URL must be configured for EF Core operations.");
 
         var options = new DbContextOptionsBuilder<AppDbContext>()
             .UseNpgsql(
