@@ -12,7 +12,7 @@ namespace Application
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
-            services.AddAutoMapper(typeof(DependencyInjection).Assembly);
+            services.AddAutoMapper(_ => { }, typeof(DependencyInjection).Assembly);
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IUserResolverService, UserResolverService>();
             services.AddScoped<ICookieService, CookieService>();
