@@ -7,6 +7,22 @@ using Microsoft.EntityFrameworkCore;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 
+if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == Environments.Development)
+{
+    var directory = new DirectoryInfo(Directory.GetCurrentDirectory());
+    while (directory is not null)
+    {
+        var envFile = Path.Combine(directory.FullName, ".env.local");
+        if (File.Exists(envFile))
+        {
+            DotNetEnv.Env.Load(envFile);
+            break;
+        }
+
+        directory = directory.Parent;
+    }
+}
+
 var builder = WebApplication.CreateBuilder(args);
 
 if (builder.Environment.IsDevelopment())
