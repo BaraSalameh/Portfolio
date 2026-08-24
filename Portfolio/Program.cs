@@ -1,5 +1,8 @@
 using Application;
 using DataAccess;
+using DataAccess.DbContexts;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 
@@ -26,9 +29,15 @@ builder.Services.AddOpenApiDocument(configure =>
 builder.Services.AddControllers();
 
 
-var allowedOrigins = builder.Configuration
+var configuredOrigins = builder.Configuration
     .GetSection("Cors:AllowedOrigins")
     .Get<string[]>() ?? Array.Empty<string>();
+var environmentOrigins = (builder.Configuration["CORS_ALLOWED_ORIGINS"] ?? string.Empty)
+    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+var allowedOrigins = configuredOrigins
+    .Concat(environmentOrigins)
+    .Distinct(StringComparer.OrdinalIgnoreCase)
+    .ToArray();
 
 builder.Services.AddCors(options =>
 {
@@ -40,6 +49,13 @@ builder.Services.AddCors(options =>
     );
 });
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -47,8 +63,9 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseForwardedHeaders();
 app.UseCors("AllowFrontend");
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || builder.Configuration.GetValue<bool>("EnableSwagger"))
 {
     app.UseOpenApi();
     app.UseSwagger();
@@ -62,5 +79,19 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapGet("/health", async (AppDbContext dbContext, CancellationToken cancellationToken) =>
+{
+    try
+    {
+        return await dbContext.Database.CanConnectAsync(cancellationToken)
+            ? Results.Ok(new { status = "healthy" })
+            : Results.Json(new { status = "unhealthy" }, statusCode: StatusCodes.Status503ServiceUnavailable);
+    }
+    catch
+    {
+        app.Logger.LogWarning("Database health check failed.");
+        return Results.Json(new { status = "unhealthy" }, statusCode: StatusCodes.Status503ServiceUnavailable);
+    }
+}).AllowAnonymous();
 
 app.Run();

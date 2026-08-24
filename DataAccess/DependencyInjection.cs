@@ -16,12 +16,13 @@ namespace DataAccess
 
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
+            var connectionString = PostgreSqlConnectionString.Resolve(configuration);
+
             services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(
-                    configuration.GetConnectionString("Default"),
+                options.UseNpgsql(
+                    connectionString,
                     b => b.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)
-                )
-            );
+                ));
             services.AddScoped<IAppDbContext, AppDbContext>();
 
             services.AddAuthentication("Cookies")
@@ -32,6 +33,9 @@ namespace DataAccess
                     options.Cookie.SameSite = SameSiteMode.None; // SameSite for cross-origin requests
                     options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Always use Secure cookies (for HTTPS)
                 });
+
+            var jwtSecret = configuration["ApplicationSettings:JWT_Secret"]
+                ?? throw new InvalidOperationException("ApplicationSettings:JWT_Secret is required.");
 
             services.AddAuthentication(x =>
             {
@@ -45,7 +49,7 @@ namespace DataAccess
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["ApplicationSettings:JWT_Secret"]!)),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ClockSkew = TimeSpan.Zero

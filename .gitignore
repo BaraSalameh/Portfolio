@@ -359,5 +359,11 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 
+# Local and Vercel-generated environment files
+.env
+.env.*
+!.env.example
+.vercel/
+
 # Fody - auto-generated XML schema
 FodyWeavers.xsd

@@ -68,7 +68,7 @@ namespace DataAccess.DbContexts
                     modelBuilder.Entity(entityType.ClrType)
                         .Property("ID")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("NEWID()");
+                        .HasDefaultValueSql("gen_random_uuid()");
                 }
             }
 
@@ -79,13 +79,7 @@ namespace DataAccess.DbContexts
                 if (typeof(AbstractEntity).IsAssignableFrom(clrType))
                 {
                     modelBuilder.Entity(clrType).Property(nameof(AbstractEntity.CreatedAt))
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    modelBuilder.Entity(clrType).Property(nameof(AbstractEntity.UpdatedAt))
-                        .HasDefaultValue(null);
-
-                    modelBuilder.Entity(clrType).Property(nameof(AbstractEntity.DeletedAt))
-                        .HasDefaultValue(null);
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     modelBuilder.Entity(clrType).Property(nameof(AbstractEntity.IsDeleted))
                         .HasDefaultValue(false);
