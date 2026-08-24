@@ -1,12 +1,21 @@
 using Application;
 using DataAccess;
 using DataAccess.DbContexts;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 
 var builder = WebApplication.CreateBuilder(args);
+
+if (builder.Environment.IsDevelopment())
+{
+    var keyDirectory = Path.Combine(builder.Environment.ContentRootPath, ".aspnet", "DataProtection-Keys");
+    builder.Services.AddDataProtection()
+        .PersistKeysToFileSystem(new DirectoryInfo(keyDirectory))
+        .SetApplicationName("Portfolio.LocalDevelopment");
+}
 
 // Add services to the container.
 builder.Services.AddHttpContextAccessor();
