@@ -16,7 +16,7 @@ namespace Application.Common.Services.Service
         {
             _emailService = emailService;
             _configuration = configuration;
-            _baseUrl = _configuration["App:FrontendUrl"]!;
+            _baseUrl = (_configuration["App:FrontendUrl"] ?? string.Empty).TrimEnd('/');
             _logo = _configuration["App:LogoUrl"]!;
         }
 
@@ -61,7 +61,7 @@ namespace Application.Common.Services.Service
         public async Task SendEmailConfirmationAsync(User user, string rawToken)
         {
 
-            var confirmationUrl = $"{_baseUrl}/auth/email/confirm?token={rawToken}";
+            var confirmationUrl = $"{_baseUrl}/auth/email/confirm?token={Uri.EscapeDataString(rawToken)}";
 
             var body = $@"
                 <div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;'>

@@ -12,6 +12,9 @@ deliberately exposed environment.
 SMTP configuration is optional for the initial deployment. Email-dependent flows
 remain unavailable until `Email__SmtpHost`, `Email__SmtpPort`, `Email__Username`,
 `Email__Password`, and `Email__From` are added to each applicable Vercel environment.
+`Email__EnableSsl` defaults to `true`, and `Email__TimeoutMilliseconds` defaults to
+`30000`. Use the SMTP submission port required by the provider (commonly 587 when
+STARTTLS is enabled), and ensure the configured sender is permitted for the account.
 
 ## Bootstrap order
 
