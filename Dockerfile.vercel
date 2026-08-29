@@ -2,7 +2,11 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0.424@sha256:bb32ba3ba3ea36e38572d9d8db76fa1
 WORKDIR /src
 
 COPY . .
-RUN dotnet restore Portfolio.sln --locked-mode
+# Dependabot updates the lock file owned by the project it changes, but NuGet
+# also invalidates lock files in projects that reference that project. Re-evaluate
+# the full solution inside this disposable build stage so dependency-update
+# previews can build; CI still verifies committed lock files with --locked-mode.
+RUN dotnet restore Portfolio.sln --force-evaluate
 RUN dotnet publish Portfolio/Portfolio.csproj -c Release -o /app/publish --no-restore
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0.30@sha256:787c228ea85457bec43c8b084e6ac360b26ea43b5c2fcbe861f721f2e8670dd3 AS runtime
