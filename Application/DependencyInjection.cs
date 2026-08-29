@@ -1,7 +1,5 @@
 ﻿using Application.Common.Services.Interface;
 using Application.Common.Services.Service;
-using Domain.Entities;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -13,20 +11,14 @@ namespace Application
         {
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
             services.AddAutoMapper(_ => { }, typeof(DependencyInjection).Assembly);
-            services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IUserResolverService, UserResolverService>();
-            services.AddScoped<ICookieService, CookieService>();
-            services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenRefreshService, TokenRefreshService>();
-            services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IUserNotificationService, UserNotificationService>();
             services.AddScoped<IUserSkillRelationService, UserSkillRelationService>();
-            services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+            services.AddScoped<IEmailOutboxService, EmailOutboxService>();
             services.AddScoped<IPendingEmailConfirmationService, PendingEmailConfirmationService>();
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-            services.AddHostedService<RefreshTokenCleanupService>();
-            services.AddHostedService<PendingEmailConfirmationCleanupService>();
             return services;
         }
     }

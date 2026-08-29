@@ -1,11 +1,12 @@
-﻿using Application.Client.Commands;
+using Application.Client.Commands;
 using Application.Common.Entities;
 using Application.Common.Services.Interface;
 using AutoMapper;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using Domain.Entities;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
+using Application.Common.Constants;
+using Application.Common.Identity;
 
 namespace Application.Client.Handlers
 {
@@ -14,45 +15,54 @@ namespace Application.Client.Handlers
         private readonly IAppDbContext _context;
         private readonly IMapper _mapper;
         private readonly IUserResolverService _userResolver;
-        private readonly IUserNotificationService _userNotificationService;
+        private readonly IEmailOutboxService _emailOutboxService;
+        private readonly IContactSubmissionGuard _submissionGuard;
 
-        public SendEmailCommandHandler(IAppDbContext context, IMapper mapper, IUserResolverService userResolver, IUserNotificationService userNotificationService)
+        public SendEmailCommandHandler(
+            IAppDbContext context,
+            IMapper mapper,
+            IUserResolverService userResolver,
+            IEmailOutboxService emailOutboxService,
+            IContactSubmissionGuard submissionGuard)
         {
             _context = context;
             _mapper = mapper;
             _userResolver = userResolver;
-            _userNotificationService = userNotificationService;
+            _emailOutboxService = emailOutboxService;
+            _submissionGuard = submissionGuard;
         }
         public async Task<CommandResponse> Handle(SendEmailCommand request, CancellationToken cancellationToken)
         {
             var response = new CommandResponse();
 
-            try
-            {
-                var user = await _userResolver.GetUserByEmailAsync(request.EmailTo, cancellationToken);
+            var user = await _userResolver.GetConfirmedUserByEmailAsync(
+                request.EmailTo,
+                cancellationToken);
 
-                if (user == null || user.ID == null)
+            if (user == null)
+            {
+                // Preserve the same public success response for unknown targets so this
+                // endpoint cannot be used to enumerate registered email addresses.
+                return response;
+            }
+
+            var normalizedSenderEmail = EmailNormalizer.Normalize(request.Email);
+            await _submissionGuard.ExecuteIfAllowedAsync(
+                user.ID,
+                normalizedSenderEmail,
+                ContactSubmissionPolicy.SenderCooldown,
+                async transactionCancellationToken =>
                 {
-                    response.lstError.Add("User not found.");
-                    return response;
-                }
+                    var newEntity = _mapper.Map<ContactMessage>(request);
+                    newEntity.ID = Guid.NewGuid();
+                    newEntity.UserID = user.ID;
+                    newEntity.Email = normalizedSenderEmail;
+                    _emailOutboxService.EnqueueContactNotification(newEntity);
 
-                var newEntity = _mapper.Map<ContactMessage>(request);
-                newEntity.UserID = user.ID.Value;
-
-                await _context.ContactMessage.AddAsync(newEntity, cancellationToken);
-                await _context.SaveChangesAsync();
-
-                await _userNotificationService.SendContactMessageNotificationEmail(request);
-            }
-            catch (DbUpdateException dbEx)
-            {
-                response.lstError.Add("Unable to send email.");
-            }
-            catch (Exception ex)
-            {
-                response.lstError.Add("Unexpected error occurred.");
-            }
+                    await _context.ContactMessage.AddAsync(newEntity, transactionCancellationToken);
+                    await _context.SaveChangesAsync(transactionCancellationToken);
+                },
+                cancellationToken);
 
             return response;
         }

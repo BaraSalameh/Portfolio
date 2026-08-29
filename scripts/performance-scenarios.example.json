@@ -1,0 +1,34 @@
+[
+  {
+    "name": "Public user list",
+    "method": "GET",
+    "path": "/api/Client/UserList?PageNumber=0&PageSize=20",
+    "authenticated": false,
+    "expectedStatusCodes": [200]
+  },
+  {
+    "name": "Public portfolio projection",
+    "method": "GET",
+    "path": "/api/Client/UserByUsername?Username={{ownerUsername}}",
+    "authenticated": false,
+    "expectedStatusCodes": [200]
+  },
+  {
+    "name": "Owner project list",
+    "method": "GET",
+    "path": "/api/Owner/ProjectList?PageNumber=0&PageSize=20",
+    "authenticated": true,
+    "expectedStatusCodes": [200]
+  },
+  {
+    "name": "Owner profile edit",
+    "method": "POST",
+    "path": "/api/Owner/EditProfile",
+    "authenticated": true,
+    "iterations": 1,
+    "body": {
+      "title": "Performance test profile"
+    },
+    "expectedStatusCodes": [200]
+  }
+]

@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16-alpine@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685
+        env:
+          POSTGRES_USER: portfolio
+          POSTGRES_PASSWORD: portfolio_test_password
+          POSTGRES_DB: portfolio_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U portfolio -d portfolio_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      TEST_DATABASE_URL: Host=localhost;Port=5432;Database=portfolio_test;Username=portfolio;Password=portfolio_test_password
+      DATABASE_URL: Host=localhost;Port=5432;Database=portfolio_test;Username=portfolio;Password=portfolio_test_password
+      DATABASE_URL_UNPOOLED: Host=localhost;Port=5432;Database=portfolio_test;Username=portfolio;Password=portfolio_test_password
+      ApplicationSettings__JWT_Secret: ci-only-secret-with-at-least-thirty-two-bytes
+      ApplicationSettings__JWT_Issuer: portfolio-api
+      ApplicationSettings__JWT_Audience: portfolio-web
+      Security__EmailConfirmationSecret: ci-only-confirmation-secret-with-at-least-thirty-two-bytes
+      CRON_SECRET: ci-only-cron-secret-with-at-least-thirty-two-bytes
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
+        with:
+          dotnet-version: '8.0.424'
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+      - run: dotnet restore Portfolio.sln --locked-mode
+      - run: dotnet tool restore
+      - run: pwsh ./scripts/verify-toolchain-pins.ps1
+      - run: pwsh ./scripts/verify-dependency-automation.ps1
+      - run: pwsh ./scripts/verify-warning-baseline.ps1
+      - run: pwsh ./scripts/verify-performance-harness.ps1
+      - run: pwsh ./scripts/verify-preview-smoke-harness.ps1
+      - run: pwsh ./scripts/verify-vercel-config.ps1
+      - run: pwsh ./scripts/verify-migration-harness.ps1
+      - run: dotnet test Portfolio.sln -c Release --no-build
+      - run: dotnet format Portfolio.sln --verify-no-changes --no-restore
+      - run: pwsh ./scripts/verify-package-vulnerabilities.ps1 -MinimumSeverity High
+      - run: dotnet ef migrations has-pending-model-changes --project DataAccess --startup-project DataAccess --configuration Release --no-build
+      - run: dotnet ef migrations script --idempotent --project DataAccess --startup-project DataAccess --configuration Release --no-build --output migration.sql
+      - run: docker build -f Dockerfile.vercel .

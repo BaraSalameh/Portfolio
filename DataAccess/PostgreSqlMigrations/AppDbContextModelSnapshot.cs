@@ -17,7 +17,7 @@ namespace DataAccess.PostgreSqlMigrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.4")
+                .HasAnnotation("ProductVersion", "9.0.19")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -31,7 +31,8 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100000)
+                        .HasColumnType("character varying(100000)");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -43,7 +44,8 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("Excerpt")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -53,17 +55,23 @@ namespace DataAccess.PostgreSqlMigrations
                     b.Property<Guid>("LKP_BlogPostStatusID")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("PublishedAt")
+                        .HasColumnType("date");
+
                     b.Property<string>("Slug")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("Thumbnail")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -71,11 +79,24 @@ namespace DataAccess.PostgreSqlMigrations
                     b.Property<Guid>("UserID")
                         .HasColumnType("uuid");
 
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("ID");
 
                     b.HasIndex("LKP_BlogPostStatusID");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("UserID", "Slug")
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
+
+                    b.HasIndex("UserID", "IsDeleted", "CreatedAt");
+
+                    b.HasIndex("UserID", "LKP_BlogPostStatusID", "IsDeleted", "PublishedAt", "ID")
+                        .HasDatabaseName("IX_BlogPost_PublicVisibility");
 
                     b.ToTable("BlogPost");
                 });
@@ -108,10 +129,12 @@ namespace DataAccess.PostgreSqlMigrations
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("CredintialID")
-                        .HasColumnType("text");
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
 
                     b.Property<string>("CredintialUrl")
-                        .HasColumnType("text");
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
@@ -139,13 +162,24 @@ namespace DataAccess.PostgreSqlMigrations
                     b.Property<Guid>("UserID")
                         .HasColumnType("uuid");
 
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("ID");
 
                     b.HasIndex("LKP_CertificateID");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("UserID", "IsDeleted", "Order", "ID");
 
-                    b.ToTable("Certificate");
+                    b.ToTable("Certificate", t =>
+                        {
+                            t.HasCheckConstraint("CK_Certificate_DateRange", "\"IssueDate\" IS NULL OR \"ExpirationDate\" IS NULL OR \"ExpirationDate\" >= \"IssueDate\"");
+
+                            t.HasCheckConstraint("CK_Certificate_Order", "\"Order\" >= 0");
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.CertificateMedia", b =>
@@ -176,11 +210,22 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("Url")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
+
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("ID");
 
                     b.HasIndex("CertificateID");
+
+                    b.HasIndex("CertificateID", "Url")
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.ToTable("CertificateMedia");
                 });
@@ -202,7 +247,8 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(320)
+                        .HasColumnType("character varying(320)");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -214,15 +260,18 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("Message")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Subject")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -230,9 +279,19 @@ namespace DataAccess.PostgreSqlMigrations
                     b.Property<Guid>("UserID")
                         .HasColumnType("uuid");
 
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("ID");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("UserID", "Email", "CreatedAt")
+                        .HasDatabaseName("IX_ContactMessage_SubmissionCooldown")
+                        .HasFilter("\"IsDeleted\" = false");
+
+                    b.HasIndex("UserID", "IsDeleted", "CreatedAt");
 
                     b.ToTable("ContactMessage");
                 });
@@ -253,7 +312,8 @@ namespace DataAccess.PostgreSqlMigrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)");
 
                     b.Property<DateOnly?>("EndDate")
                         .HasColumnType("date");
@@ -284,6 +344,12 @@ namespace DataAccess.PostgreSqlMigrations
                     b.Property<Guid>("UserID")
                         .HasColumnType("uuid");
 
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("ID");
 
                     b.HasIndex("LKP_DegreeID");
@@ -292,9 +358,71 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.HasIndex("LKP_InstitutionID");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("UserID", "IsDeleted", "Order", "ID");
 
-                    b.ToTable("Education");
+                    b.ToTable("Education", t =>
+                        {
+                            t.HasCheckConstraint("CK_Education_DateRange", "\"EndDate\" IS NULL OR \"EndDate\" >= \"StartDate\"");
+
+                            t.HasCheckConstraint("CK_Education_Order", "\"Order\" >= 0");
+                        });
+                });
+
+            modelBuilder.Entity("Domain.Entities.EmailOutboxMessage", b =>
+                {
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<Guid>("AggregateID")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AttemptCount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("LastError")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<Guid?>("LockID")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("LockedUntil")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("NextAttemptAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ProcessedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("Kind", "AggregateID")
+                        .IsUnique()
+                        .HasFilter("\"ProcessedAt\" IS NULL");
+
+                    b.HasIndex("Kind", "CreatedAt");
+
+                    b.HasIndex("ProcessedAt", "NextAttemptAt", "LockedUntil");
+
+                    b.ToTable("EmailOutboxMessage", t =>
+                        {
+                            t.HasCheckConstraint("CK_EmailOutboxMessage_AttemptCount", "\"AttemptCount\" BETWEEN 0 AND 5");
+
+                            t.HasCheckConstraint("CK_EmailOutboxMessage_Kind", "\"Kind\" IN (1, 2)");
+
+                            t.HasCheckConstraint("CK_EmailOutboxMessage_LeasePair", "(\"LockID\" IS NULL) = (\"LockedUntil\" IS NULL)");
+
+                            t.HasCheckConstraint("CK_EmailOutboxMessage_ProcessedLease", "\"ProcessedAt\" IS NULL OR \"LockID\" IS NULL");
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Experience", b =>
@@ -306,7 +434,8 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("CompanyName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -317,7 +446,8 @@ namespace DataAccess.PostgreSqlMigrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)");
 
                     b.Property<DateOnly?>("EndDate")
                         .HasColumnType("date");
@@ -329,11 +459,13 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("JobTitle")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("Location")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
 
                     b.Property<int>("Order")
                         .HasColumnType("integer");
@@ -347,11 +479,22 @@ namespace DataAccess.PostgreSqlMigrations
                     b.Property<Guid>("UserID")
                         .HasColumnType("uuid");
 
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("ID");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("UserID", "IsDeleted", "Order", "ID");
 
-                    b.ToTable("Experience");
+                    b.ToTable("Experience", t =>
+                        {
+                            t.HasCheckConstraint("CK_Experience_DateRange", "\"EndDate\" IS NULL OR \"EndDate\" >= \"StartDate\"");
+
+                            t.HasCheckConstraint("CK_Experience_Order", "\"Order\" >= 0");
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.LKP_BlogPostStatus", b =>
@@ -363,7 +506,8 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("ID");
 
@@ -432,10 +576,17 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("ID");
 
@@ -1169,10 +1320,17 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("ID");
 
@@ -1227,11 +1385,13 @@ namespace DataAccess.PostgreSqlMigrations
                         .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<string>("Abbreviation")
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("ID");
 
@@ -1282,7 +1442,8 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("ID");
 
@@ -1332,11 +1493,13 @@ namespace DataAccess.PostgreSqlMigrations
                         .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<string>("Logo")
-                        .HasColumnType("text");
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("ID");
 
@@ -1390,15 +1553,23 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("ID");
 
                     b.HasIndex("Name")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.ToTable("LKP_Language");
                 });
@@ -1425,15 +1596,23 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("Level")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("ID");
 
                     b.HasIndex("Level")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.ToTable("LKP_LanguageProficiency");
                 });
@@ -1460,15 +1639,23 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("ID");
 
                     b.HasIndex("Name")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.ToTable("LKP_Preference");
 
@@ -1688,7 +1875,8 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("IconUrl")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -1697,10 +1885,17 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("ID");
 
@@ -1891,10 +2086,17 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("ID");
 
@@ -1980,16 +2182,22 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("TokenHash")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<Guid>("UserID")
                         .HasColumnType("uuid");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("TokenHash");
+                    b.HasIndex("ExpiresAt");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("UserID")
+                        .IsUnique()
+                        .HasFilter("\"RevokedAt\" IS NULL");
 
                     b.ToTable("PendingEmailConfirmation");
                 });
@@ -2010,7 +2218,8 @@ namespace DataAccess.PostgreSqlMigrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)");
 
                     b.Property<Guid?>("EducationID")
                         .HasColumnType("uuid");
@@ -2019,7 +2228,8 @@ namespace DataAccess.PostgreSqlMigrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("ImageUrl")
-                        .HasColumnType("text");
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -2030,17 +2240,20 @@ namespace DataAccess.PostgreSqlMigrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("LiveLink")
-                        .HasColumnType("text");
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
 
                     b.Property<int>("Order")
                         .HasColumnType("integer");
 
                     b.Property<string>("SourceCode")
-                        .HasColumnType("text");
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -2048,15 +2261,24 @@ namespace DataAccess.PostgreSqlMigrations
                     b.Property<Guid>("UserID")
                         .HasColumnType("uuid");
 
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("ID");
 
                     b.HasIndex("EducationID");
 
                     b.HasIndex("ExperienceID");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("UserID", "IsDeleted", "Order", "ID");
 
-                    b.ToTable("Project");
+                    b.ToTable("Project", t =>
+                        {
+                            t.HasCheckConstraint("CK_Project_Order", "\"Order\" >= 0");
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.RefreshToken", b =>
@@ -2071,7 +2293,8 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("CreatedByIp")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(45)
+                        .HasColumnType("character varying(45)");
 
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("timestamp with time zone");
@@ -2082,19 +2305,25 @@ namespace DataAccess.PostgreSqlMigrations
                     b.Property<bool>("RememberMe")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime>("RevokedAt")
+                    b.Property<DateTime?>("RevokedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Token")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<Guid>("UserID")
                         .HasColumnType("uuid");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("ExpiresAt");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserID", "IsRevoked");
 
                     b.ToTable("RefreshToken");
                 });
@@ -2121,15 +2350,23 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("ID");
 
                     b.HasIndex("Name")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.ToTable("Role");
 
@@ -2166,7 +2403,8 @@ namespace DataAccess.PostgreSqlMigrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Icon")
-                        .HasColumnType("text");
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -2175,21 +2413,29 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("Platform")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Url")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
 
                     b.Property<Guid>("UserID")
                         .HasColumnType("uuid");
 
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("ID");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("UserID", "IsDeleted");
 
                     b.ToTable("SocialLink");
                 });
@@ -2203,7 +2449,8 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("ID");
 
@@ -2214,27 +2461,32 @@ namespace DataAccess.PostgreSqlMigrations
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<string>("Bio")
-                        .HasColumnType("text");
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)");
 
                     b.Property<DateOnly?>("BirthDate")
                         .HasColumnType("date");
 
                     b.Property<string>("CoverPhoto")
-                        .HasColumnType("text");
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(320)
+                        .HasColumnType("character varying(320)");
 
                     b.Property<string>("Firstname")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<int?>("Gender")
                         .HasColumnType("integer");
@@ -2246,30 +2498,36 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("Lastname")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)");
 
                     b.Property<string>("Phone")
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("ProfilePicture")
-                        .HasColumnType("text");
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
 
                     b.Property<Guid>("RoleID")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Title")
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("ID");
 
@@ -2281,7 +2539,12 @@ namespace DataAccess.PostgreSqlMigrations
                     b.HasIndex("Username")
                         .IsUnique();
 
-                    b.ToTable("User");
+                    b.HasIndex("IsConfirmed", "CreatedAt", "ID");
+
+                    b.ToTable("User", t =>
+                        {
+                            t.HasCheckConstraint("CK_User_Gender", "\"Gender\" IS NULL OR \"Gender\" BETWEEN 0 AND 2");
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.UserChartPreference", b =>
@@ -2305,7 +2568,8 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("GroupBy")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -2316,7 +2580,14 @@ namespace DataAccess.PostgreSqlMigrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ValueSource")
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("UserID", "LKP_WidgetID", "LKP_ChartTypeID");
 
@@ -2373,7 +2644,14 @@ namespace DataAccess.PostgreSqlMigrations
 
                     b.Property<string>("Value")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("UserID", "LKP_PreferenceID");
 
@@ -2411,11 +2689,19 @@ namespace DataAccess.PostgreSqlMigrations
                     b.Property<Guid>("UserID")
                         .HasColumnType("uuid");
 
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("ID");
 
                     b.HasIndex("LKP_SkillID");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("UserID", "LKP_SkillID")
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.ToTable("UserSkill");
                 });
@@ -2485,13 +2771,13 @@ namespace DataAccess.PostgreSqlMigrations
                     b.HasOne("Domain.Entities.LKP_BlogPostStatus", "LKP_BlogPostStatus")
                         .WithMany("LstBlogPosts")
                         .HasForeignKey("LKP_BlogPostStatusID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("LstBlogPosts")
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("LKP_BlogPostStatus");
@@ -2504,13 +2790,13 @@ namespace DataAccess.PostgreSqlMigrations
                     b.HasOne("Domain.Entities.BlogPost", "BlogPost")
                         .WithMany("LstBlogPostTags")
                         .HasForeignKey("BlogPostID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.Tag", "Tag")
                         .WithMany("LstBlogPostTags")
                         .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("BlogPost");
@@ -2523,13 +2809,13 @@ namespace DataAccess.PostgreSqlMigrations
                     b.HasOne("Domain.Entities.LKP_Certificate", "LKP_Certificate")
                         .WithMany("LstCertificates")
                         .HasForeignKey("LKP_CertificateID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("LstCertificates")
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("LKP_Certificate");
@@ -2542,7 +2828,7 @@ namespace DataAccess.PostgreSqlMigrations
                     b.HasOne("Domain.Entities.Certificate", "Certificate")
                         .WithMany("LstCertificateMedias")
                         .HasForeignKey("CertificateID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Certificate");
@@ -2553,7 +2839,7 @@ namespace DataAccess.PostgreSqlMigrations
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("LstContactMessages")
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -2564,25 +2850,25 @@ namespace DataAccess.PostgreSqlMigrations
                     b.HasOne("Domain.Entities.LKP_Degree", "LKP_Degree")
                         .WithMany("LstEducations")
                         .HasForeignKey("LKP_DegreeID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.LKP_FieldOfStudy", "LKP_FieldOfStudy")
                         .WithMany("LstEducations")
                         .HasForeignKey("LKP_FieldOfStudyID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.LKP_Institution", "LKP_Institution")
                         .WithMany("LstEducations")
                         .HasForeignKey("LKP_InstitutionID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("LstEducations")
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("LKP_Degree");
@@ -2599,7 +2885,7 @@ namespace DataAccess.PostgreSqlMigrations
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("LstExperiences")
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -2610,7 +2896,7 @@ namespace DataAccess.PostgreSqlMigrations
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("LstPendingEmailConfirmations")
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -2620,16 +2906,18 @@ namespace DataAccess.PostgreSqlMigrations
                 {
                     b.HasOne("Domain.Entities.Education", "Education")
                         .WithMany("LstProjects")
-                        .HasForeignKey("EducationID");
+                        .HasForeignKey("EducationID")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Domain.Entities.Experience", "Experience")
                         .WithMany("LstProjects")
-                        .HasForeignKey("ExperienceID");
+                        .HasForeignKey("ExperienceID")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("LstProjects")
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Education");
@@ -2644,7 +2932,7 @@ namespace DataAccess.PostgreSqlMigrations
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("LstRefreshTokens")
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -2655,7 +2943,7 @@ namespace DataAccess.PostgreSqlMigrations
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("LstSocialLinks")
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -2666,7 +2954,7 @@ namespace DataAccess.PostgreSqlMigrations
                     b.HasOne("Domain.Entities.Role", "Role")
                         .WithMany("LstUsers")
                         .HasForeignKey("RoleID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Role");
@@ -2677,19 +2965,19 @@ namespace DataAccess.PostgreSqlMigrations
                     b.HasOne("Domain.Entities.LKP_ChartType", "LKP_ChartType")
                         .WithMany("LstChartPreferences")
                         .HasForeignKey("LKP_ChartTypeID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.LKP_Widget", "LKP_Widget")
                         .WithMany("LstWidgetPreferences")
                         .HasForeignKey("LKP_WidgetID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("LstUserChartPreferences")
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("LKP_ChartType");
@@ -2704,19 +2992,19 @@ namespace DataAccess.PostgreSqlMigrations
                     b.HasOne("Domain.Entities.LKP_Language", "LKP_Language")
                         .WithMany("LstLanguageUsers")
                         .HasForeignKey("LKP_LanguageID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.LKP_LanguageProficiency", "LKP_LanguageProficiency")
                         .WithMany("LstUsersAndLanguages")
                         .HasForeignKey("LKP_LanguageProficiencyID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("LstUserLanguages")
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("LKP_Language");
@@ -2731,13 +3019,13 @@ namespace DataAccess.PostgreSqlMigrations
                     b.HasOne("Domain.Entities.LKP_Preference", "LKP_Preference")
                         .WithMany("LstPreferenceUsers")
                         .HasForeignKey("LKP_PreferenceID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("LstUserPreferences")
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("LKP_Preference");
@@ -2750,13 +3038,13 @@ namespace DataAccess.PostgreSqlMigrations
                     b.HasOne("Domain.Entities.LKP_Skill", "LKP_Skill")
                         .WithMany("LstSkillUsers")
                         .HasForeignKey("LKP_SkillID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("LstUserSkills")
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("LKP_Skill");
@@ -2769,13 +3057,13 @@ namespace DataAccess.PostgreSqlMigrations
                     b.HasOne("Domain.Entities.Certificate", "Certificate")
                         .WithMany("LstUserSkillCertificates")
                         .HasForeignKey("CertificateID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.UserSkill", "UserSkill")
                         .WithMany("LstCertificates")
                         .HasForeignKey("UserSkillID")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Certificate");
@@ -2788,13 +3076,13 @@ namespace DataAccess.PostgreSqlMigrations
                     b.HasOne("Domain.Entities.Education", "Education")
                         .WithMany("LstUserSkillEducations")
                         .HasForeignKey("EducationID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.UserSkill", "UserSkill")
                         .WithMany("LstEducations")
                         .HasForeignKey("UserSkillID")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Education");
@@ -2807,13 +3095,13 @@ namespace DataAccess.PostgreSqlMigrations
                     b.HasOne("Domain.Entities.Experience", "Experience")
                         .WithMany("LstUserSkillExperiences")
                         .HasForeignKey("ExperienceID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.UserSkill", "UserSkill")
                         .WithMany("LstExperiences")
                         .HasForeignKey("UserSkillID")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Experience");
@@ -2826,13 +3114,13 @@ namespace DataAccess.PostgreSqlMigrations
                     b.HasOne("Domain.Entities.Project", "Project")
                         .WithMany("LstUserSkillProjects")
                         .HasForeignKey("ProjectID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.UserSkill", "UserSkill")
                         .WithMany("LstProjects")
                         .HasForeignKey("UserSkillID")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Project");

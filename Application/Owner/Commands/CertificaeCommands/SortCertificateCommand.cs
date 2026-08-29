@@ -1,10 +1,12 @@
-﻿using Application.Common.Entities;
+using Application.Common.Entities;
 using MediatR;
+using System.ComponentModel.DataAnnotations;
 
 namespace Application.Owner.Commands.CertificaeCommands
 {
     public class SortCertificateCommand : IRequest<CommandResponse>
     {
-        public List<Guid> CertificateIdsInOrder { get; set; }
+        [MaxLength(500)]
+        public List<Guid> CertificateIdsInOrder { get; set; } = [];
     }
 }

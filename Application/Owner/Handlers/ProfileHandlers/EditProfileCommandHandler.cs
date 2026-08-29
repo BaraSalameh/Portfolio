@@ -1,8 +1,8 @@
-﻿using Application.Common.Entities;
+using Application.Common.Entities;
 using Application.Common.Services.Interface;
 using Application.Owner.Commands.Profile;
 using AutoMapper;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,31 +25,19 @@ namespace Application.Owner.Handlers.Profile
         {
             var response = new CommandResponse();
 
-            try
-            {
-                var existingEntity = await _context.User
-                    .FirstOrDefaultAsync(u => u.ID == _currentUserService.UserID!.Value, cancellationToken);
+            var existingEntity = await _context.User
+                .FirstOrDefaultAsync(u => u.ID == _currentUserService.UserID!.Value, cancellationToken);
 
-                if (existingEntity == null)
-                {
-                    response.lstError.Add("User not found.");
-                    return response;
-                }
-
-                _mapper.Map(request, existingEntity);
-                existingEntity.UpdatedAt = DateTime.UtcNow;
-            
-
-                await _context.SaveChangesAsync(cancellationToken);
-            }
-            catch (DbUpdateException dbEx)
+            if (existingEntity == null)
             {
-                response.lstError.Add("Error while adding/updating the User.");
+                response.lstError.Add("User not found.");
+                return response;
             }
-            catch (Exception ex)
-            {
-                response.lstError.Add("Unexpected error occurred.");
-            }
+
+            _mapper.Map(request, existingEntity);
+
+
+            await _context.SaveChangesAsync(cancellationToken);
 
             return response;
         }

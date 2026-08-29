@@ -5,6 +5,10 @@ namespace Application.Common.Services.Interface
 {
     public interface IUserSkillRelationService
     {
+        Task<bool> AreValidSkillIdsAsync(
+            IReadOnlyCollection<Guid> skillIds,
+            CancellationToken cancellationToken);
+
         Task<List<TJoin>> CreateUserSkillRelationsAsync<TJoin>(
             List<Guid> skillIds,
             Guid userId,

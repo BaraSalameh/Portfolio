@@ -8,10 +8,10 @@ namespace Application.Owner.MappingProfiles
     {
         public UserMappingProfiles()
         {
-        // UserInfoQuery
+            // UserInfoQuery
             CreateMap<User, UIQ_Response>();
 
-        // UserFullInfoQuery
+            // UserFullInfoQuery
             CreateMap<User, UFIQ_Response>()
                 // -> User
                 .ForMember(dest => dest.User,
@@ -30,6 +30,8 @@ namespace Application.Owner.MappingProfiles
                     opt => opt.MapFrom(src => src.LstProjects
                         .Where(p => p.IsDeleted == false)
                         .OrderBy(p => p.Order)
+                        .ThenBy(p => p.ID)
+                        .Take(Client.PublicPortfolioLimits.MaxCollectionItems)
                     )
                 )
 
@@ -37,6 +39,8 @@ namespace Application.Owner.MappingProfiles
                 .ForMember(dest => dest.LstUserSkills,
                     opt => opt.MapFrom(src => src.LstUserSkills
                         .Where(s => s.IsDeleted == false)
+                        .OrderBy(s => s.ID)
+                        .Take(Client.PublicPortfolioLimits.MaxCollectionItems)
                     )
                 )
 
@@ -45,6 +49,8 @@ namespace Application.Owner.MappingProfiles
                     opt => opt.MapFrom(src => src.LstEducations
                         .Where(e => e.IsDeleted == false)
                         .OrderBy(e => e.Order)
+                        .ThenBy(e => e.ID)
+                        .Take(Client.PublicPortfolioLimits.MaxCollectionItems)
                     )
                 )
 
@@ -53,6 +59,8 @@ namespace Application.Owner.MappingProfiles
                     opt => opt.MapFrom(src => src.LstCertificates
                         .Where(e => e.IsDeleted == false)
                         .OrderBy(e => e.Order)
+                        .ThenBy(e => e.ID)
+                        .Take(Client.PublicPortfolioLimits.MaxCollectionItems)
                     )
                 )
 
@@ -61,6 +69,8 @@ namespace Application.Owner.MappingProfiles
                     opt => opt.MapFrom(src => src.LstExperiences
                         .Where(e => e.IsDeleted == false)
                         .OrderBy(e => e.Order)
+                        .ThenBy(e => e.ID)
+                        .Take(Client.PublicPortfolioLimits.MaxCollectionItems)
                     )
                 )
 
@@ -68,6 +78,9 @@ namespace Application.Owner.MappingProfiles
                 .ForMember(dest => dest.LstBlogPosts,
                     opt => opt.MapFrom(src => src.LstBlogPosts
                         .Where(p => p.IsDeleted == false)
+                        .OrderByDescending(p => p.CreatedAt)
+                        .ThenBy(p => p.ID)
+                        .Take(Client.PublicPortfolioLimits.MaxCollectionItems)
                     )
                 )
 
@@ -75,6 +88,16 @@ namespace Application.Owner.MappingProfiles
                 .ForMember(dest => dest.LstSocialLinks,
                     opt => opt.MapFrom(src => src.LstSocialLinks
                         .Where(l => l.IsDeleted == false)
+                        .OrderBy(l => l.ID)
+                        .Take(Client.PublicPortfolioLimits.MaxCollectionItems)
+                    )
+                )
+
+                // -> LstUserLanguages
+                .ForMember(dest => dest.LstUserLanguages,
+                    opt => opt.MapFrom(src => src.LstUserLanguages
+                        .OrderBy(language => language.LKP_LanguageID)
+                        .Take(Client.PublicPortfolioLimits.MaxCollectionItems)
                     )
                 )
 
@@ -82,6 +105,8 @@ namespace Application.Owner.MappingProfiles
                 .ForMember(dest => dest.LstUserPreferences,
                     opt => opt.MapFrom(src => src.LstUserPreferences
                         .Where(up => up.IsDeleted == false)
+                        .OrderBy(up => up.LKP_PreferenceID)
+                        .Take(Client.PublicPortfolioLimits.MaxCollectionItems)
                     )
                 )
 
@@ -89,6 +114,9 @@ namespace Application.Owner.MappingProfiles
                 .ForMember(dest => dest.LstUserChartPreferences,
                     opt => opt.MapFrom(src => src.LstUserChartPreferences
                         .Where(ucp => ucp.IsDeleted == false)
+                        .OrderBy(ucp => ucp.LKP_WidgetID)
+                        .ThenBy(ucp => ucp.LKP_ChartTypeID)
+                        .Take(Client.PublicPortfolioLimits.MaxCollectionItems)
                     )
                 );
 
@@ -103,7 +131,10 @@ namespace Application.Owner.MappingProfiles
                 // -> LstProjects -> Experience
                 .ForMember(dest => dest.Experience, opt => opt.MapFrom(src => src.Experience))
                 // -> LstProjects -> LstSkills
-                .ForMember(dest => dest.LstSkills, opt => opt.MapFrom(src => src.LstUserSkillProjects.Select(usp => usp.UserSkill).Select(us => us.LKP_Skill)));
+                .ForMember(dest => dest.LstSkills, opt => opt.MapFrom(src => src.LstUserSkillProjects
+                    .OrderBy(relation => relation.UserSkillID)
+                    .Take(Client.PublicPortfolioLimits.MaxCollectionItems)
+                    .Select(relation => relation.UserSkill.LKP_Skill)));
             // -> LstProjects -> Education (Already defined)
             // -> LstProjects -> Experience
             CreateMap<Experience, UFIQ_Shared_Experience>();
@@ -116,13 +147,25 @@ namespace Application.Owner.MappingProfiles
                 // -> LstUserSkills -> Skill
                 .ForMember(dest => dest.Skill, opt => opt.MapFrom(src => src.LKP_Skill))
                 // -> LstUserSkills -> Education
-                .ForMember(dest => dest.LstEducations, opt => opt.MapFrom(src => src.LstEducations.Select(us => us.Education)))
+                .ForMember(dest => dest.LstEducations, opt => opt.MapFrom(src => src.LstEducations
+                    .OrderBy(relation => relation.EducationID)
+                    .Take(Client.PublicPortfolioLimits.MaxCollectionItems)
+                    .Select(relation => relation.Education)))
                 // -> LstUserSkills -> Experience
-                .ForMember(dest => dest.LstExperiences, opt => opt.MapFrom(src => src.LstExperiences.Select(us => us.Experience)))
+                .ForMember(dest => dest.LstExperiences, opt => opt.MapFrom(src => src.LstExperiences
+                    .OrderBy(relation => relation.ExperienceID)
+                    .Take(Client.PublicPortfolioLimits.MaxCollectionItems)
+                    .Select(relation => relation.Experience)))
                 // -> LstUserSkills -> Project
-                .ForMember(dest => dest.LstProjects, opt => opt.MapFrom(src => src.LstProjects.Select(us => us.Project)))
+                .ForMember(dest => dest.LstProjects, opt => opt.MapFrom(src => src.LstProjects
+                    .OrderBy(relation => relation.ProjectID)
+                    .Take(Client.PublicPortfolioLimits.MaxCollectionItems)
+                    .Select(relation => relation.Project)))
                 // -> LstUserSkills -> Certificate
-                .ForMember(dest => dest.LstCertificates, opt => opt.MapFrom(src => src.LstCertificates.Select(us => us.Certificate)));
+                .ForMember(dest => dest.LstCertificates, opt => opt.MapFrom(src => src.LstCertificates
+                    .OrderBy(relation => relation.CertificateID)
+                    .Take(Client.PublicPortfolioLimits.MaxCollectionItems)
+                    .Select(relation => relation.Certificate)));
             // -> LstUserSkills -> Skill (Already defined)
             // -> LstUserSkills -> Education
             CreateMap<Education, UFIQ_Shared_Education>()
@@ -149,9 +192,15 @@ namespace Application.Owner.MappingProfiles
                 // -> LstEducations -> FieldOfStudy
                 .ForMember(dest => dest.FieldOfStudy, opt => opt.MapFrom(src => src.LKP_FieldOfStudy))
                 // -> LstEducations -> LstProjects
-                .ForMember(dest => dest.LstProjects, opt => opt.MapFrom(src => src.LstProjects))
+                .ForMember(dest => dest.LstProjects, opt => opt.MapFrom(src => src.LstProjects
+                    .OrderBy(project => project.Order)
+                    .ThenBy(project => project.ID)
+                    .Take(Client.PublicPortfolioLimits.MaxCollectionItems)))
                 // -> LstEducations -> LstSkills
-                .ForMember(dest => dest.LstSkills, opt => opt.MapFrom(src => src.LstUserSkillEducations.Select(use => use.UserSkill).Select(us => us.LKP_Skill)));
+                .ForMember(dest => dest.LstSkills, opt => opt.MapFrom(src => src.LstUserSkillEducations
+                    .OrderBy(relation => relation.UserSkillID)
+                    .Take(Client.PublicPortfolioLimits.MaxCollectionItems)
+                    .Select(relation => relation.UserSkill.LKP_Skill)));
             // -> LstEducations -> Institution
             CreateMap<LKP_Institution, UFIQ_LKP_Institution>();
             // -> LstEducations -> Degree
@@ -166,9 +215,14 @@ namespace Application.Owner.MappingProfiles
                 // -> LstCertificates -> Certificate
                 .ForMember(dest => dest.Certificate, opt => opt.MapFrom(src => src.LKP_Certificate))
                 // -> LstCertificates -> LstSkills
-                .ForMember(dest => dest.LstSkills,  opt => opt.MapFrom(src => src.LstUserSkillCertificates.Select(usc => usc.UserSkill).Select(us => us.LKP_Skill)))
+                .ForMember(dest => dest.LstSkills, opt => opt.MapFrom(src => src.LstUserSkillCertificates
+                    .OrderBy(relation => relation.UserSkillID)
+                    .Take(Client.PublicPortfolioLimits.MaxCollectionItems)
+                    .Select(relation => relation.UserSkill.LKP_Skill)))
                 // -> LstCertificates -> LstCertificateMedias
-                .ForMember(dest => dest.LstCertificateMedias, opt => opt.MapFrom(src => src.LstCertificateMedias));
+                .ForMember(dest => dest.LstCertificateMedias, opt => opt.MapFrom(src => src.LstCertificateMedias
+                    .OrderBy(media => media.ID)
+                    .Take(Client.PublicPortfolioLimits.MaxCollectionItems)));
             // -> LstCertificates -> Certificate
             CreateMap<LKP_Certificate, UFIQ_LKP_Certificate>();
             // -> LstCertificates -> LstSkills (Already defined)
@@ -179,7 +233,10 @@ namespace Application.Owner.MappingProfiles
             // -> LstExperiences
             CreateMap<Experience, UFIQ_Experience>()
                 // -> LstExperiences -> LstSkills
-                .ForMember(dest => dest.LstSkills, opt => opt.MapFrom(src => src.LstUserSkillExperiences.Select(use => use.UserSkill).Select(us => us.LKP_Skill)));
+                .ForMember(dest => dest.LstSkills, opt => opt.MapFrom(src => src.LstUserSkillExperiences
+                    .OrderBy(relation => relation.UserSkillID)
+                    .Take(Client.PublicPortfolioLimits.MaxCollectionItems)
+                    .Select(relation => relation.UserSkill.LKP_Skill)));
             // -> LstExperiences -> LstSkills (Already defined)
 
             // -> LstBlogPosts (Not yet built)

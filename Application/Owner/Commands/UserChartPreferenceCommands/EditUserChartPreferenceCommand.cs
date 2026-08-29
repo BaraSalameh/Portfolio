@@ -1,5 +1,6 @@
-﻿using Application.Common.Entities;
+using Application.Common.Entities;
 using MediatR;
+using System.ComponentModel.DataAnnotations;
 
 namespace Application.Owner.Commands.UserChartPreferenceCommands
 {
@@ -7,7 +8,9 @@ namespace Application.Owner.Commands.UserChartPreferenceCommands
     {
         public Guid LKP_WidgetID { get; set; }
         public Guid LKP_ChartTypeID { get; set; }
-        public string GroupBy { get; set; }
+        [Required, StringLength(100)]
+        public string GroupBy { get; set; } = string.Empty;
+        [StringLength(200)]
         public string? ValueSource { get; set; }
     }
 }

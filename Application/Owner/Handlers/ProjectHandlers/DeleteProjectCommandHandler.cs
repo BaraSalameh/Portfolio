@@ -1,7 +1,7 @@
-﻿using Application.Common.Entities;
+using Application.Common.Entities;
 using Application.Common.Services.Interface;
 using Application.Owner.Commands.ProjectCommands;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,36 +22,24 @@ namespace Application.Owner.Handlers.ProjectHandlers
         {
             var response = new CommandResponse();
 
-            try
-            {
-                var existingEntity = await _context.Project
-                    .Include(p => p.LstUserSkillProjects)
-                    .FirstOrDefaultAsync(p =>
-                        p.UserID == _currentUser.UserID!.Value &&
-                        p.ID == request.ID &&
-                        p.IsDeleted == false,
-                        cancellationToken
-                    );
+            var existingEntity = await _context.Project
+                .Include(p => p.LstUserSkillProjects)
+                .FirstOrDefaultAsync(p =>
+                    p.UserID == _currentUser.UserID!.Value &&
+                    p.ID == request.ID &&
+                    p.IsDeleted == false,
+                    cancellationToken
+                );
 
-                if(existingEntity == null)
-                {
-                    response.lstError.Add("Project not found.");
-                    return response;
-                }
+            if (existingEntity == null)
+            {
+                response.lstError.Add("Project not found.");
+                return response;
+            }
 
-                existingEntity.IsDeleted = true;
-                existingEntity.DeletedAt = DateTime.UtcNow;
-                existingEntity.LstUserSkillProjects.Clear();
-                await _context.SaveChangesAsync(cancellationToken);
-            }
-            catch (DbUpdateException dbEx)
-            {
-                response.lstError.Add("Error while deleting the Project.");
-            }
-            catch (Exception ex)
-            {
-                response.lstError.Add("Unexpected error occurred.");
-            }
+            existingEntity.IsDeleted = true;
+            existingEntity.LstUserSkillProjects.Clear();
+            await _context.SaveChangesAsync(cancellationToken);
 
             return response;
         }

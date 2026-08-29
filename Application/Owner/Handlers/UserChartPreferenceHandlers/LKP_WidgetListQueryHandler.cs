@@ -1,7 +1,7 @@
 ﻿using Application.Common.Entities;
 using Application.Owner.Queries.UserChartPreferenceQueries;
 using AutoMapper;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,8 +25,10 @@ namespace Application.Owner.Handlers.UserChartPreferenceHandlers
             var existingEntity = _context.LKP_Widget
                 .AsNoTracking();
 
-            response.Items = await _mapper.ProjectTo<LKP_WLQ_Response>(existingEntity).ToListAsync(cancellationToken);
-            response.RowCount = response.Items.Count();
+            response.RowCount = await existingEntity.CountAsync(cancellationToken);
+            response.Items = await _mapper.ProjectTo<LKP_WLQ_Response>(
+                existingEntity.OrderBy(entity => entity.Name).Take(100))
+                .ToListAsync(cancellationToken);
 
             return response;
         }

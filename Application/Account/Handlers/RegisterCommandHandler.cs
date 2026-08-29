@@ -1,13 +1,13 @@
-﻿using Application.Account.Commands;
+using Application.Account.Commands;
 using Application.Common.Entities;
 using Application.Common.Services.Interface;
 using AutoMapper;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using Domain.Entities;
 using Domain.Enums;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Application.Common.Identity;
 
 namespace Application.Account.Handlers
 {
@@ -16,66 +16,55 @@ namespace Application.Account.Handlers
         private readonly IAppDbContext _context;
         private readonly IMapper _mapper;
         private readonly IDateTimeProvider _dateTimeProvider;
-        private readonly IUserNotificationService _userNotificationService;
+        private readonly IEmailOutboxService _emailOutboxService;
         private readonly IPendingEmailConfirmationService _pendingEmailConfirmationService;
-        private readonly IPasswordHasher<User> _passwordHasher;
+        private readonly IPasswordService _passwordService;
 
         public RegisterCommandHandler(
             IAppDbContext context,
             IMapper mapper,
             IDateTimeProvider dateTimeProvider,
-            IUserNotificationService userNotificationService,
+            IEmailOutboxService emailOutboxService,
             IPendingEmailConfirmationService pendingEmailConfirmationService,
-            IPasswordHasher<User> passwordHasher
+            IPasswordService passwordService
         )
         {
             _context = context;
             _mapper = mapper;
             _dateTimeProvider = dateTimeProvider;
-            _userNotificationService = userNotificationService;
+            _emailOutboxService = emailOutboxService;
             _pendingEmailConfirmationService = pendingEmailConfirmationService;
-            _passwordHasher = passwordHasher;
+            _passwordService = passwordService;
         }
 
         public async Task<CommandResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
             var response = new CommandResponse();
 
-            try
+            var defaultRoleExists = await _context.Role
+                .AsNoTracking()
+                .AnyAsync(role => role.ID == RoleIdentifiers.Owner, cancellationToken);
+            if (!defaultRoleExists)
             {
-                var role = await _context.Role.FindAsync(RoleIdentifiers.Owner, cancellationToken);
-                if (role == null)
-                {
-                    response.lstError.Add("Default user role not found.");
-                    return response;
-                }
-
-                var baseUserName = $"{request.Firstname}-{request.Lastname}".ToLower().Replace(" ", "-");
-                var guidSuffix = Guid.NewGuid().ToString("N").Substring(0, 6);
-
-                var newEntity = _mapper.Map<User>(request);
-                newEntity.Username = $"{baseUserName}-{guidSuffix}";
-                newEntity.RoleID =  RoleIdentifiers.Owner;
-                newEntity.Role = role;
-                newEntity.CreatedAt = _dateTimeProvider.UtcNow;
-                newEntity.Password = _passwordHasher.HashPassword(newEntity, request.Password);
-
-                var rawToken = _pendingEmailConfirmationService.Create(newEntity, request.RememberMe ?? false);
-
-                await _context.User.AddAsync(newEntity, cancellationToken);
-                await _context.SaveChangesAsync(cancellationToken);
-
-                await _userNotificationService.SendEmailConfirmationAsync(newEntity, rawToken);
-
+                response.lstError.Add("Default user role not found.");
+                return response;
             }
-            catch (DbUpdateException dbEx)
-            {
-                response.lstError.Add("Email is already registered.");
-            }
-            catch (Exception ex)
-            {
-                response.lstError.Add("Unexpected error occurred.");
-            }
+
+            var newEntity = _mapper.Map<User>(request);
+            newEntity.Firstname = request.Firstname.Trim();
+            newEntity.Lastname = request.Lastname.Trim();
+            newEntity.Email = EmailNormalizer.Normalize(request.Email);
+            newEntity.Username = UsernameGenerator.Create(newEntity.Firstname, newEntity.Lastname);
+            newEntity.RoleID = RoleIdentifiers.Owner;
+            newEntity.CreatedAt = _dateTimeProvider.UtcNow;
+            newEntity.Password = _passwordService.Hash(newEntity, request.Password);
+
+            var confirmation = _pendingEmailConfirmationService.Create(newEntity, request.RememberMe ?? false);
+            var outboxMessage = _emailOutboxService.EnqueueConfirmation(confirmation);
+
+            await _context.User.AddAsync(newEntity, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+            await _emailOutboxService.AttemptImmediateDispatchAsync(outboxMessage.ID, cancellationToken);
 
             return response;
         }

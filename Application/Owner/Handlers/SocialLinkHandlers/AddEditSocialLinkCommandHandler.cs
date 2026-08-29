@@ -1,8 +1,8 @@
-﻿using Application.Common.Entities;
+using Application.Common.Entities;
 using Application.Common.Services.Interface;
 using Application.Owner.Commands.SocialLinkCommands;
 using AutoMapper;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -26,44 +26,32 @@ namespace Application.Owner.Handlers.SocialLinkHandlers
         {
             var response = new CommandResponse();
 
-            try
+            if (request.ID == null)
             {
-                if (request.ID == null)
-                {
-                    var newEntity = _mapper.Map<SocialLink>(request);
-                    newEntity.UserID = _currentUser.UserID!.Value;
-                    await _context.SocialLink.AddAsync(newEntity, cancellationToken);
-                }
-                else
-                {
-                    var existingEntity = await _context.SocialLink
-                        .FirstOrDefaultAsync(x =>
-                            x.UserID == _currentUser.UserID!.Value &&
-                            x.ID == request.ID &&
-                            x.IsDeleted == false,
-                            cancellationToken
-                        );
+                var newEntity = _mapper.Map<SocialLink>(request);
+                newEntity.UserID = _currentUser.UserID!.Value;
+                await _context.SocialLink.AddAsync(newEntity, cancellationToken);
+            }
+            else
+            {
+                var existingEntity = await _context.SocialLink
+                    .FirstOrDefaultAsync(x =>
+                        x.UserID == _currentUser.UserID!.Value &&
+                        x.ID == request.ID &&
+                        x.IsDeleted == false,
+                        cancellationToken
+                    );
 
-                    if (existingEntity == null)
-                    {
-                        response.lstError.Add("SocialLink not found.");
-                        return response;
-                    }
-
-                    _mapper.Map(request, existingEntity);
-                    existingEntity.UpdatedAt = DateTime.UtcNow;
+                if (existingEntity == null)
+                {
+                    response.lstError.Add("SocialLink not found.");
+                    return response;
                 }
 
-                await _context.SaveChangesAsync(cancellationToken);
+                _mapper.Map(request, existingEntity);
             }
-            catch (DbUpdateException dbEx)
-            {
-                response.lstError.Add("Error while adding/updating the SocialLink.");
-            }
-            catch (Exception ex)
-            {
-                response.lstError.Add("Unexpected error occurred.");
-            }
+
+            await _context.SaveChangesAsync(cancellationToken);
 
             return response;
         }

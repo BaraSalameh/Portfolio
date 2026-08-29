@@ -4,7 +4,7 @@ using Domain.Entities;
 
 namespace Application.Admin.MappingProfiles
 {
-    public class LKP_PreferenceMappingProfiles: Profile
+    public class LKP_PreferenceMappingProfiles : Profile
     {
         public LKP_PreferenceMappingProfiles()
         {

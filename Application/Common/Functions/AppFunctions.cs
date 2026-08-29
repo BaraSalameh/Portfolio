@@ -20,16 +20,18 @@ namespace Application.Common.Functions
         {
             if (string.IsNullOrWhiteSpace(input)) return input;
 
-            var words = Regex.Split(input, @"[\s_]+");
-            return char.ToLowerInvariant(words[0][0]) + string.Join("", words.Skip(1).Select(word => char.ToUpperInvariant(word[0]) + word.Substring(1).ToLower()));
+            var words = Words(input);
+            if (words.Length == 0) return string.Empty;
+
+            return LowerFirst(words[0]) + string.Concat(words.Skip(1).Select(UpperFirst));
         }
 
         public static string ToPascalCase(this string input)
         {
             if (string.IsNullOrWhiteSpace(input)) return input;
 
-            var words = Regex.Split(input, @"[\s_]+");
-            return string.Join("", words.Select(word => char.ToUpperInvariant(word[0]) + word.Substring(1).ToLower()));
+            var words = Words(input);
+            return string.Concat(words.Select(UpperFirst));
         }
 
         public static string ToSnakeCase(this string input)
@@ -40,5 +42,15 @@ namespace Application.Common.Functions
                 .Replace(" ", "_") // Replace spaces
                 .ToLowerInvariant(); // Convert all to lower case
         }
+
+        private static string[] Words(string input) => Regex.Split(input.Trim(), @"[\s_]+")
+            .Where(word => word.Length > 0)
+            .ToArray();
+
+        private static string LowerFirst(string word) =>
+            char.ToLowerInvariant(word[0]) + word[1..].ToLowerInvariant();
+
+        private static string UpperFirst(string word) =>
+            char.ToUpperInvariant(word[0]) + word[1..].ToLowerInvariant();
     }
 }

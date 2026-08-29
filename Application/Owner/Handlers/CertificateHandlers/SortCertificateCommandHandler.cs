@@ -1,7 +1,7 @@
-﻿using Application.Common.Entities;
+using Application.Common.Entities;
 using Application.Common.Services.Interface;
 using Application.Owner.Commands.CertificaeCommands;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,36 +21,31 @@ namespace Application.Owner.Handlers.CertificateHandlers
         public async Task<CommandResponse> Handle(SortCertificateCommand request, CancellationToken cancellationToken)
         {
             var response = new CommandResponse();
-
-            try
+            if (request.CertificateIdsInOrder.Count != request.CertificateIdsInOrder.Distinct().Count())
             {
-                var Certificates = await _context.Certificate
-                    .Where(e => e.UserID == _currentUserService.UserID && request.CertificateIdsInOrder.Contains(e.ID))
-                    .ToListAsync();
-
-                if (Certificates.Count != request.CertificateIdsInOrder.Count)
-                {
-                    response.lstError.Add("Mismatch between IDs in the request and database records.");
-                    return response;
-                }
-
-                for (int i = 0; i < request.CertificateIdsInOrder.Count; i++)
-                {
-                    var id = request.CertificateIdsInOrder[i];
-                    var edu = Certificates.First(e => e.ID == id);
-                    edu.Order = i + 1;
-                }
-
-                await _context.SaveChangesAsync();
+                response.lstError.Add("Duplicate certificate IDs are not allowed.");
+                return response;
             }
-            catch (DbUpdateException dbEx)
+
+            var certificates = await _context.Certificate
+                .Where(entity => entity.UserID == _currentUserService.UserID
+                    && !entity.IsDeleted)
+                .OrderBy(entity => entity.ID)
+                .Take(501)
+                .ToDictionaryAsync(entity => entity.ID, cancellationToken);
+
+            if (certificates.Count > 500 || !certificates.Keys.ToHashSet().SetEquals(request.CertificateIdsInOrder))
             {
-                response.lstError.Add("Error while re ordering Certificate.");
+                response.lstError.Add("The request must contain every active certificate exactly once.");
+                return response;
             }
-            catch (Exception ex)
+
+            for (int i = 0; i < request.CertificateIdsInOrder.Count; i++)
             {
-                response.lstError.Add("Unexpected error occurred.");
+                certificates[request.CertificateIdsInOrder[i]].Order = i + 1;
             }
+
+            await _context.SaveChangesAsync(cancellationToken);
 
             return response;
         }

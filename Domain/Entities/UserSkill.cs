@@ -1,14 +1,14 @@
-﻿namespace Domain.Entities
+namespace Domain.Entities
 {
     public class UserSkill : AbstractEntity
     {
         public Guid ID { get; set; }
 
         public Guid UserID { get; set; }
-        public User User { get; set; }
+        public User User { get; set; } = null!;
 
         public Guid LKP_SkillID { get; set; }
-        public LKP_Skill LKP_Skill { get; set; }
+        public LKP_Skill LKP_Skill { get; set; } = null!;
 
         public List<UserSkillEducation> LstEducations { get; set; } = new List<UserSkillEducation>();
         public List<UserSkillExperience> LstExperiences { get; set; } = new List<UserSkillExperience>();

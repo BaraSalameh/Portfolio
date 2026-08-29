@@ -4,7 +4,7 @@
     {
         string? GetRefreshToken();
         void SetAccessToken(string token);
-        void SetRefreshToken(string token);
+        void SetRefreshToken(string token, bool rememberMe);
         void ClearAuthCookies();
     }
 }

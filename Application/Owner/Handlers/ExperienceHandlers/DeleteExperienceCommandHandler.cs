@@ -1,13 +1,13 @@
-﻿using Application.Common.Entities;
+using Application.Common.Entities;
 using Application.Common.Services.Interface;
 using Application.Owner.Commands.ExperienceCommands;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Owner.Handlers.ExperienceHandlers
 {
-    public class DeleteExperienceCommandHandler: IRequestHandler<DeleteExperienceCommand, CommandResponse>
+    public class DeleteExperienceCommandHandler : IRequestHandler<DeleteExperienceCommand, CommandResponse>
     {
         private readonly ICurrentUserService _currentUser;
         private readonly IAppDbContext _context;
@@ -22,36 +22,24 @@ namespace Application.Owner.Handlers.ExperienceHandlers
         {
             var response = new CommandResponse();
 
-            try
-            {
-                var existingEntity = await _context.Experience
-                    .Include(e => e.LstUserSkillExperiences)
-                    .FirstOrDefaultAsync(x =>
-                        x.UserID == _currentUser.UserID!.Value &&
-                        x.ID == request.ID &&
-                        x.IsDeleted == false,
-                        cancellationToken
-                    );
+            var existingEntity = await _context.Experience
+                .Include(e => e.LstUserSkillExperiences)
+                .FirstOrDefaultAsync(x =>
+                    x.UserID == _currentUser.UserID!.Value &&
+                    x.ID == request.ID &&
+                    x.IsDeleted == false,
+                    cancellationToken
+                );
 
-                if (existingEntity == null)
-                {
-                    response.lstError.Add("Experience not found.");
-                    return response;
-                }
+            if (existingEntity == null)
+            {
+                response.lstError.Add("Experience not found.");
+                return response;
+            }
 
-                existingEntity.IsDeleted = true;
-                existingEntity.DeletedAt = DateTime.UtcNow;
-                existingEntity.LstUserSkillExperiences.Clear();
-                await _context.SaveChangesAsync(cancellationToken);
-            }
-            catch (DbUpdateException dbEx)
-            {
-                response.lstError.Add("Error while deleting the Experience.");
-            }
-            catch (Exception ex)
-            {
-                response.lstError.Add("Unexpected error occurred.");
-            }
+            existingEntity.IsDeleted = true;
+            existingEntity.LstUserSkillExperiences.Clear();
+            await _context.SaveChangesAsync(cancellationToken);
 
             return response;
         }

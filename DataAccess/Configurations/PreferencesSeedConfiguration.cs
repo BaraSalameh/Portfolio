@@ -8,7 +8,7 @@ namespace DataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<LKP_Preference> builder)
         {
-            builder.HasIndex(d => d.Name).IsUnique();
+            builder.HasIndex(d => d.Name).IsUnique().HasFilter("\"IsDeleted\" = false");
 
             builder.HasData(
                 new LKP_Preference { ID = Guid.Parse("6f1f71a6-74b1-4ed3-b2ae-4d1137dbcb8d"), Name = "show-language-bar-chart" },

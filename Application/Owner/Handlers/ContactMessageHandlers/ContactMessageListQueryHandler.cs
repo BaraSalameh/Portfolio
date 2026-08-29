@@ -1,7 +1,7 @@
 ﻿using Application.Common.Services.Interface;
 using Application.Owner.Queries.ContactMessageQueries;
 using AutoMapper;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,16 +28,24 @@ namespace Application.Owner.Handlers.ContactMessageHandlers
                 .AsNoTracking()
                 .Where(e => e.UserID == _currentUserService.UserID && e.IsDeleted == false);
 
-            response.UnreadContactMessageCount = await existingEntity.CountAsync(cm => !cm.IsRead, cancellationToken);
-            response.RowCount = await existingEntity.CountAsync(cancellationToken);
-            var pageNumber = request.PageNumber;
+            var counts = await existingEntity
+                .GroupBy(_ => 1)
+                .Select(group => new
+                {
+                    RowCount = group.Count(),
+                    UnreadCount = group.Count(message => !message.IsRead)
+                })
+                .SingleOrDefaultAsync(cancellationToken);
+            response.UnreadContactMessageCount = counts?.UnreadCount ?? 0;
+            response.RowCount = counts?.RowCount ?? 0;
             var pageSize = request.PageSize;
 
             response.Items =
                 await _mapper.ProjectTo<CMLQ_ContactMessage>(
                     existingEntity
                         .OrderByDescending(e => e.CreatedAt)
-                        .Skip(pageNumber * pageSize)
+                        .ThenBy(e => e.ID)
+                        .Skip(request.Offset)
                         .Take(pageSize)
                 ).ToListAsync(cancellationToken);
 

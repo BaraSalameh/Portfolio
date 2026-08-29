@@ -1,4 +1,4 @@
-﻿using Application.Common.Entities;
+using Application.Common.Entities;
 
 namespace Application.Owner.Queries.UserSkillQueries
 {
@@ -7,7 +7,7 @@ namespace Application.Owner.Queries.UserSkillQueries
     public class LKP_SLQ_Response
     {
         public Guid ID { get; set; }
-        public string Name { get; set; }
-        public string IconUrl { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string IconUrl { get; set; } = string.Empty;
     }
 }

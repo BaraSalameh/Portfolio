@@ -8,7 +8,7 @@
         public DateTime CreatedAt { get; set; }
         public string CreatedByIp { get; set; } = null!;
         public bool IsRevoked { get; set; }
-        public DateTime RevokedAt { get; set; }
+        public DateTime? RevokedAt { get; set; }
         public bool RememberMe { get; set; }
         public Guid UserID { get; set; }
         public User User { get; set; } = null!;

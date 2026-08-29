@@ -9,7 +9,7 @@ namespace DataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<Role> builder)
         {
-            builder.HasIndex(r => r.Name).IsUnique();
+            builder.HasIndex(r => r.Name).IsUnique().HasFilter("\"IsDeleted\" = false");
             builder.HasData(
                 new Role { ID = RoleIdentifiers.Admin, Name = nameof(RoleIdentifiers.Admin) },
                 new Role { ID = RoleIdentifiers.Owner, Name = nameof(RoleIdentifiers.Owner) }

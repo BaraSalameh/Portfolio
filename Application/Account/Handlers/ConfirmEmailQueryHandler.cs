@@ -1,7 +1,7 @@
 ﻿using Application.Account.Queries;
 using Application.Common.Entities;
 using Application.Common.Services.Interface;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,50 +10,66 @@ namespace Application.Account.Handlers
     public class ConfirmEmailQueryHandler : IRequestHandler<ConfirmEmailQuery, CommandResponse>
     {
         private readonly IAppDbContext _context;
-        private readonly IAuthService _authService;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly ITokenService _tokenService;
+        private readonly IEmailConfirmationLock _confirmationLock;
 
 
         public ConfirmEmailQueryHandler(
             IAppDbContext context,
-            IAuthService authService,
             IDateTimeProvider dateTimeProvider,
-            ITokenService tokenService
+            ITokenService tokenService,
+            IEmailConfirmationLock confirmationLock
         )
         {
             _context = context;
-            _authService = authService;
             _dateTimeProvider = dateTimeProvider;
             _tokenService = tokenService;
+            _confirmationLock = confirmationLock;
         }
 
         public async Task<CommandResponse> Handle(ConfirmEmailQuery request, CancellationToken cancellationToken)
         {
-            var response = new CommandResponse();
-
-            var existingEntity = await _context.PendingEmailConfirmation
-                .Include(p => p.User).ThenInclude(u => u.Role)
-                .FirstOrDefaultAsync(
-                    pec => pec.TokenHash == _tokenService.HashToken(request.Token)
-                    && pec.RevokedAt == null
-                    && pec.ExpiresAt > _dateTimeProvider.UtcNow,
-                    cancellationToken
-                );
-
-            if (existingEntity == null)
+            return await _context.ExecuteInTransactionAsync(async transactionCancellationToken =>
             {
-                response.lstError.Add("Invalid confirmation link.");
+                var response = new CommandResponse();
+                var now = _dateTimeProvider.UtcNow;
+                var tokenHash = _tokenService.HashToken(request.Token);
+                var existingEntity = await _context.PendingEmailConfirmation
+                    .Include(p => p.User).ThenInclude(u => u.Role)
+                    .FirstOrDefaultAsync(
+                        pec => pec.TokenHash == tokenHash && pec.RevokedAt == null && pec.ExpiresAt > now,
+                        transactionCancellationToken);
+
+                if (existingEntity == null)
+                {
+                    response.lstError.Add("Invalid confirmation link.");
+                    return response;
+                }
+
+                await _confirmationLock.AcquireAsync(
+                    existingEntity.UserID,
+                    transactionCancellationToken);
+
+                var claimed = await _context.PendingEmailConfirmation
+                    .Where(candidate =>
+                        candidate.ID == existingEntity.ID &&
+                        candidate.RevokedAt == null &&
+                        candidate.ExpiresAt > now)
+                    .ExecuteUpdateAsync(
+                        updates => updates.SetProperty(candidate => candidate.RevokedAt, now),
+                        transactionCancellationToken);
+
+                if (claimed != 1)
+                {
+                    response.lstError.Add("Invalid confirmation link.");
+                    return response;
+                }
+
+                existingEntity.User.IsConfirmed = true;
+                await _context.SaveChangesAsync(transactionCancellationToken);
                 return response;
-            }
-
-            existingEntity.RevokedAt = _dateTimeProvider.UtcNow;
-            existingEntity.User.IsConfirmed = true;
-
-            await _authService.AuthSetupAsync(existingEntity.User, existingEntity.RememberMe);
-            await _context.SaveChangesAsync(cancellationToken);
-
-            return response;
+            }, cancellationToken);
         }
     }
 }

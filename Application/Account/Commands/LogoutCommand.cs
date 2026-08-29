@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Application.Account.Commands
 {
-    public class LogoutCommand : IRequest<CommandResponse>{}
+    public class LogoutCommand : IRequest<CommandResponse> { }
 }

@@ -8,7 +8,8 @@ namespace Application.Owner.MappingProfiles
     {
         public BlogPostMappingProfiles()
         {
-            CreateMap<AddEditBlogPostCommand, BlogPost>();
+            CreateMap<AddEditBlogPostCommand, BlogPost>()
+                .ForMember(destination => destination.LKP_BlogPostStatusID, options => options.Ignore());
         }
     }
 }

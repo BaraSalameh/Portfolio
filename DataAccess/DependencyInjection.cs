@@ -1,77 +1,41 @@
 ﻿using DataAccess.DbContexts;
-using DataAccess.Interfaces;
-using Domain.Enums;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http;
+using Application.Common.Persistence;
+using DataAccess.Services;
+using Application.Common.Services.Interface;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 namespace DataAccess
 {
     public static class DependencyInjection
     {
 
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddInfrastructure(
+            this IServiceCollection services,
+            IConfiguration configuration)
         {
             var connectionString = PostgreSqlConnectionString.Resolve(configuration);
 
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(
                     connectionString,
-                    b => b.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)
-                ));
+                    b => b
+                        .MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)
+                        .CommandTimeout(30)
+                ).UsePortfolioQuerySafety());
             services.AddScoped<IAppDbContext, AppDbContext>();
-
-            services.AddAuthentication("Cookies")
-                .AddCookie("Cookies", options =>
-                {
-                    options.Cookie.Name = "AccessToken";  // The cookie name
-                    options.Cookie.HttpOnly = true;     // Secure cookie
-                    options.Cookie.SameSite = SameSiteMode.None; // SameSite for cross-origin requests
-                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Always use Secure cookies (for HTTPS)
-                });
-
-            var jwtSecret = configuration["ApplicationSettings:JWT_Secret"]
-                ?? throw new InvalidOperationException("ApplicationSettings:JWT_Secret is required.");
-
-            services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(x => {
-                x.RequireHttpsMetadata = false; // Set to true in production
-                x.SaveToken = false;
-                x.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ClockSkew = TimeSpan.Zero
-                };
-                x.Events = new JwtBearerEvents
-                {
-                    OnMessageReceived = context =>
-                    {
-                        // Check for JWT token in the cookie
-                        var accessToken = context.Request.Cookies["AccessToken"];
-                        if (!string.IsNullOrEmpty(accessToken))
-                        {
-                            context.Token = accessToken;
-                        }
-                        return Task.CompletedTask;
-                    }
-                };
-            });
-
-            services.AddAuthorizationBuilder()
-                .AddPolicy("RequireAdminRole", policy => policy.RequireRole(nameof(RoleIdentifiers.Admin)))
-                .AddPolicy("RequireOwnerRole", policy => policy.RequireRole(nameof(RoleIdentifiers.Owner)));
+            // PasswordHasher<TUser> is stateless after construction. Keeping one
+            // instance also ensures the expensive dummy-account hash is generated
+            // once per application lifetime rather than once per request.
+            services.AddSingleton<IPasswordService, PasswordService>();
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IMaintenanceCleanupService, MaintenanceCleanupService>();
+            services.AddScoped<IDatabaseReadinessService, DatabaseReadinessService>();
+            services.AddScoped<IContactSubmissionGuard, ContactSubmissionGuard>();
+            services.AddScoped<IEmailConfirmationLock, EmailConfirmationLock>();
+            services.AddSingleton<IPersistenceExceptionClassifier, PersistenceExceptionClassifier>();
 
             return services;
         }

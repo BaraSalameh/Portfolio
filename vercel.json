@@ -5,5 +5,15 @@
       "main": true,
       "*": false
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/maintenance/email-outbox",
+      "schedule": "17 7 * * *"
+    },
+    {
+      "path": "/api/maintenance/cleanup",
+      "schedule": "17 3 * * *"
+    }
+  ]
 }

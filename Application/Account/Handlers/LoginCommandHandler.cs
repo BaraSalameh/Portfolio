@@ -1,12 +1,13 @@
-﻿using Application.Account.Commands;
+using Application.Account.Commands;
 using Application.Common.Entities;
 using Application.Common.Services.Interface;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using Domain.Enums;
 using Domain.Entities;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Application.Common.Identity;
+using Application.Common.Services.Service;
 
 namespace Application.Account.Handlers
 {
@@ -15,85 +16,119 @@ namespace Application.Account.Handlers
         private readonly IAppDbContext _context;
         private readonly IAuthService _authService;
         private readonly IPendingEmailConfirmationService _pendingEmailConfirmationService;
-        private readonly IUserNotificationService _userNotificationService;
-        private readonly IPasswordHasher<User> _passwordHasher;
+        private readonly IEmailOutboxService _emailOutboxService;
+        private readonly IPasswordService _passwordService;
+        private readonly IOperationalMetrics _metrics;
+        private readonly IDateTimeProvider _clock;
 
         public LoginCommandHandler(
             IAppDbContext context,
             IAuthService authService,
             IPendingEmailConfirmationService pendingEmailConfirmationService,
-            IUserNotificationService userNotificationService,
-            IPasswordHasher<User> passwordHasher
+            IEmailOutboxService emailOutboxService,
+            IPasswordService passwordService,
+            IOperationalMetrics metrics,
+            IDateTimeProvider clock
         )
         {
             _context = context;
             _authService = authService;
             _pendingEmailConfirmationService = pendingEmailConfirmationService;
-            _userNotificationService = userNotificationService;
-            _passwordHasher = passwordHasher;
+            _emailOutboxService = emailOutboxService;
+            _passwordService = passwordService;
+            _metrics = metrics;
+            _clock = clock;
         }
 
         public async Task<CommandResponse<LC_Response>> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
             var response = new CommandResponse<LC_Response>();
+            var normalizedEmail = EmailNormalizer.Normalize(request.Email);
 
             var existingEntity =
                  await _context.User
                     .Include(u => u.Role)
-                    .FirstOrDefaultAsync(u => u.Email == request.Email);
+                    .FirstOrDefaultAsync(u => u.Email == normalizedEmail, cancellationToken);
 
             if (existingEntity == null)
             {
+                _passwordService.PerformDummyVerification(request.Password);
+                _metrics.RecordAuthenticationFailure("invalid_credentials");
                 response.ResultType = ResultType.NotFound;
                 response.lstError.Add("Wrong username/password");
                 return response;
             }
 
-            var verifiedResult = _passwordHasher.VerifyHashedPassword(existingEntity, existingEntity.Password, request.Password);
-            if (verifiedResult != PasswordVerificationResult.Success)
+            var passwordVerification = _passwordService.Verify(
+                existingEntity,
+                existingEntity.Password,
+                request.Password);
+            if (passwordVerification == PasswordVerificationOutcome.Failed)
             {
+                _metrics.RecordAuthenticationFailure("invalid_credentials");
                 response.ResultType = ResultType.NotFound;
                 response.lstError.Add("Wrong username/password");
                 return response;
             }
 
-            try
+            if (passwordVerification == PasswordVerificationOutcome.SuccessRehashNeeded)
             {
-                if (!existingEntity.IsConfirmed)
+                existingEntity.Password = _passwordService.Hash(existingEntity, request.Password);
+            }
+
+            if (!existingEntity.IsConfirmed)
+            {
+                _metrics.RecordAuthenticationFailure("unconfirmed_account");
+                var outboxMessage = await _context.ExecuteInTransactionAsync(async transactionCancellationToken =>
                 {
-                    _context.PendingEmailConfirmation.RemoveRange(
-                        _context.PendingEmailConfirmation.Where(p => p.UserID == existingEntity.ID)
-                    );
+                    var recentlyQueued = await EmailConfirmationQueuePolicy.WasRecentlyQueuedAsync(
+                        _context,
+                        existingEntity.ID,
+                        _clock.UtcNow,
+                        transactionCancellationToken);
+                    EmailOutboxMessage? message = null;
+                    if (!recentlyQueued)
+                    {
+                        await _context.PendingEmailConfirmation
+                            .Where(confirmation =>
+                                confirmation.UserID == existingEntity.ID &&
+                                confirmation.RevokedAt == null)
+                            .ExecuteUpdateAsync(
+                                updates => updates.SetProperty(
+                                    confirmation => confirmation.RevokedAt,
+                                    _clock.UtcNow),
+                                transactionCancellationToken);
 
-                    var rawToken = _pendingEmailConfirmationService.Create(existingEntity, request.RememberMe);
-                    await _context.SaveChangesAsync(cancellationToken);
+                        var confirmation = _pendingEmailConfirmationService.Create(
+                            existingEntity,
+                            request.RememberMe);
+                        message = _emailOutboxService.EnqueueConfirmation(confirmation);
+                    }
+                    await _context.SaveChangesAsync(transactionCancellationToken);
+                    return message;
+                }, cancellationToken);
 
-                    await _userNotificationService.SendEmailConfirmationAsync(existingEntity, rawToken);
-
-                    response.ResultType = ResultType.Forbidden;
-                    response.lstError.Add("User lacks confirmation.");
-                    return response;
+                if (outboxMessage is not null)
+                {
+                    await _emailOutboxService.AttemptImmediateDispatchAsync(outboxMessage.ID, cancellationToken);
                 }
 
-                await _authService.AuthSetupAsync(existingEntity, request.RememberMe);
-                await _context.SaveChangesAsync(cancellationToken);
-
-                response.Data = new LC_Response
-                {
-                    Username = existingEntity.Username!,
-                    Role = existingEntity.Role.Name!
-                };
-            } catch (DbUpdateException dbEx)
-            {
-                response.ResultType = ResultType.ServerError;
-                response.lstError.Add("An error occurred while updating user authentication data.");
-            } catch (Exception ex)
-            {
-                response.ResultType = ResultType.ServerError;
-                response.lstError.Add("Unexpected error occurred.");
+                response.ResultType = ResultType.Forbidden;
+                response.lstError.Add("User lacks confirmation.");
+                return response;
             }
+
+            var session = _authService.PrepareSession(existingEntity, request.RememberMe);
+            await _context.SaveChangesAsync(cancellationToken);
+            _authService.PublishSession(session);
+
+            response.Data = new LC_Response
+            {
+                Username = existingEntity.Username!,
+                Role = existingEntity.Role.Name!
+            };
 
             return response;
         }
     }
-} 
+}

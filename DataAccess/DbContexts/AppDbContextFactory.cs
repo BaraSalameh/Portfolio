@@ -7,17 +7,21 @@ public sealed class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbConte
 {
     public AppDbContext CreateDbContext(string[] args)
     {
-        var rawConnectionString = Environment.GetEnvironmentVariable("DATABASE_URL_UNPOOLED")
-            ?? Environment.GetEnvironmentVariable("DATABASE_URL")
-            ?? throw new InvalidOperationException(
-                "DATABASE_URL_UNPOOLED or DATABASE_URL must be configured for EF Core operations.");
+        var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL_UNPOOLED");
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            throw new InvalidOperationException(
+                "DATABASE_URL_UNPOOLED is required for design-time migration operations; pooled runtime connections are not accepted.");
+        }
+        PostgreSqlConnectionString.EnsureDirectMigrationEndpoint(connectionString);
+        PostgreSqlConnectionString.EnsureSecureRemoteTransport(connectionString);
 
         var options = new DbContextOptionsBuilder<AppDbContext>()
             .UseNpgsql(
-                PostgreSqlConnectionString.Normalize(rawConnectionString),
+                PostgreSqlConnectionString.Normalize(connectionString),
                 builder => builder.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName))
+            .UsePortfolioQuerySafety()
             .Options;
-
         return new AppDbContext(options);
     }
 }

@@ -38,38 +38,6 @@ namespace Application.Owner.MappingProfiles
                 .ForMember(dest => dest.Certificate, opt => opt.MapFrom(src => src.LKP_Certificate));
             CreateMap<LKP_Certificate, USLQ_LKP_Certificate>();
 
-            CreateMap<EditDeleteUserSkillCommand, User>()
-                .ForMember(dest => dest.LstUserSkills, opt => opt.MapFrom(src =>
-                    (src.LstUserSkills ?? new List<EDUSC_UserSkill>()).Select(skill => new UserSkill
-                    {
-                        LKP_SkillID = skill.LKP_SkillID,
-
-                        LstEducations = (skill.EducationIDs ?? new List<Guid>())
-                        .Select(eid => new UserSkillEducation
-                        {
-                            EducationID = eid
-                        }).ToList(),
-
-                        LstExperiences = (skill.ExperienceIDs ?? new List<Guid>())
-                        .Select(eid => new UserSkillExperience
-                        {
-                            ExperienceID = eid
-                        }).ToList(),
-
-                        LstProjects = (skill.ProjectIDs ?? new List<Guid>())
-                        .Select(pid => new UserSkillProject
-                        {
-                            ProjectID = pid
-                        }).ToList(),
-
-                        LstCertificates = (skill.CertificateIDs ?? new List<Guid>())
-                        .Select(cid => new UserSkillCertificate
-                        {
-                            CertificateID = cid
-                        }).ToList(),
-                    }).ToList()
-                ));
-
             CreateMap<LKP_Skill, LKP_SLQ_Response>();
         }
     }

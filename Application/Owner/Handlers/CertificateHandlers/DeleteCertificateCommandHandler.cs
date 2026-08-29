@@ -1,7 +1,7 @@
-﻿using Application.Common.Entities;
+using Application.Common.Entities;
 using Application.Common.Services.Interface;
 using Application.Owner.Commands.CertificaeCommands;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,36 +22,24 @@ namespace Application.Owner.Handlers.CertificateHandlers
         {
             var response = new CommandResponse();
 
-            try
-            {
-                var existingEntity = await _context.Certificate
-                    .Include(c => c.LstUserSkillCertificates)
-                    .FirstOrDefaultAsync(x =>
-                        x.UserID == _currentUser.UserID!.Value &&
-                        x.ID == request.ID &&
-                        x.IsDeleted == false,
-                        cancellationToken
-                    );
+            var existingEntity = await _context.Certificate
+                .Include(c => c.LstUserSkillCertificates)
+                .FirstOrDefaultAsync(x =>
+                    x.UserID == _currentUser.UserID!.Value &&
+                    x.ID == request.ID &&
+                    x.IsDeleted == false,
+                    cancellationToken
+                );
 
-                if (existingEntity == null)
-                {
-                    response.lstError.Add("Certificate not found.");
-                    return response;
-                }
+            if (existingEntity == null)
+            {
+                response.lstError.Add("Certificate not found.");
+                return response;
+            }
 
-                existingEntity.IsDeleted = true;
-                existingEntity.DeletedAt = DateTime.UtcNow;
-                existingEntity.LstUserSkillCertificates.Clear();
-                await _context.SaveChangesAsync(cancellationToken);
-            }
-            catch (DbUpdateException dbEx)
-            {
-                response.lstError.Add("Error while deleting the Certificate.");
-            }
-            catch (Exception ex)
-            {
-                response.lstError.Add("Unexpected error occurred.");
-            }
+            existingEntity.IsDeleted = true;
+            existingEntity.LstUserSkillCertificates.Clear();
+            await _context.SaveChangesAsync(cancellationToken);
 
             return response;
         }

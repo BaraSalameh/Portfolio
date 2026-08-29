@@ -3,7 +3,7 @@ using Application.Common.Services.Interface;
 using Application.Owner.Queries.UserQueries;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,26 +26,19 @@ namespace Application.Owner.Handlers.UserHandlers
         {
             var response = new SingleQueryResponse<UIQ_Response>();
 
-            try
-            {
-                var existingEntity = await _context.User
-                    .Where(u => u.ID == _currentUserService.UserID)
-                    .ProjectTo<UIQ_Response>(_mapper.ConfigurationProvider)
-                    .FirstOrDefaultAsync(cancellationToken);
+            var existingEntity = await _context.User
+                .AsNoTracking()
+                .Where(u => u.ID == _currentUserService.UserID)
+                .ProjectTo<UIQ_Response>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(cancellationToken);
 
-                if (existingEntity == null)
-                {
-                    response.lstError.Add("User not found.");
-                    return response;
-                }
-
-                response.Data = existingEntity;
-            }
-            catch
+            if (existingEntity == null)
             {
-                response.lstError.Add("Unexpected error occurred.");
+                response.lstError.Add("User not found.");
+                return response;
             }
 
+            response.Data = existingEntity;
             return response;
         }
     }

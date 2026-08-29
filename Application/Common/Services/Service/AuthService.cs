@@ -3,7 +3,7 @@ using Domain.Entities;
 
 namespace Application.Common.Services.Service
 {
-    public class AuthService : IAuthService // Require SavingChanges after use, It updates the context!
+    public class AuthService : IAuthService
     {
         private readonly ITokenService _tokenService;
         private readonly ICookieService _cookieService;
@@ -14,17 +14,20 @@ namespace Application.Common.Services.Service
             _cookieService = cookieService;
         }
 
-        public Task AuthSetupAsync(User user, bool rememberMe)
+        public AuthenticationSession PrepareSession(User user, bool rememberMe)
         {
             var accessToken = _tokenService.GenerateAccessToken(user);
             var refreshToken = _tokenService.GenerateRefreshToken(rememberMe);
 
-            user.LstRefreshTokens.Add(refreshToken);
+            user.LstRefreshTokens.Add(refreshToken.Entity);
 
-            _cookieService.SetAccessToken(accessToken);
-            _cookieService.SetRefreshToken(refreshToken.Token);
+            return new AuthenticationSession(accessToken, refreshToken.RawToken, rememberMe);
+        }
 
-            return Task.CompletedTask;
+        public void PublishSession(AuthenticationSession session)
+        {
+            _cookieService.SetAccessToken(session.AccessToken);
+            _cookieService.SetRefreshToken(session.RefreshToken, session.RememberMe);
         }
     }
 }

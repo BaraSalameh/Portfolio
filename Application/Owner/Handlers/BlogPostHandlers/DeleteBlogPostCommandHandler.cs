@@ -1,13 +1,13 @@
-﻿using Application.Common.Entities;
+using Application.Common.Entities;
 using Application.Common.Services.Interface;
 using Application.Owner.Commands.BlogPostCommands;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Owner.Handlers.BlogPostHandlers
 {
-    public class DeleteBlogPostCommandHandler: IRequestHandler<DeleteBlogPostCommand, CommandResponse>
+    public class DeleteBlogPostCommandHandler : IRequestHandler<DeleteBlogPostCommand, CommandResponse>
     {
         private readonly ICurrentUserService _currentUser;
         private readonly IAppDbContext _context;
@@ -22,34 +22,22 @@ namespace Application.Owner.Handlers.BlogPostHandlers
         {
             var response = new CommandResponse();
 
-            try
-            {
-                var existingEntity = await _context.BlogPost
-                    .FirstOrDefaultAsync(x =>
-                        x.UserID == _currentUser.UserID!.Value &&
-                        x.ID == request.ID &&
-                        x.IsDeleted == false,
-                        cancellationToken
-                    );
+            var existingEntity = await _context.BlogPost
+                .FirstOrDefaultAsync(x =>
+                    x.UserID == _currentUser.UserID!.Value &&
+                    x.ID == request.ID &&
+                    x.IsDeleted == false,
+                    cancellationToken
+                );
 
-                if (existingEntity == null)
-                {
-                    response.lstError.Add("BlogPost not found.");
-                    return response;
-                }
+            if (existingEntity == null)
+            {
+                response.lstError.Add("BlogPost not found.");
+                return response;
+            }
 
-                existingEntity.IsDeleted = true;
-                existingEntity.DeletedAt = DateTime.UtcNow;
-                await _context.SaveChangesAsync(cancellationToken);
-            }
-            catch (DbUpdateException dbEx)
-            {
-                response.lstError.Add("Error while deleting the BlogPost.");
-            }
-            catch (Exception ex)
-            {
-                response.lstError.Add("Unexpected error occurred");
-            }
+            existingEntity.IsDeleted = true;
+            await _context.SaveChangesAsync(cancellationToken);
 
             return response;
         }

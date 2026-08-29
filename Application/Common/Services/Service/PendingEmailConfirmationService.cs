@@ -18,18 +18,19 @@ namespace Application.Common.Services.Service
             _tokenService = tokenService;
         }
 
-        public string Create(User user, bool rememberMe)
+        public PendingEmailConfirmation Create(User user, bool rememberMe)
         {
-            var rawToken = _tokenService.GenerateRawToken();
-
-            var pendingEmail = new PendingEmailConfirmation {
+            var pendingEmail = new PendingEmailConfirmation
+            {
+                ID = Guid.NewGuid(),
                 RememberMe = rememberMe,
                 ExpiresAt = _dateTimeProvider.UtcNow.Add(ExpirationTimes.PendingEmailTokenLifeTime),
-                TokenHash = _tokenService.HashToken(rawToken),
             };
+            var rawToken = _tokenService.DeriveEmailConfirmationToken(pendingEmail.ID);
+            pendingEmail.TokenHash = _tokenService.HashToken(rawToken);
 
             user.LstPendingEmailConfirmations.Add(pendingEmail);
-            return rawToken;
+            return pendingEmail;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Application.Common.Entities;
+using Application.Common.Entities;
 
 namespace Application.Owner.Queries.CertificateQueries
 {
@@ -7,6 +7,6 @@ namespace Application.Owner.Queries.CertificateQueries
     public class LKP_CLQ_Response
     {
         public Guid ID { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 }

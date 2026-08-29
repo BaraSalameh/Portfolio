@@ -1,20 +1,28 @@
 ﻿using DataAccess.Configurations;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using Domain;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Application.Common.Identity;
+using Application.Common.Constants;
 
 namespace DataAccess.DbContexts
 {
     public class AppDbContext : DbContext, IAppDbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        private readonly Application.Common.Services.Interface.IDateTimeProvider? _dateTimeProvider;
+
+        public AppDbContext(
+            DbContextOptions<AppDbContext> options,
+            Application.Common.Services.Interface.IDateTimeProvider? dateTimeProvider = null) : base(options)
         {
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public DbSet<RefreshToken> RefreshToken { get; set; }
         public DbSet<PendingEmailConfirmation> PendingEmailConfirmation { get; set; }
+        public DbSet<EmailOutboxMessage> EmailOutboxMessage { get; set; }
         public DbSet<Role> Role { get; set; }
         public DbSet<User> User { get; set; }
         public DbSet<UserSkill> UserSkill { get; set; }
@@ -53,7 +61,74 @@ namespace DataAccess.DbContexts
             modelBuilder = OnModelCreateKeys(modelBuilder);
             modelBuilder = OnModelCreateRelations(modelBuilder);
 
+            // Physical cascade deletes are incompatible with the application's
+            // soft-delete model. Required dependents must be removed or archived
+            // intentionally by the owning use case.
+            foreach (var foreignKey in modelBuilder.Model.GetEntityTypes().SelectMany(entity => entity.GetForeignKeys()))
+            {
+                foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
+            }
+
             base.OnModelCreating(modelBuilder);
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            ApplyPersistenceConventions();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task<TResult> ExecuteInTransactionAsync<TResult>(
+            Func<CancellationToken, Task<TResult>> operation,
+            CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(operation);
+
+            // A composed application service may already own the unit of work.
+            // In that case participate in it; only the creator may commit or roll
+            // back the transaction.
+            if (Database.CurrentTransaction is not null)
+            {
+                return await operation(cancellationToken);
+            }
+
+            await using var transaction = await Database.BeginTransactionAsync(cancellationToken);
+            var result = await operation(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+            return result;
+        }
+
+        internal void ApplyPersistenceConventions()
+        {
+            var now = _dateTimeProvider?.UtcNow ?? DateTime.UtcNow;
+
+            foreach (var entry in ChangeTracker.Entries<AbstractEntity>())
+            {
+                if (entry.State == EntityState.Deleted)
+                {
+                    entry.State = EntityState.Modified;
+                    entry.Entity.IsDeleted = true;
+                }
+
+                if (entry.State == EntityState.Added)
+                {
+                    entry.Entity.CreatedAt = now;
+                    entry.Entity.IsDeleted = false;
+                    entry.Entity.DeletedAt = null;
+                    continue;
+                }
+
+                if (entry.State != EntityState.Modified)
+                {
+                    continue;
+                }
+
+                entry.Entity.UpdatedAt = now;
+                if (entry.Entity.IsDeleted)
+                {
+                    entry.Entity.DeletedAt = now;
+                }
+            }
         }
 
         private ModelBuilder OnModelCreateKeys(ModelBuilder modelBuilder)
@@ -83,8 +158,56 @@ namespace DataAccess.DbContexts
 
                     modelBuilder.Entity(clrType).Property(nameof(AbstractEntity.IsDeleted))
                         .HasDefaultValue(false);
+
+                    // PostgreSQL's system xmin column provides migration-free
+                    // optimistic concurrency for every mutable audited entity.
+                    modelBuilder.Entity(clrType).Property<uint>("xmin").IsRowVersion();
+
+                    var entityParameter = System.Linq.Expressions.Expression.Parameter(clrType, "entity");
+                    var isDeleted = System.Linq.Expressions.Expression.Property(
+                        entityParameter,
+                        nameof(AbstractEntity.IsDeleted));
+                    var activeEntityFilter = System.Linq.Expressions.Expression.Lambda(
+                        System.Linq.Expressions.Expression.Equal(
+                            isDeleted,
+                            System.Linq.Expressions.Expression.Constant(false)),
+                        entityParameter);
+                    modelBuilder.Entity(clrType).HasQueryFilter(activeEntityFilter);
                 }
             }
+
+            // Required dependents mirror the active-record filter of their
+            // principal. This makes soft-delete semantics explicit and avoids
+            // EF producing different results depending on whether a required
+            // navigation is included in the query.
+            modelBuilder.Entity<User>()
+                .HasQueryFilter(user => !user.Role.IsDeleted);
+            modelBuilder.Entity<PendingEmailConfirmation>()
+                .HasQueryFilter(confirmation => !confirmation.User.Role.IsDeleted);
+            modelBuilder.Entity<RefreshToken>()
+                .HasQueryFilter(token => !token.User.Role.IsDeleted);
+            modelBuilder.Entity<BlogPostTag>()
+                .HasQueryFilter(relation => !relation.BlogPost.IsDeleted);
+            modelBuilder.Entity<UserLanguage>()
+                .HasQueryFilter(relation =>
+                    !relation.LKP_Language.IsDeleted &&
+                    !relation.LKP_LanguageProficiency!.IsDeleted);
+            modelBuilder.Entity<UserSkillCertificate>()
+                .HasQueryFilter(relation =>
+                    !relation.UserSkill.IsDeleted &&
+                    !relation.Certificate.IsDeleted);
+            modelBuilder.Entity<UserSkillEducation>()
+                .HasQueryFilter(relation =>
+                    !relation.UserSkill.IsDeleted &&
+                    !relation.Education.IsDeleted);
+            modelBuilder.Entity<UserSkillExperience>()
+                .HasQueryFilter(relation =>
+                    !relation.UserSkill.IsDeleted &&
+                    !relation.Experience.IsDeleted);
+            modelBuilder.Entity<UserSkillProject>()
+                .HasQueryFilter(relation =>
+                    !relation.UserSkill.IsDeleted &&
+                    !relation.Project.IsDeleted);
 
             // Converter for DateOnly ↔ DateTime
             var dateOnlyConverter = new ValueConverter<DateOnly, DateTime>(
@@ -109,7 +232,23 @@ namespace DataAccess.DbContexts
                 }
             }
 
-            modelBuilder.Entity<PendingEmailConfirmation>().HasIndex(p => new { p.TokenHash });
+            modelBuilder.Entity<RefreshToken>().HasIndex(token => token.Token).IsUnique();
+            modelBuilder.Entity<RefreshToken>().HasIndex(token => new { token.UserID, token.IsRevoked });
+            modelBuilder.Entity<RefreshToken>().HasIndex(token => token.ExpiresAt);
+            modelBuilder.Entity<PendingEmailConfirmation>().HasIndex(p => p.TokenHash).IsUnique();
+            modelBuilder.Entity<PendingEmailConfirmation>().HasIndex(p => p.ExpiresAt);
+            modelBuilder.Entity<PendingEmailConfirmation>()
+                .HasIndex(p => p.UserID)
+                .IsUnique()
+                .HasFilter("\"RevokedAt\" IS NULL");
+            modelBuilder.Entity<EmailOutboxMessage>()
+                .HasIndex(message => new { message.ProcessedAt, message.NextAttemptAt, message.LockedUntil });
+            modelBuilder.Entity<EmailOutboxMessage>()
+                .HasIndex(message => new { message.Kind, message.CreatedAt });
+            modelBuilder.Entity<EmailOutboxMessage>()
+                .HasIndex(message => new { message.Kind, message.AggregateID })
+                .IsUnique()
+                .HasFilter("\"ProcessedAt\" IS NULL");
             modelBuilder.Entity<BlogPostTag>().HasKey(pt => new { pt.BlogPostID, pt.TagId });
             modelBuilder.Entity<UserLanguage>().HasKey(pt => new { pt.UserID, pt.LKP_LanguageID });
             modelBuilder.Entity<UserSkillEducation>().HasKey(use => new { use.UserSkillID, use.EducationID });
@@ -120,9 +259,152 @@ namespace DataAccess.DbContexts
             modelBuilder.Entity<UserChartPreference>().HasKey(ucp => new { ucp.UserID, ucp.LKP_WidgetID, ucp.LKP_ChartTypeID });
             modelBuilder.Entity<User>().HasIndex(x => x.Email).IsUnique();
             modelBuilder.Entity<User>().HasIndex(x => x.Username).IsUnique();
+            modelBuilder.Entity<User>().Property(x => x.Firstname).HasMaxLength(100);
+            modelBuilder.Entity<User>().Property(x => x.Lastname).HasMaxLength(100);
+            modelBuilder.Entity<User>().Property(x => x.Email).HasMaxLength(320);
+            modelBuilder.Entity<User>().Property(x => x.Username).HasMaxLength(UsernameGenerator.MaxLength);
+            modelBuilder.Entity<User>().Property(x => x.Password).HasMaxLength(1024);
+            modelBuilder.Entity<User>().Property(x => x.Title).HasMaxLength(200);
+            modelBuilder.Entity<User>().Property(x => x.Bio).HasMaxLength(5000);
+            modelBuilder.Entity<User>().Property(x => x.Phone).HasMaxLength(50);
+            modelBuilder.Entity<User>().Property(x => x.ProfilePicture).HasMaxLength(2048);
+            modelBuilder.Entity<User>().Property(x => x.CoverPhoto).HasMaxLength(2048);
+
+            modelBuilder.Entity<Project>().Property(x => x.Title).HasMaxLength(200);
+            modelBuilder.Entity<Project>().Property(x => x.Description).HasMaxLength(5000);
+            modelBuilder.Entity<Project>().Property(x => x.LiveLink).HasMaxLength(2048);
+            modelBuilder.Entity<Project>().Property(x => x.SourceCode).HasMaxLength(2048);
+            modelBuilder.Entity<Project>().Property(x => x.ImageUrl).HasMaxLength(2048);
+            modelBuilder.Entity<Experience>().Property(x => x.JobTitle).HasMaxLength(200);
+            modelBuilder.Entity<Experience>().Property(x => x.CompanyName).HasMaxLength(200);
+            modelBuilder.Entity<Experience>().Property(x => x.Location).HasMaxLength(300);
+            modelBuilder.Entity<Experience>().Property(x => x.Description).HasMaxLength(5000);
+            modelBuilder.Entity<Education>().Property(x => x.Description).HasMaxLength(5000);
+            modelBuilder.Entity<Certificate>().Property(x => x.CredintialID).HasMaxLength(300);
+            modelBuilder.Entity<Certificate>().Property(x => x.CredintialUrl).HasMaxLength(2048);
+            modelBuilder.Entity<CertificateMedia>().Property(x => x.Url).HasMaxLength(2048);
+            modelBuilder.Entity<SocialLink>().Property(x => x.Platform).HasMaxLength(100);
+            modelBuilder.Entity<SocialLink>().Property(x => x.Url).HasMaxLength(2048);
+            modelBuilder.Entity<SocialLink>().Property(x => x.Icon).HasMaxLength(2048);
+            modelBuilder.Entity<BlogPost>().Property(x => x.Title).HasMaxLength(200);
+            modelBuilder.Entity<BlogPost>().Property(x => x.Slug).HasMaxLength(200);
+            modelBuilder.Entity<BlogPost>().Property(x => x.Content).HasMaxLength(100000);
+            modelBuilder.Entity<BlogPost>().Property(x => x.Thumbnail).HasMaxLength(2048);
+            modelBuilder.Entity<BlogPost>().Property(x => x.Excerpt).HasMaxLength(5000);
+            modelBuilder.Entity<ContactMessage>().Property(x => x.Name).HasMaxLength(100);
+            modelBuilder.Entity<ContactMessage>().Property(x => x.Email).HasMaxLength(320);
+            modelBuilder.Entity<ContactMessage>().Property(x => x.Subject).HasMaxLength(200);
+            modelBuilder.Entity<ContactMessage>().Property(x => x.Message).HasMaxLength(5000);
+            modelBuilder.Entity<UserPreference>().Property(x => x.Value).HasMaxLength(1000);
+            modelBuilder.Entity<UserChartPreference>().Property(x => x.GroupBy).HasMaxLength(100);
+            modelBuilder.Entity<UserChartPreference>().Property(x => x.ValueSource).HasMaxLength(200);
+
+            modelBuilder.Entity<Role>().Property(x => x.Name).HasMaxLength(100);
+            modelBuilder.Entity<Tag>().Property(x => x.Name).HasMaxLength(100);
+            modelBuilder.Entity<LKP_Preference>().Property(x => x.Name).HasMaxLength(100);
+            modelBuilder.Entity<LKP_Widget>().Property(x => x.Name).HasMaxLength(100);
+            modelBuilder.Entity<LKP_ChartType>().Property(x => x.Name).HasMaxLength(100);
+            modelBuilder.Entity<LKP_Certificate>().Property(x => x.Name).HasMaxLength(100);
+            modelBuilder.Entity<LKP_Language>().Property(x => x.Name).HasMaxLength(100);
+            modelBuilder.Entity<LKP_LanguageProficiency>().Property(x => x.Level).HasMaxLength(100);
+            modelBuilder.Entity<LKP_Degree>().Property(x => x.Name).HasMaxLength(100);
+            modelBuilder.Entity<LKP_Degree>().Property(x => x.Abbreviation).HasMaxLength(100);
+            modelBuilder.Entity<LKP_FieldOfStudy>().Property(x => x.Name).HasMaxLength(100);
+            modelBuilder.Entity<LKP_Institution>().Property(x => x.Name).HasMaxLength(100);
+            modelBuilder.Entity<LKP_Institution>().Property(x => x.Logo).HasMaxLength(2048);
+            modelBuilder.Entity<LKP_Skill>().Property(x => x.Name).HasMaxLength(100);
+            modelBuilder.Entity<LKP_Skill>().Property(x => x.IconUrl).HasMaxLength(2048);
+            modelBuilder.Entity<LKP_BlogPostStatus>().Property(x => x.Name).HasMaxLength(100);
+
+            modelBuilder.Entity<RefreshToken>().Property(x => x.Token).HasMaxLength(64);
+            modelBuilder.Entity<RefreshToken>().Property(x => x.CreatedByIp).HasMaxLength(45);
+            modelBuilder.Entity<PendingEmailConfirmation>().Property(x => x.TokenHash).HasMaxLength(64);
+            modelBuilder.Entity<EmailOutboxMessage>().Property(x => x.LastError).HasMaxLength(2000);
+
+            modelBuilder.Entity<User>().ToTable(table => table.HasCheckConstraint(
+                "CK_User_Gender",
+                "\"Gender\" IS NULL OR \"Gender\" BETWEEN 0 AND 2"));
+            modelBuilder.Entity<Project>().ToTable(table => table.HasCheckConstraint(
+                "CK_Project_Order",
+                "\"Order\" >= 0"));
+            modelBuilder.Entity<Education>().ToTable(table =>
+            {
+                table.HasCheckConstraint("CK_Education_Order", "\"Order\" >= 0");
+                table.HasCheckConstraint(
+                    "CK_Education_DateRange",
+                    "\"EndDate\" IS NULL OR \"EndDate\" >= \"StartDate\"");
+            });
+            modelBuilder.Entity<Experience>().ToTable(table =>
+            {
+                table.HasCheckConstraint("CK_Experience_Order", "\"Order\" >= 0");
+                table.HasCheckConstraint(
+                    "CK_Experience_DateRange",
+                    "\"EndDate\" IS NULL OR \"EndDate\" >= \"StartDate\"");
+            });
+            modelBuilder.Entity<Certificate>().ToTable(table =>
+            {
+                table.HasCheckConstraint("CK_Certificate_Order", "\"Order\" >= 0");
+                table.HasCheckConstraint(
+                    "CK_Certificate_DateRange",
+                    "\"IssueDate\" IS NULL OR \"ExpirationDate\" IS NULL OR \"ExpirationDate\" >= \"IssueDate\"");
+            });
+            modelBuilder.Entity<EmailOutboxMessage>().ToTable(table =>
+            {
+                table.HasCheckConstraint(
+                    "CK_EmailOutboxMessage_Kind",
+                    "\"Kind\" IN (1, 2)");
+                table.HasCheckConstraint(
+                    "CK_EmailOutboxMessage_AttemptCount",
+                    $"\"AttemptCount\" BETWEEN 0 AND {EmailOutboxPolicy.MaximumAttempts}");
+                table.HasCheckConstraint(
+                    "CK_EmailOutboxMessage_LeasePair",
+                    "(\"LockID\" IS NULL) = (\"LockedUntil\" IS NULL)");
+                table.HasCheckConstraint(
+                    "CK_EmailOutboxMessage_ProcessedLease",
+                    "\"ProcessedAt\" IS NULL OR \"LockID\" IS NULL");
+            });
+            modelBuilder.Entity<CertificateMedia>().HasIndex(x => x.CertificateID);
+            modelBuilder.Entity<CertificateMedia>()
+                .HasIndex(x => new { x.CertificateID, x.Url })
+                .IsUnique()
+                .HasFilter("\"IsDeleted\" = false");
+            modelBuilder.Entity<User>().HasIndex(x => new { x.IsConfirmed, x.CreatedAt, x.ID });
+            modelBuilder.Entity<Project>().HasIndex(x => new { x.UserID, x.IsDeleted, x.Order, x.ID });
+            modelBuilder.Entity<Education>().HasIndex(x => new { x.UserID, x.IsDeleted, x.Order, x.ID });
+            modelBuilder.Entity<Experience>().HasIndex(x => new { x.UserID, x.IsDeleted, x.Order, x.ID });
+            modelBuilder.Entity<Certificate>().HasIndex(x => new { x.UserID, x.IsDeleted, x.Order, x.ID });
+            modelBuilder.Entity<ContactMessage>().HasIndex(x => new { x.UserID, x.IsDeleted, x.CreatedAt });
+            modelBuilder.Entity<ContactMessage>()
+                .HasIndex(x => new { x.UserID, x.Email, x.CreatedAt })
+                .HasDatabaseName("IX_ContactMessage_SubmissionCooldown")
+                .HasFilter("\"IsDeleted\" = false");
+            modelBuilder.Entity<BlogPost>().HasIndex(x => new { x.UserID, x.IsDeleted, x.CreatedAt });
+            modelBuilder.Entity<BlogPost>().HasIndex(x => new
+            {
+                x.UserID,
+                x.LKP_BlogPostStatusID,
+                x.IsDeleted,
+                x.PublishedAt,
+                x.ID
+            }).HasDatabaseName("IX_BlogPost_PublicVisibility");
+            modelBuilder.Entity<BlogPost>()
+                .HasIndex(x => new { x.UserID, x.Slug })
+                .IsUnique()
+                .HasFilter("\"IsDeleted\" = false");
+            modelBuilder.Entity<SocialLink>().HasIndex(x => new { x.UserID, x.IsDeleted });
+            modelBuilder.Entity<UserSkill>()
+                .HasIndex(x => new { x.UserID, x.LKP_SkillID })
+                .IsUnique()
+                .HasFilter("\"IsDeleted\" = false");
             modelBuilder.Entity<User>().Property(x => x.IsConfirmed).HasDefaultValue(false);
-            modelBuilder.Entity<LKP_Language>().HasIndex(x => x.Name).IsUnique();
-            modelBuilder.Entity<LKP_LanguageProficiency>().HasIndex(x => x.Level).IsUnique();
+            modelBuilder.Entity<LKP_Language>()
+                .HasIndex(x => x.Name)
+                .IsUnique()
+                .HasFilter("\"IsDeleted\" = false");
+            modelBuilder.Entity<LKP_LanguageProficiency>()
+                .HasIndex(x => x.Level)
+                .IsUnique()
+                .HasFilter("\"IsDeleted\" = false");
 
             modelBuilder.ApplyConfiguration(new RoleSeedConfiguration());
             modelBuilder.ApplyConfiguration(new InstitutionSeedConfiguration());

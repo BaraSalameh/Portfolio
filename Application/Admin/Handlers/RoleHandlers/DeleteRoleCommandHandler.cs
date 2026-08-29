@@ -1,8 +1,9 @@
-﻿using Application.Admin.Commands.RoleCommands;
+using Application.Admin.Commands.RoleCommands;
 using Application.Common.Entities;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Domain.Enums;
 
 namespace Application.Admin.Handlers.RoleHandlers
 {
@@ -19,29 +20,29 @@ namespace Application.Admin.Handlers.RoleHandlers
         {
             var response = new CommandResponse();
 
-            try
+            if (request.ID == RoleIdentifiers.Admin || request.ID == RoleIdentifiers.Owner)
             {
-                var existingEntity = await _context.Role
-                    .FirstOrDefaultAsync(x => x.ID == request.ID && x.IsDeleted == false, cancellationToken);
+                response.lstError.Add("System roles cannot be deleted.");
+                return response;
+            }
 
-                if (existingEntity == null)
-                {
-                    response.lstError.Add("Role not found.");
-                    return response;
-                }
+            var existingEntity = await _context.Role
+                .FirstOrDefaultAsync(x => x.ID == request.ID && x.IsDeleted == false, cancellationToken);
 
-                existingEntity.IsDeleted = true;
-                existingEntity.DeletedAt = DateTime.UtcNow;
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException dbEx)
+            if (existingEntity == null)
             {
-                response.lstError.Add("Error while deleting the Role.");
+                response.lstError.Add("Role not found.");
+                return response;
             }
-            catch (Exception ex)
+
+            if (await _context.User.AnyAsync(user => user.RoleID == request.ID, cancellationToken))
             {
-                response.lstError.Add("Unexpected error occurred.");
+                response.lstError.Add("Role cannot be deleted while it is assigned to users.");
+                return response;
             }
+
+            existingEntity.IsDeleted = true;
+            await _context.SaveChangesAsync(cancellationToken);
 
             return response;
         }

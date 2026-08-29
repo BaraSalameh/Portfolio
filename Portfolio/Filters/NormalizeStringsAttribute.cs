@@ -24,7 +24,7 @@ namespace Portfolio.Filters
 
                 foreach (var prop in props)
                 {
-                    var currentValue = (string)prop.GetValue(argument);
+                    var currentValue = prop.GetValue(argument) as string;
                     if (currentValue != null)
                     {
                         var value = currentValue.Trim();

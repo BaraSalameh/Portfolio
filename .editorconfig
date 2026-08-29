@@ -1,0 +1,6 @@
+root = true
+
+[*.cs]
+# A request cancellation token must flow to cancellable operations. Release
+# builds already promote this warning, like every warning, to an error.
+dotnet_diagnostic.CA2016.severity = warning

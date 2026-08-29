@@ -11,12 +11,7 @@ namespace Application.Owner.MappingProfiles
         {
             CreateMap<AddEditCertificateCommand, Certificate>()
                 .ForMember(dest => dest.LstUserSkillCertificates, opt => opt.Ignore())
-                .ForMember(dest => dest.LstCertificateMedias, opt => opt.MapFrom(src =>
-                    (src.LstCertificateMedias ?? new List<string>()).Select(url => new CertificateMedia
-                    {
-                        Url = url
-                    }).ToList()
-                ));
+                .ForMember(dest => dest.LstCertificateMedias, opt => opt.Ignore());
 
             CreateMap<Certificate, CLQ_Response>()
                 .ForMember(dest => dest.Certificate, opt => opt.MapFrom(src => src.LKP_Certificate))

@@ -2,7 +2,7 @@
 using Application.Common.Services.Interface;
 using Application.Owner.Queries.ExperienceQueries;
 using AutoMapper;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,8 +31,13 @@ namespace Application.Owner.Handlers.ExperienceHandlers
                 .OrderBy(e => e.Order);
 
 
-            response.Items = await _mapper.ProjectTo<ELQ_Response>(existingEntity).ToListAsync(cancellationToken);
-            response.RowCount = response.Items.Count();
+            response.RowCount = await existingEntity.CountAsync(cancellationToken);
+            response.Items = await _mapper.ProjectTo<ELQ_Response>(
+                existingEntity
+                    .ThenBy(entity => entity.ID)
+                    .Skip(request.Offset)
+                    .Take(request.PageSize))
+                .ToListAsync(cancellationToken);
 
             return response;
         }

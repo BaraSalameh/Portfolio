@@ -1,11 +1,12 @@
 ﻿using Application.Common.Entities;
 using Application.Owner.Queries.UserSkillQueries;
 using AutoMapper;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using Application.Common.Text;
 
 namespace Application.Owner.Handlers.UserSkillHandlers
 {
@@ -27,7 +28,7 @@ namespace Application.Owner.Handlers.UserSkillHandlers
 
             if (!string.IsNullOrEmpty(request.Search))
             {
-                var search = request.Search.ToLower();
+                var search = SearchTerm.Normalize(request.Search);
                 Filter = f =>
                     f.Name.ToLower().Contains(search);
             }
@@ -37,14 +38,13 @@ namespace Application.Owner.Handlers.UserSkillHandlers
                 .Where(Filter);
 
             response.RowCount = await existingEntity.CountAsync(cancellationToken);
-            var pageNumber = request.PageNumber;
             var pageSize = request.PageSize;
 
             response.Items =
                 await _mapper.ProjectTo<LKP_SLQ_Response>(
                     existingEntity
                         .OrderBy(u => u.Name)
-                        .Skip(pageNumber * pageSize)
+                        .Skip(request.Offset)
                         .Take(pageSize)
                 ).ToListAsync(cancellationToken);
 

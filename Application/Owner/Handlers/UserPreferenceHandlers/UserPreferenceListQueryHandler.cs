@@ -2,7 +2,7 @@
 using Application.Common.Services.Interface;
 using Application.Owner.Queries.UserPreferenceQueries;
 using AutoMapper;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,8 +29,13 @@ namespace Application.Owner.Handlers.UserPreferenceHandlers
                 .AsNoTracking()
                 .Where(up => up.UserID == _currentUserService.UserID);
 
-            response.Items = await _mapper.ProjectTo<UPLQ_Response>(existingEntity).ToListAsync(cancellationToken);
-            response.RowCount = response.Items.Count();
+            response.RowCount = await existingEntity.CountAsync(cancellationToken);
+            response.Items = await _mapper.ProjectTo<UPLQ_Response>(
+                existingEntity
+                    .OrderBy(entity => entity.LKP_PreferenceID)
+                    .Skip(request.Offset)
+                    .Take(request.PageSize))
+                .ToListAsync(cancellationToken);
 
             return response;
         }

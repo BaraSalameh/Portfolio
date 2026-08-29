@@ -1,7 +1,7 @@
 ﻿using Application.Client.Queries;
 using Application.Common.Entities;
 using AutoMapper;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -24,32 +24,24 @@ namespace Application.Client.Handlers
         {
             var response = new ListQueryResponse<ULQ_Response>();
 
-            var existingEntity = _context.User.Where(u => u.IsConfirmed);
+            var existingEntity = _context.User
+                .AsNoTracking()
+                .Where(u => u.IsConfirmed);
 
             if (!string.IsNullOrEmpty(request.Search))
             {
-                var search = request.Search;
-                var terms = request.Search.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-                existingEntity = existingEntity.Where(u =>
-                    u.Username.Contains(search) ||
-                    u.Email.Contains(search) ||
-                    terms.All(t => 
-                        u.Firstname.Contains(t) || 
-                        u.Lastname.Contains(t)
-                    )
-                );
+                existingEntity = PublicUserSearch.Apply(existingEntity, request.Search);
             }
 
             response.RowCount = await existingEntity.CountAsync(cancellationToken);
-            var pageNumber = request.PageNumber;
             var pageSize = request.PageSize;
 
             response.Items =
                 await _mapper.ProjectTo<ULQ_Response>(
                     existingEntity
                         .OrderBy(u => u.CreatedAt)
-                        .Skip(pageNumber * pageSize)
+                        .ThenBy(u => u.ID)
+                        .Skip(request.Offset)
                         .Take(pageSize)
                 ).ToListAsync(cancellationToken);
 

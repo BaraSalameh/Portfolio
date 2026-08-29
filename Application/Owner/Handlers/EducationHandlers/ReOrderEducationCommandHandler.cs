@@ -1,7 +1,7 @@
-﻿using Application.Common.Entities;
+using Application.Common.Entities;
 using Application.Common.Services.Interface;
 using Application.Owner.Commands.EducationCommands;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,36 +21,31 @@ namespace Application.Owner.Handlers.EducationHandlers
         public async Task<CommandResponse> Handle(ReOrderEducationCommand request, CancellationToken cancellationToken)
         {
             var response = new CommandResponse();
-
-            try
+            if (request.EducationIdsInOrder.Count != request.EducationIdsInOrder.Distinct().Count())
             {
-                var educations = await _context.Education
-                    .Where(e => e.UserID == _currentUserService.UserID && request.EducationIdsInOrder.Contains(e.ID))
-                    .ToListAsync();
-
-                if (educations.Count != request.EducationIdsInOrder.Count)
-                {
-                    response.lstError.Add("Mismatch between IDs in the request and database records.");
-                    return response;
-                }
-
-                for (int i = 0; i < request.EducationIdsInOrder.Count; i++)
-                {
-                    var id = request.EducationIdsInOrder[i];
-                    var edu = educations.First(e => e.ID == id);
-                    edu.Order = i + 1;
-                }
-
-                await _context.SaveChangesAsync();
+                response.lstError.Add("Duplicate education IDs are not allowed.");
+                return response;
             }
-            catch(DbUpdateException dbEx)
+
+            var educations = await _context.Education
+                .Where(entity => entity.UserID == _currentUserService.UserID
+                    && !entity.IsDeleted)
+                .OrderBy(entity => entity.ID)
+                .Take(501)
+                .ToDictionaryAsync(entity => entity.ID, cancellationToken);
+
+            if (educations.Count > 500 || !educations.Keys.ToHashSet().SetEquals(request.EducationIdsInOrder))
             {
-                response.lstError.Add("Error while re ordering education.");
+                response.lstError.Add("The request must contain every active education record exactly once.");
+                return response;
             }
-            catch (Exception ex)
+
+            for (int i = 0; i < request.EducationIdsInOrder.Count; i++)
             {
-                response.lstError.Add("Unexpected error occurred.");
+                educations[request.EducationIdsInOrder[i]].Order = i + 1;
             }
+
+            await _context.SaveChangesAsync(cancellationToken);
 
             return response;
         }

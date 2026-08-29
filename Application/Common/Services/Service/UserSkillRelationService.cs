@@ -1,5 +1,5 @@
 ﻿using Application.Common.Services.Interface;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -15,6 +15,22 @@ namespace Application.Common.Services.Service
             _context = context;
         }
 
+        public async Task<bool> AreValidSkillIdsAsync(
+            IReadOnlyCollection<Guid> skillIds,
+            CancellationToken cancellationToken)
+        {
+            var distinctIds = skillIds.Distinct().ToList();
+            if (distinctIds.Count == 0)
+            {
+                return true;
+            }
+
+            var existingCount = await _context.LKP_Skill.CountAsync(
+                skill => distinctIds.Contains(skill.ID),
+                cancellationToken);
+            return existingCount == distinctIds.Count;
+        }
+
         public async Task<List<TJoin>> CreateUserSkillRelationsAsync<TJoin>(
             List<Guid> skillIds,
             Guid userId,
@@ -26,20 +42,27 @@ namespace Application.Common.Services.Service
         )
             where TJoin : class, new()
         {
-            var userSkills = new List<TJoin>();
-
-            foreach (var skillId in skillIds)
+            var distinctSkillIds = skillIds.Distinct().ToList();
+            if (distinctSkillIds.Count == 0)
             {
-                var existingSkill = await _context.UserSkill
-                    .Include(joinCollectionSelector)
-                    .FirstOrDefaultAsync(us => us.UserID == userId && us.LKP_SkillID == skillId, cancellationToken);
+                return [];
+            }
 
-                if (existingSkill != null)
+            var existingSkills = await _context.UserSkill
+                .Where(skill => skill.UserID == userId && distinctSkillIds.Contains(skill.LKP_SkillID))
+                .Include(joinCollectionSelector)
+                .ToDictionaryAsync(skill => skill.LKP_SkillID, cancellationToken);
+
+            var userSkills = new List<TJoin>(distinctSkillIds.Count);
+            var joinCollectionAccessor = joinCollectionSelector.Compile();
+            var parentIdAccessor = getParentIdExpr.Compile();
+
+            foreach (var skillId in distinctSkillIds)
+            {
+                if (existingSkills.TryGetValue(skillId, out var existingSkill))
                 {
-                    var compiledParentIdGetter = getParentIdExpr.Compile();
-
-                    var joinCollection = joinCollectionSelector.Compile().Invoke(existingSkill);
-                    var existingJoin = joinCollection.FirstOrDefault(j => compiledParentIdGetter(j) == parentEntityId);
+                    var joinCollection = joinCollectionAccessor(existingSkill);
+                    var existingJoin = joinCollection.FirstOrDefault(join => parentIdAccessor(join) == parentEntityId);
 
                     if (existingJoin != null)
                     {
@@ -60,7 +83,7 @@ namespace Application.Common.Services.Service
                         LKP_SkillID = skillId,
                     };
 
-                    var joinCollection = joinCollectionSelector.Compile().Invoke(newSkill);
+                    var joinCollection = joinCollectionAccessor(newSkill);
                     var newJoin = new TJoin();
                     setParentIdAction(newJoin, parentEntityId);
                     joinCollection.Add(newJoin);
@@ -87,18 +110,19 @@ namespace Application.Common.Services.Service
             where TEntity : class
             where TJoin : class
         {
-            var joinCollection = joinCollectionSelector.Compile().Invoke(parentEntity);
+            var joinCollection = joinCollectionSelector.Compile()(parentEntity);
+            var skillIdAccessor = joinSkillIdSelector.Compile();
+            var distinctSkillIds = newSkillIds.Distinct().ToList();
 
-            // Get existing skill IDs from join entities
             var existingSkillIds = joinCollection
-                .Select(joinSkillIdSelector.Compile())
+                .Select(skillIdAccessor)
                 .ToHashSet();
 
-            var newSkillIdSet = newSkillIds.ToHashSet();
+            var newSkillIdSet = distinctSkillIds.ToHashSet();
 
             // Remove join entities no longer linked
             var toRemove = joinCollection
-                .Where(j => !newSkillIdSet.Contains(joinSkillIdSelector.Compile()(j)))
+                .Where(join => !newSkillIdSet.Contains(skillIdAccessor(join)))
                 .ToList();
 
             foreach (var item in toRemove)
@@ -108,15 +132,19 @@ namespace Application.Common.Services.Service
             }
 
             // Add new links for new skills
-            var toAdd = newSkillIds.Except(existingSkillIds);
+            var toAdd = distinctSkillIds.Except(existingSkillIds).ToList();
+            if (toAdd.Count == 0)
+            {
+                return;
+            }
+
+            var existingUserSkills = await _context.UserSkill
+                .Where(skill => skill.UserID == userId && toAdd.Contains(skill.LKP_SkillID))
+                .ToDictionaryAsync(skill => skill.LKP_SkillID, cancellationToken);
 
             foreach (var skillId in toAdd)
             {
-                // Try find existing UserSkill for user + skill
-                var existingUserSkill = await _context.UserSkill
-                    .FirstOrDefaultAsync(us => us.UserID == userId && us.LKP_SkillID == skillId, cancellationToken);
-
-                if (existingUserSkill == null)
+                if (!existingUserSkills.TryGetValue(skillId, out var existingUserSkill))
                 {
                     existingUserSkill = new UserSkill
                     {

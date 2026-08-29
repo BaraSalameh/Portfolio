@@ -1,9 +1,9 @@
-﻿namespace Domain.Entities
+namespace Domain.Entities
 {
     public class Project : AbstractEntity
     {
         public Guid ID { get; set; }
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
         public string? LiveLink { get; set; }
         public string? SourceCode { get; set; }
@@ -11,11 +11,11 @@
         public bool IsFeatured { get; set; }
         public int Order { get; set; }
         public Guid UserID { get; set; }
-        public User User { get; set; }
+        public User User { get; set; } = null!;
         public Guid? EducationID { get; set; }
-        public Education Education { get; set; }
+        public Education Education { get; set; } = null!;
         public Guid? ExperienceID { get; set; }
-        public Experience Experience { get; set; }
+        public Experience Experience { get; set; } = null!;
         public List<UserSkillProject> LstUserSkillProjects { get; set; } = new List<UserSkillProject>();
     }
 }

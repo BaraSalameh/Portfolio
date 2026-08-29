@@ -16,15 +16,6 @@ namespace Application.Owner.MappingProfiles
             CreateMap<LKP_Language, ULLQ_LKP_Language>();
             CreateMap<LKP_LanguageProficiency, ULLQ_LKP_LanguageProficiency>();
 
-            CreateMap<EditDeleteUserLanguageCommand, User>()
-                .ForMember(dest => dest.LstUserLanguages, opt => opt.MapFrom(src =>
-                    (src.LstLanguages ?? new List<EDULC_LKP_Language>()).Select(id => new UserLanguage
-                    {
-                        LKP_LanguageID = id.LKP_LanguageID,
-                        LKP_LanguageProficiencyID = id.LKP_LanguageProficiencyID
-                    }).ToList()
-                ));
-
             CreateMap<LKP_Language, LKP_LLQ_Response>();
 
             CreateMap<LKP_LanguageProficiency, LKP_LPLQ_Response>();

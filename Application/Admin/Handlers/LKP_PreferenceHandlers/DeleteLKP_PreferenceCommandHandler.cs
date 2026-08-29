@@ -1,6 +1,6 @@
-﻿using Application.Admin.Commands.LKP_PreferenceCommands;
+using Application.Admin.Commands.LKP_PreferenceCommands;
 using Application.Common.Entities;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,29 +19,25 @@ namespace Application.Admin.Handlers.LKP_PreferenceHandlers
         {
             var response = new CommandResponse();
 
-            try
-            {
-                var existingEntity = await _context.LKP_Preference
-                    .FirstOrDefaultAsync(x => x.ID == request.ID && x.IsDeleted == false, cancellationToken);
+            var existingEntity = await _context.LKP_Preference
+                .FirstOrDefaultAsync(x => x.ID == request.ID && x.IsDeleted == false, cancellationToken);
 
-                if (existingEntity == null)
-                {
-                    response.lstError.Add("LKP_Preference not found.");
-                    return response;
-                }
+            if (existingEntity == null)
+            {
+                response.lstError.Add("LKP_Preference not found.");
+                return response;
+            }
 
-                existingEntity.IsDeleted = true;
-                existingEntity.DeletedAt = DateTime.UtcNow;
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException dbEx)
+            if (await _context.UserPreference.AnyAsync(
+                relation => relation.LKP_PreferenceID == request.ID,
+                cancellationToken))
             {
-                response.lstError.Add("Error while deleting the LKP_Preference.");
+                response.lstError.Add("Preference cannot be deleted while it is assigned to users.");
+                return response;
             }
-            catch (Exception ex)
-            {
-                response.lstError.Add("Unexpected error occurred.");
-            }
+
+            existingEntity.IsDeleted = true;
+            await _context.SaveChangesAsync(cancellationToken);
 
             return response;
         }

@@ -1,7 +1,7 @@
-﻿using Application.Common.Entities;
+using Application.Common.Entities;
 using Application.Common.Services.Interface;
 using Application.Owner.Commands.ExperienceCommands;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,36 +21,31 @@ namespace Application.Owner.Handlers.ExperienceHandlers
         public async Task<CommandResponse> Handle(SortExperienceCommand request, CancellationToken cancellationToken)
         {
             var response = new CommandResponse();
-
-            try
+            if (request.ExperienceIdsInOrder.Count != request.ExperienceIdsInOrder.Distinct().Count())
             {
-                var experiences = await _context.Experience
-                    .Where(e => e.UserID == _currentUserService.UserID && request.ExperienceIdsInOrder.Contains(e.ID))
-                    .ToListAsync();
-
-                if (experiences.Count != request.ExperienceIdsInOrder.Count)
-                {
-                    response.lstError.Add("Mismatch between IDs in the request and database records.");
-                    return response;
-                }
-
-                for (int i = 0; i < request.ExperienceIdsInOrder.Count; i++)
-                {
-                    var id = request.ExperienceIdsInOrder[i];
-                    var exp = experiences.First(e => e.ID == id);
-                    exp.Order = i + 1;
-                }
-
-                await _context.SaveChangesAsync();
+                response.lstError.Add("Duplicate experience IDs are not allowed.");
+                return response;
             }
-            catch(DbUpdateException dbEx)
+
+            var experiences = await _context.Experience
+                .Where(entity => entity.UserID == _currentUserService.UserID
+                    && !entity.IsDeleted)
+                .OrderBy(entity => entity.ID)
+                .Take(501)
+                .ToDictionaryAsync(entity => entity.ID, cancellationToken);
+
+            if (experiences.Count > 500 || !experiences.Keys.ToHashSet().SetEquals(request.ExperienceIdsInOrder))
             {
-                response.lstError.Add("Error while re sorting experience.");
+                response.lstError.Add("The request must contain every active experience exactly once.");
+                return response;
             }
-            catch (Exception ex)
+
+            for (int i = 0; i < request.ExperienceIdsInOrder.Count; i++)
             {
-                response.lstError.Add("Unexpected error occurred.");
+                experiences[request.ExperienceIdsInOrder[i]].Order = i + 1;
             }
+
+            await _context.SaveChangesAsync(cancellationToken);
 
             return response;
         }

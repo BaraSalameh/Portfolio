@@ -1,10 +1,12 @@
-﻿using Application.Common.Entities;
+using Application.Common.Entities;
 using MediatR;
+using System.ComponentModel.DataAnnotations;
 
 namespace Application.Owner.Commands.ExperienceCommands
 {
     public class SortExperienceCommand : IRequest<CommandResponse>
     {
-        public List<Guid> ExperienceIdsInOrder { get; set; }
+        [MaxLength(500)]
+        public List<Guid> ExperienceIdsInOrder { get; set; } = [];
     }
 }

@@ -2,7 +2,7 @@
 using Application.Common.Services.Interface;
 using Application.Owner.Queries.UserSkillQueries;
 using AutoMapper;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,8 +29,13 @@ namespace Application.Owner.Handlers.UserSkillHandlers
                 .AsNoTracking()
                 .Where(ul => ul.UserID == _currentUserService.UserID);
 
-            response.Items = await _mapper.ProjectTo<USLQ_Response>(existingEntity).ToListAsync(cancellationToken);
-            response.RowCount = response.Items.Count();
+            response.RowCount = await existingEntity.CountAsync(cancellationToken);
+            response.Items = await _mapper.ProjectTo<USLQ_Response>(
+                existingEntity
+                    .OrderBy(entity => entity.ID)
+                    .Skip(request.Offset)
+                    .Take(request.PageSize))
+                .ToListAsync(cancellationToken);
 
             return response;
         }

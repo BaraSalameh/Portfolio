@@ -1,13 +1,13 @@
-﻿using Application.Common.Entities;
+using Application.Common.Entities;
 using Application.Common.Services.Interface;
 using Application.Owner.Commands.EducationCommands;
-using DataAccess.Interfaces;
+using Application.Common.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Owner.Handlers.EducationHandlers
 {
-    public class DeleteEducationCommandHandler: IRequestHandler<DeleteEducationCommand, CommandResponse>
+    public class DeleteEducationCommandHandler : IRequestHandler<DeleteEducationCommand, CommandResponse>
     {
         private readonly ICurrentUserService _currentUser;
         private readonly IAppDbContext _context;
@@ -22,36 +22,24 @@ namespace Application.Owner.Handlers.EducationHandlers
         {
             var response = new CommandResponse();
 
-            try
-            {
-                var existingEntity = await _context.Education
-                    .Include(e => e.LstUserSkillEducations)
-                    .FirstOrDefaultAsync(x =>
-                        x.UserID == _currentUser.UserID!.Value &&
-                        x.ID == request.ID &&
-                        x.IsDeleted == false,
-                        cancellationToken
-                    );
+            var existingEntity = await _context.Education
+                .Include(e => e.LstUserSkillEducations)
+                .FirstOrDefaultAsync(x =>
+                    x.UserID == _currentUser.UserID!.Value &&
+                    x.ID == request.ID &&
+                    x.IsDeleted == false,
+                    cancellationToken
+                );
 
-                if (existingEntity == null)
-                {
-                    response.lstError.Add("Education not found.");
-                    return response;
-                }
+            if (existingEntity == null)
+            {
+                response.lstError.Add("Education not found.");
+                return response;
+            }
 
-                existingEntity.IsDeleted = true;
-                existingEntity.DeletedAt = DateTime.UtcNow;
-                existingEntity.LstUserSkillEducations.Clear();
-                await _context.SaveChangesAsync(cancellationToken);
-            }
-            catch (DbUpdateException dbEx)
-            {
-                response.lstError.Add("Error while deleting the Education.");
-            }
-            catch (Exception ex)
-            {
-                response.lstError.Add("Unexpected error occurred.");
-            }
+            existingEntity.IsDeleted = true;
+            existingEntity.LstUserSkillEducations.Clear();
+            await _context.SaveChangesAsync(cancellationToken);
 
             return response;
         }

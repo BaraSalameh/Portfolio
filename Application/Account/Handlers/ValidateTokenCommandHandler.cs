@@ -46,7 +46,7 @@ namespace Application.Account.Handlers
                 Username = _currentUserService.Username!,
                 Role = _currentUserService.Role!
             };
-            
+
             return response;
         }
     }
