@@ -89,19 +89,21 @@ namespace Application.Account.Handlers
                     EmailOutboxMessage? message = null;
                     if (!recentlyQueued)
                     {
-                        await _context.PendingEmailConfirmation
+                        var activeConfirmations = await _context.PendingEmailConfirmation
                             .Where(confirmation =>
                                 confirmation.UserID == existingEntity.ID &&
                                 confirmation.RevokedAt == null)
-                            .ExecuteUpdateAsync(
-                                updates => updates.SetProperty(
-                                    confirmation => confirmation.RevokedAt,
-                                    _clock.UtcNow),
-                                transactionCancellationToken);
+                            .ToListAsync(transactionCancellationToken);
+
+                        foreach (var activeConfirmation in activeConfirmations)
+                        {
+                            activeConfirmation.RevokedAt = _clock.UtcNow;
+                        }
 
                         var confirmation = _pendingEmailConfirmationService.Create(
                             existingEntity,
                             request.RememberMe);
+                        _context.PendingEmailConfirmation.Add(confirmation);
                         message = _emailOutboxService.EnqueueConfirmation(confirmation);
                     }
                     await _context.SaveChangesAsync(transactionCancellationToken);

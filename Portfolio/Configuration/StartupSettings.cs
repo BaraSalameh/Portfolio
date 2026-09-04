@@ -118,6 +118,7 @@ public static class StartupSettings
         var port = configuration.GetValue("Email:SmtpPort", 587);
         var timeout = configuration.GetValue("Email:TimeoutMilliseconds", 30000);
         var enableSsl = configuration.GetValue("Email:EnableSsl", true);
+        var useImplicitSsl = configuration.GetValue("Email:UseImplicitSsl", false);
 
         if (required && new[] { host, username, password, from }.Any(string.IsNullOrWhiteSpace))
         {
@@ -127,6 +128,10 @@ public static class StartupSettings
         {
             throw new InvalidOperationException(
                 "Email:EnableSsl must be true in production so SMTP credentials and message contents are encrypted in transit.");
+        }
+        if (useImplicitSsl && !enableSsl)
+        {
+            throw new InvalidOperationException("Email:UseImplicitSsl requires Email:EnableSsl.");
         }
         if (!string.IsNullOrEmpty(host) &&
             (!string.Equals(host, host.Trim(), StringComparison.Ordinal) ||
@@ -157,7 +162,7 @@ public static class StartupSettings
             }
         }
 
-        return new EmailSettings(host, port, username, password, from, enableSsl, timeout);
+        return new EmailSettings(host, port, username, password, from, enableSsl, timeout, useImplicitSsl);
     }
 
     private static HashSet<string> ReadOrigins(IConfiguration configuration, bool isProduction)

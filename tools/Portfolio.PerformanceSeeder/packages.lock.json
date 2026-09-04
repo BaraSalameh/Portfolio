@@ -12,6 +12,20 @@
           "Microsoft.IdentityModel.JsonWebTokens": "8.14.0"
         }
       },
+      "BouncyCastle.Cryptography": {
+        "type": "Transitive",
+        "resolved": "2.6.2",
+        "contentHash": "7oWOcvnntmMKNzDLsdxAYqApt+AjpRpP2CShjMfIa3umZ42UQMvH0tl1qAliYPNYO6vTdcGMqnRrCPmsfzTI1w=="
+      },
+      "MailKit": {
+        "type": "Transitive",
+        "resolved": "4.17.0",
+        "contentHash": "1nUAVLxM9fhT/78we6/AGsCesnpn5dRNLLeRqOfr52Wnk87pzVwo5YMTMyqnmoXrYc7piGhmayiMA/OgDluIjg==",
+        "dependencies": {
+          "MimeKit": "4.17.0",
+          "System.Formats.Asn1": "8.0.1"
+        }
+      },
       "MediatR": {
         "type": "Transitive",
         "resolved": "12.5.0",
@@ -194,6 +208,15 @@
           "Microsoft.IdentityModel.Logging": "8.22.0"
         }
       },
+      "MimeKit": {
+        "type": "Transitive",
+        "resolved": "4.17.0",
+        "contentHash": "h/KXsCreJf8RpR/PSAtlbvYtZFndp9N8Wn1Bs248AL7ITyhn+AiIY5bLTvt60tbN2mu6g8KadtBNWygTji2lqg==",
+        "dependencies": {
+          "BouncyCastle.Cryptography": "2.6.2",
+          "System.Security.Cryptography.Pkcs": "8.0.1"
+        }
+      },
       "Npgsql": {
         "type": "Transitive",
         "resolved": "9.0.3",
@@ -231,6 +254,11 @@
           "Microsoft.IdentityModel.Tokens": "8.22.0"
         }
       },
+      "System.Security.Cryptography.Pkcs": {
+        "type": "Transitive",
+        "resolved": "8.0.1",
+        "contentHash": "CoCRHFym33aUSf/NtWSVSZa99dkd0Hm7OCZUxORBjRB16LNhIEOf8THPqzIYlvKM0nNDAPTRBa1FxEECrgaxxA=="
+      },
       "application": {
         "type": "Project",
         "dependencies": {
@@ -246,6 +274,7 @@
         "dependencies": {
           "Application": "[1.0.0, )",
           "Domain": "[1.0.0, )",
+          "MailKit": "[4.17.0, )",
           "Microsoft.EntityFrameworkCore": "[9.0.19, )",
           "Microsoft.EntityFrameworkCore.Relational": "[9.0.19, )",
           "Microsoft.Extensions.Identity.Core": "[8.0.30, )",

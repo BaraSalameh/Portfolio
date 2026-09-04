@@ -13,7 +13,8 @@ public sealed record EmailSettings(
     string Password,
     string From,
     bool EnableSsl,
-    int TimeoutMilliseconds);
+    int TimeoutMilliseconds,
+    bool UseImplicitSsl = false);
 
 public sealed record BrandingSettings(Uri FrontendUrl, Uri LogoUrl);
 

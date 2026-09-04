@@ -89,6 +89,7 @@ namespace Application.Account.Handlers
                         transactionCancellationToken);
 
                 var confirmation = _pendingEmailConfirmationService.Create(user, rememberMe);
+                _context.PendingEmailConfirmation.Add(confirmation);
                 var message = _emailOutboxService.EnqueueConfirmation(confirmation);
                 await _context.SaveChangesAsync(transactionCancellationToken);
                 return message;

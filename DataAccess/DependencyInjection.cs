@@ -24,7 +24,11 @@ namespace DataAccess
                         .MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)
                         .CommandTimeout(30)
                 ).UsePortfolioQuerySafety());
-            services.AddScoped<IAppDbContext, AppDbContext>();
+            // Resolve the abstraction to the scoped DbContext registered above.
+            // Registering the implementation type again creates a second context,
+            // so transaction-aware collaborators cannot see the handler's transaction.
+            services.AddScoped<IAppDbContext>(provider =>
+                provider.GetRequiredService<AppDbContext>());
             // PasswordHasher<TUser> is stateless after construction. Keeping one
             // instance also ensures the expensive dummy-account hash is generated
             // once per application lifetime rather than once per request.

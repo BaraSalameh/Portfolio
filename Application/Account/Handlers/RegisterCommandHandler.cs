@@ -40,6 +40,16 @@ namespace Application.Account.Handlers
         public async Task<CommandResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
             var response = new CommandResponse();
+            var normalizedEmail = EmailNormalizer.Normalize(request.Email);
+
+            var existingUser = await _context.User
+                .Include(user => user.LstPendingEmailConfirmations)
+                .SingleOrDefaultAsync(user => user.Email == normalizedEmail, cancellationToken);
+            if (existingUser?.IsConfirmed == true)
+            {
+                response.lstError.Add("An account with this email address already exists.");
+                return response;
+            }
 
             var defaultRoleExists = await _context.Role
                 .AsNoTracking()
@@ -50,19 +60,38 @@ namespace Application.Account.Handlers
                 return response;
             }
 
-            var newEntity = _mapper.Map<User>(request);
+            var newEntity = existingUser ?? _mapper.Map<User>(request);
+            if (existingUser is null)
+            {
+                newEntity.ID = Guid.NewGuid();
+                newEntity.CreatedAt = _dateTimeProvider.UtcNow;
+            }
+            else
+            {
+                foreach (var pendingConfirmation in newEntity.LstPendingEmailConfirmations
+                    .Where(confirmation => confirmation.RevokedAt == null))
+                {
+                    pendingConfirmation.RevokedAt = _dateTimeProvider.UtcNow;
+                }
+
+                newEntity.UpdatedAt = _dateTimeProvider.UtcNow;
+            }
+
             newEntity.Firstname = request.Firstname.Trim();
             newEntity.Lastname = request.Lastname.Trim();
-            newEntity.Email = EmailNormalizer.Normalize(request.Email);
+            newEntity.Email = normalizedEmail;
             newEntity.Username = UsernameGenerator.Create(newEntity.Firstname, newEntity.Lastname);
             newEntity.RoleID = RoleIdentifiers.Owner;
-            newEntity.CreatedAt = _dateTimeProvider.UtcNow;
             newEntity.Password = _passwordService.Hash(newEntity, request.Password);
 
-            var confirmation = _pendingEmailConfirmationService.Create(newEntity, request.RememberMe ?? false);
-            var outboxMessage = _emailOutboxService.EnqueueConfirmation(confirmation);
+            if (existingUser is null)
+            {
+                await _context.User.AddAsync(newEntity, cancellationToken);
+            }
 
-            await _context.User.AddAsync(newEntity, cancellationToken);
+            var confirmation = _pendingEmailConfirmationService.Create(newEntity, request.RememberMe ?? false);
+            _context.PendingEmailConfirmation.Add(confirmation);
+            var outboxMessage = _emailOutboxService.EnqueueConfirmation(confirmation);
             await _context.SaveChangesAsync(cancellationToken);
             await _emailOutboxService.AttemptImmediateDispatchAsync(outboxMessage.ID, cancellationToken);
 
