@@ -738,6 +738,18 @@
         "additionalProperties": false,
         "type": "object"
       },
+      "ProfileImageKind": {
+        "description": "",
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "x-enumNames": [
+          "ProfilePicture",
+          "CoverPhoto"
+        ]
+      },
       "ReOrderEducationCommand": {
         "additionalProperties": false,
         "properties": {
@@ -3173,6 +3185,47 @@
         ]
       }
     },
+    "/api/Owner/RemoveProfileImage": {
+      "delete": {
+        "operationId": "Owner_RemoveProfileImage",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "ImageKind",
+            "schema": {
+              "nullable": true,
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/ProfileImageKind"
+                }
+              ]
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Owner"
+        ]
+      }
+    },
     "/api/Owner/SignMessage": {
       "post": {
         "operationId": "Owner_SignMessage",
@@ -3301,6 +3354,52 @@
           "required": true,
           "x-name": "request",
           "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Owner"
+        ]
+      }
+    },
+    "/api/Owner/UpdateProfileImage": {
+      "post": {
+        "operationId": "Owner_UpdateProfileImage",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "File": {
+                    "format": "binary",
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "ImageKind": {
+                    "nullable": true,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
         },
         "responses": {
           "200": {

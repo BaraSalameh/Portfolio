@@ -121,8 +121,7 @@ if (builder.Environment.IsDevelopment())
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<ICookieService, CookieService>();
-builder.Services.AddHttpClient<ICloudinaryAssetService, DataAccess.Services.CloudinaryAssetService>(client =>
-    client.Timeout = TimeSpan.FromSeconds(10));
+builder.Services.AddScoped<ICloudinaryAssetService, DataAccess.Services.CloudinaryAssetService>();
 builder.Services.AddSingleton<IOperationalMetrics, OperationalMetrics>();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApiAuthentication(builder.Configuration, validatedSettings.Jwt);

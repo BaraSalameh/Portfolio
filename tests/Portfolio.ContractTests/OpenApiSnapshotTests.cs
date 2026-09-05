@@ -82,7 +82,7 @@ public sealed class OpenApiSnapshotTests : IClassFixture<OperationalApiFactory>
             .OrderBy(operation => operation, StringComparer.Ordinal)
             .ToArray();
 
-        Assert.Equal(61, expected.Length);
+        Assert.Equal(63, expected.Length);
         Assert.Equal(expected, actual);
     }
 
@@ -100,7 +100,7 @@ public sealed class OpenApiSnapshotTests : IClassFixture<OperationalApiFactory>
             .SelectMany(path => path.Value.EnumerateObject().Where(operation => IsHttpMethod(operation.Name)))
             .ToArray();
 
-        Assert.Equal(61, operations.Length);
+        Assert.Equal(63, operations.Length);
     }
 
     [Fact]

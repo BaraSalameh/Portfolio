@@ -25,6 +25,7 @@ using Application.Owner.Queries.UserSkillQueries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
+using Portfolio.Models;
 
 namespace Portfolio.Controllers
 {
@@ -63,6 +64,27 @@ namespace Portfolio.Controllers
         [HttpPost]
         public async Task<IActionResult> EditProfile(EditProfileCommand request)
             => Result.HandleResult(await Send(request));
+
+        [HttpPost]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UpdateProfileImage([FromForm] UpdateProfileImageRequest request)
+        {
+            using var buffer = new MemoryStream(checked((int)request.File!.Length));
+            await request.File.CopyToAsync(buffer, HttpContext.RequestAborted);
+
+            return Result.HandleResult(await Send(new UpdateProfileImageCommand
+            {
+                Content = buffer.ToArray(),
+                ImageKind = request.ImageKind!.Value
+            }));
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> RemoveProfileImage([FromQuery] RemoveProfileImageRequest request)
+            => Result.HandleResult(await Send(new RemoveProfileImageCommand
+            {
+                ImageKind = request.ImageKind!.Value
+            }));
 
         // Message
         [HttpGet]

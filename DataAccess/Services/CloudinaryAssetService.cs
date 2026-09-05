@@ -1,36 +1,36 @@
 using Application.Common.Services.Interface;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Globalization;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace DataAccess.Services;
 
 public sealed partial class CloudinaryAssetService : ICloudinaryAssetService
 {
-    private readonly HttpClient _httpClient;
     private readonly ILogger<CloudinaryAssetService> _logger;
     private readonly string? _cloudName;
     private readonly string? _apiKey;
     private readonly string? _apiSecret;
 
     public CloudinaryAssetService(
-        HttpClient httpClient,
         IConfiguration configuration,
         ILogger<CloudinaryAssetService> logger)
     {
-        _httpClient = httpClient;
         _logger = logger;
         _cloudName = configuration["Cloudinary:CloudName"];
         _apiKey = configuration["Cloudinary:ApiKey"];
         _apiSecret = configuration["Cloudinary:ApiSecret"];
     }
 
-    public async Task DeleteByUrlAsync(string? assetUrl, CancellationToken cancellationToken = default)
+    public async Task DeleteByUrlAsync(
+        string? assetUrl,
+        CancellationToken cancellationToken = default,
+        string? preservePublicId = null)
     {
         if (!TryGetPublicId(assetUrl, _cloudName, out var publicId)) return;
+        if (string.Equals(publicId, preservePublicId, StringComparison.Ordinal)) return;
 
         if (string.IsNullOrWhiteSpace(_apiKey) || string.IsNullOrWhiteSpace(_apiSecret))
         {
@@ -38,33 +38,17 @@ public sealed partial class CloudinaryAssetService : ICloudinaryAssetService
             return;
         }
 
-        var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture);
-        var parameters = $"invalidate=true&public_id={publicId}&timestamp={timestamp}";
-        var signatureBytes = SHA1.HashData(Encoding.UTF8.GetBytes(parameters + _apiSecret));
-        var signature = Convert.ToHexString(signatureBytes).ToLowerInvariant();
-
-        using var content = new FormUrlEncodedContent(new Dictionary<string, string>
-        {
-            ["public_id"] = publicId,
-            ["timestamp"] = timestamp,
-            ["api_key"] = _apiKey,
-            ["signature"] = signature,
-            ["invalidate"] = "true"
-        });
-
         try
         {
-            using var response = await _httpClient.PostAsync(
-                $"https://api.cloudinary.com/v1_1/{Uri.EscapeDataString(_cloudName!)}/image/destroy",
-                content,
-                cancellationToken);
-
-            if (!response.IsSuccessStatusCode)
+            var result = await CreateClient().DestroyAsync(new DeletionParams(publicId)
             {
-                _logger.LogWarning(
-                    "Cloudinary returned status {StatusCode} while deleting superseded asset {PublicId}",
-                    (int)response.StatusCode,
-                    publicId);
+                Invalidate = true,
+                ResourceType = ResourceType.Image
+            });
+
+            if (result.Error is not null)
+            {
+                _logger.LogWarning("Cloudinary could not delete superseded asset {PublicId}: {Reason}", publicId, result.Error.Message);
             }
         }
         catch (Exception exception) when (exception is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
@@ -73,6 +57,57 @@ public sealed partial class CloudinaryAssetService : ICloudinaryAssetService
             // make the client retry a mutation that actually succeeded.
             _logger.LogWarning(exception, "Could not delete superseded Cloudinary asset {PublicId}", publicId);
         }
+    }
+
+    public async Task<CloudinaryUploadResult> UploadAsync(
+        byte[] content,
+        string publicId,
+        string assetFolder,
+        CancellationToken cancellationToken = default)
+    {
+        EnsureConfigured();
+
+        await using var stream = new MemoryStream(content, writable: false);
+        var result = await CreateClient().UploadAsync(new ImageUploadParams
+        {
+            File = new FileDescription("profile-image", stream),
+            PublicId = publicId,
+            AssetFolder = assetFolder,
+            Overwrite = true,
+            Invalidate = true,
+            UniqueFilename = false,
+            UseFilename = false
+        }, cancellationToken);
+
+        if (result.Error is not null)
+        {
+            _logger.LogWarning("Cloudinary upload failed: {Reason}", result.Error.Message);
+            throw new InvalidOperationException($"The profile image could not be uploaded: {result.Error.Message}");
+        }
+        if (result.SecureUrl is null || string.IsNullOrWhiteSpace(result.PublicId))
+        {
+            throw new InvalidOperationException("Cloudinary returned an invalid upload response.");
+        }
+
+        return new CloudinaryUploadResult(result.SecureUrl.AbsoluteUri, result.PublicId);
+    }
+
+    private void EnsureConfigured()
+    {
+        if (string.IsNullOrWhiteSpace(_cloudName)
+            || string.IsNullOrWhiteSpace(_apiKey)
+            || string.IsNullOrWhiteSpace(_apiSecret))
+        {
+            throw new InvalidOperationException("Cloudinary is not configured.");
+        }
+    }
+
+    private Cloudinary CreateClient()
+    {
+        EnsureConfigured();
+        var cloudinary = new Cloudinary(new Account(_cloudName, _apiKey, _apiSecret));
+        cloudinary.Api.Secure = true;
+        return cloudinary;
     }
 
     public static bool TryGetPublicId(string? assetUrl, string? cloudName, out string publicId)
