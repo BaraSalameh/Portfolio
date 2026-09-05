@@ -60,6 +60,14 @@ if (builder.Environment.IsDevelopment())
 builder.Logging.AddJsonConsole(options => options.IncludeScopes = true);
 
 var validatedSettings = StartupSettings.Bind(builder.Configuration, builder.Environment.IsProduction());
+if (builder.Environment.IsProduction()
+    && (string.IsNullOrWhiteSpace(builder.Configuration["Cloudinary:CloudName"])
+        || string.IsNullOrWhiteSpace(builder.Configuration["Cloudinary:ApiKey"])
+        || string.IsNullOrWhiteSpace(builder.Configuration["Cloudinary:ApiSecret"])))
+{
+    throw new InvalidOperationException(
+        "Cloudinary:CloudName, Cloudinary:ApiKey, and Cloudinary:ApiSecret are required in Production.");
+}
 builder.Services.AddSingleton(validatedSettings.Jwt);
 builder.Services.AddSingleton(validatedSettings.EmailConfirmationTokens);
 builder.Services.AddSingleton(validatedSettings.Email);
@@ -113,6 +121,8 @@ if (builder.Environment.IsDevelopment())
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<ICookieService, CookieService>();
+builder.Services.AddHttpClient<ICloudinaryAssetService, DataAccess.Services.CloudinaryAssetService>(client =>
+    client.Timeout = TimeSpan.FromSeconds(10));
 builder.Services.AddSingleton<IOperationalMetrics, OperationalMetrics>();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApiAuthentication(builder.Configuration, validatedSettings.Jwt);
