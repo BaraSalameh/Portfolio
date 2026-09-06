@@ -88,7 +88,8 @@ namespace Application.Owner.MappingProfiles
                 .ForMember(dest => dest.LstSocialLinks,
                     opt => opt.MapFrom(src => src.LstSocialLinks
                         .Where(l => l.IsDeleted == false)
-                        .OrderBy(l => l.ID)
+                        .OrderBy(l => l.Order)
+                        .ThenBy(l => l.ID)
                         .Take(Client.PublicPortfolioLimits.MaxCollectionItems)
                     )
                 )

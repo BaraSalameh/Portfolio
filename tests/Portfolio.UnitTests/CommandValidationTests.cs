@@ -36,6 +36,30 @@ public sealed class CommandValidationTests
             error => error.MemberNames.Contains(nameof(futureDate.BirthDate)));
     }
 
+    [Theory]
+    [InlineData("Istanbul, Turkey")]
+    [InlineData(" - Turkey")]
+    public void Profile_RejectsMalformedAddress(string address)
+    {
+        var command = new EditProfileCommand
+        {
+            Address = address
+        };
+
+        Assert.NotEmpty(Validate(command));
+    }
+
+    [Theory]
+    [InlineData("+905551234567", true)]
+    [InlineData("+962790000000", true)]
+    [InlineData("0790000000", false)]
+    [InlineData("+0123456789", false)]
+    public void Profile_ValidatesWhatsAppAsE164(string number, bool valid)
+    {
+        var errors = Validate(new EditProfileCommand { WhatsAppNumber = number });
+        Assert.Equal(valid, errors.Count == 0);
+    }
+
     [Fact]
     public void PreviouslyUnboundedCommands_RejectInvalidValues()
     {
@@ -53,6 +77,17 @@ public sealed class CommandValidationTests
             GroupBy = new string('g', 101),
             ValueSource = new string('v', 201)
         }));
+    }
+
+    [Fact]
+    public void SocialLinkOrdering_RejectsMoreThanTenLinks()
+    {
+        var command = new SortSocialLinksCommand
+        {
+            SocialLinkIdsInOrder = Enumerable.Range(0, 11).Select(_ => Guid.NewGuid()).ToList()
+        };
+
+        Assert.NotEmpty(Validate(command));
     }
 
     [Fact]

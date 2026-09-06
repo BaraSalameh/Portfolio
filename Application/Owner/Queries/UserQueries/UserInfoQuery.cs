@@ -13,6 +13,9 @@ namespace Application.Owner.Queries.UserQueries
         public string? Title { get; set; }
         public string? Email { get; set; }
         public string? Bio { get; set; }
+        public string? Address { get; set; }
+        public string? WhatsAppNumber { get; set; }
+        public string? CvUrl { get; set; }
         public string? Phone { get; set; }
         public string? ProfilePicture { get; set; }
         public string? CoverPhoto { get; set; }

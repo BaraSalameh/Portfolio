@@ -29,7 +29,31 @@ public sealed partial class CloudinaryAssetService : ICloudinaryAssetService
         CancellationToken cancellationToken = default,
         string? preservePublicId = null)
     {
-        if (!TryGetPublicId(assetUrl, _cloudName, out var publicId)) return;
+        await DeleteByUrlAsync(assetUrl, ResourceType.Image, "image", cancellationToken, preservePublicId);
+    }
+
+    public async Task DeleteCvByUrlAsync(
+        string? assetUrl,
+        CancellationToken cancellationToken = default,
+        string? preservePublicId = null)
+    {
+        if (TryGetPublicId(assetUrl, _cloudName, "image", true, out _))
+        {
+            await DeleteByUrlAsync(assetUrl, ResourceType.Image, "image", cancellationToken, preservePublicId);
+            return;
+        }
+
+        await DeleteByUrlAsync(assetUrl, ResourceType.Raw, "raw", cancellationToken, preservePublicId);
+    }
+
+    private async Task DeleteByUrlAsync(
+        string? assetUrl,
+        ResourceType resourceType,
+        string resourcePath,
+        CancellationToken cancellationToken,
+        string? preservePublicId)
+    {
+        if (!TryGetPublicId(assetUrl, _cloudName, resourcePath, resourceType == ResourceType.Image, out var publicId)) return;
         if (string.Equals(publicId, preservePublicId, StringComparison.Ordinal)) return;
 
         if (string.IsNullOrWhiteSpace(_apiKey) || string.IsNullOrWhiteSpace(_apiSecret))
@@ -43,7 +67,7 @@ public sealed partial class CloudinaryAssetService : ICloudinaryAssetService
             var result = await CreateClient().DestroyAsync(new DeletionParams(publicId)
             {
                 Invalidate = true,
-                ResourceType = ResourceType.Image
+                ResourceType = resourceType
             });
 
             if (result.Error is not null)
@@ -92,6 +116,48 @@ public sealed partial class CloudinaryAssetService : ICloudinaryAssetService
         return new CloudinaryUploadResult(result.SecureUrl.AbsoluteUri, result.PublicId);
     }
 
+    public async Task<CloudinaryUploadResult> UploadPdfAsync(
+        byte[] content,
+        string fileName,
+        string publicId,
+        string assetFolder,
+        CancellationToken cancellationToken = default)
+    {
+        EnsureConfigured();
+
+        await using var stream = new MemoryStream(content, writable: false);
+        var result = await CreateClient().UploadAsync(new ImageUploadParams
+        {
+            File = new FileDescription(fileName, stream),
+            PublicId = publicId,
+            AssetFolder = assetFolder,
+            Format = "pdf",
+            Overwrite = true,
+            Invalidate = true,
+            UniqueFilename = false,
+            UseFilename = false
+        }, cancellationToken);
+
+        if (result.Error is not null || result.SecureUrl is null || string.IsNullOrWhiteSpace(result.PublicId))
+        {
+            var reason = result.Error?.Message ?? "Cloudinary returned an invalid upload response.";
+            throw new InvalidOperationException($"The CV could not be uploaded: {reason}");
+        }
+
+        var deliveryUrl = AddAttachmentFlag(result.SecureUrl.AbsoluteUri, "CV");
+        return new CloudinaryUploadResult(deliveryUrl, result.PublicId);
+    }
+
+    internal static string AddAttachmentFlag(string assetUrl, string fileName)
+    {
+        const string uploadSegment = "/upload/";
+        var uploadIndex = assetUrl.IndexOf(uploadSegment, StringComparison.Ordinal);
+        if (uploadIndex < 0) throw new InvalidOperationException("Cloudinary returned an invalid PDF delivery URL.");
+
+        var safeFileName = Regex.Replace(fileName, "[^A-Za-z0-9_-]", "_");
+        return assetUrl.Insert(uploadIndex + uploadSegment.Length, $"fl_attachment:{safeFileName}/");
+    }
+
     private void EnsureConfigured()
     {
         if (string.IsNullOrWhiteSpace(_cloudName)
@@ -111,6 +177,9 @@ public sealed partial class CloudinaryAssetService : ICloudinaryAssetService
     }
 
     public static bool TryGetPublicId(string? assetUrl, string? cloudName, out string publicId)
+        => TryGetPublicId(assetUrl, cloudName, "image", true, out publicId);
+
+    private static bool TryGetPublicId(string? assetUrl, string? cloudName, string resourcePath, bool stripExtension, out string publicId)
     {
         publicId = string.Empty;
         if (string.IsNullOrWhiteSpace(assetUrl)
@@ -125,7 +194,7 @@ public sealed partial class CloudinaryAssetService : ICloudinaryAssetService
         var segments = uri.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
         if (segments.Length < 5
             || !string.Equals(Uri.UnescapeDataString(segments[0]), cloudName, StringComparison.Ordinal)
-            || !string.Equals(segments[1], "image", StringComparison.Ordinal)
+            || !string.Equals(segments[1], resourcePath, StringComparison.Ordinal)
             || !string.Equals(segments[2], "upload", StringComparison.Ordinal))
         {
             return false;
@@ -137,7 +206,7 @@ public sealed partial class CloudinaryAssetService : ICloudinaryAssetService
         var publicIdSegments = segments[(versionIndex + 1)..]
             .Select(Uri.UnescapeDataString)
             .ToArray();
-        publicIdSegments[^1] = Path.GetFileNameWithoutExtension(publicIdSegments[^1]);
+        if (stripExtension) publicIdSegments[^1] = Path.GetFileNameWithoutExtension(publicIdSegments[^1]);
         publicId = string.Join('/', publicIdSegments);
         return !string.IsNullOrWhiteSpace(publicId);
     }

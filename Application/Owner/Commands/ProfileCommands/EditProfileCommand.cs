@@ -16,6 +16,13 @@ namespace Application.Owner.Commands.Profile
         public string? Title { get; set; }
         [StringLength(5000)]
         public string? Bio { get; set; }
+        [StringLength(120)]
+        [RegularExpression(@"^\p{L}[\p{L}\p{M} .'-]* - \p{L}[\p{L}\p{M} .'-]*$",
+            ErrorMessage = "Address must use the format City - Country (for example, Istanbul - Turkey).")]
+        public string? Address { get; set; }
+        [StringLength(16)]
+        [RegularExpression(@"^\+[1-9]\d{7,14}$", ErrorMessage = "WhatsApp number must use E.164 format, for example +905551234567.")]
+        public string? WhatsAppNumber { get; set; }
         [StringLength(50), Phone]
         public string? Phone { get; set; }
         [StringLength(2048), Url, HttpUrl]

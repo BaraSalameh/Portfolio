@@ -83,7 +83,8 @@ namespace Application.Client.MappingProfiles
                 .ForMember(dest => dest.LstSocialLinks,
                     opt => opt.MapFrom(src => src.LstSocialLinks
                         .Where(l => l.IsDeleted == false)
-                        .OrderBy(l => l.ID)
+                        .OrderBy(l => l.Order)
+                        .ThenBy(l => l.ID)
                         .Take(PublicPortfolioLimits.MaxCollectionItems)
                     )
                 )
@@ -121,28 +122,42 @@ namespace Application.Client.MappingProfiles
                     source.LstUserPreferences.Any(preference =>
                         !preference.IsDeleted &&
                         preference.LKP_Preference.Name == PublicProfilePrivacy.ShowEmailPreference &&
-                        preference.Value.ToLower() == "true")
+                        (preference.Value.ToLower() == "true" || preference.Value.ToLower() == "show"))
                         ? source.Email
                         : null))
                 .ForMember(destination => destination.Phone, options => options.MapFrom(source =>
                     source.LstUserPreferences.Any(preference =>
                         !preference.IsDeleted &&
                         preference.LKP_Preference.Name == PublicProfilePrivacy.ShowPhonePreference &&
-                        preference.Value.ToLower() == "true")
+                        (preference.Value.ToLower() == "true" || preference.Value.ToLower() == "show"))
                         ? source.Phone
+                        : null))
+                .ForMember(destination => destination.WhatsAppNumber, options => options.MapFrom(source =>
+                    source.LstUserPreferences.Any(preference =>
+                        !preference.IsDeleted &&
+                        preference.LKP_Preference.Name == PublicProfilePrivacy.ShowWhatsAppPreference &&
+                        (preference.Value.ToLower() == "true" || preference.Value.ToLower() == "show"))
+                        ? source.WhatsAppNumber
+                        : null))
+                .ForMember(destination => destination.CvUrl, options => options.MapFrom(source =>
+                    source.LstUserPreferences.Any(preference =>
+                        !preference.IsDeleted &&
+                        preference.LKP_Preference.Name == PublicProfilePrivacy.ShowCvPreference &&
+                        (preference.Value.ToLower() == "true" || preference.Value.ToLower() == "show"))
+                        ? source.CvUrl
                         : null))
                 .ForMember(destination => destination.BirthDate, options => options.MapFrom(source =>
                     source.LstUserPreferences.Any(preference =>
                         !preference.IsDeleted &&
                         preference.LKP_Preference.Name == PublicProfilePrivacy.ShowBirthDatePreference &&
-                        preference.Value.ToLower() == "true")
+                        (preference.Value.ToLower() == "true" || preference.Value.ToLower() == "show"))
                         ? source.BirthDate
                         : null))
                 .ForMember(destination => destination.Gender, options => options.MapFrom(source =>
                     source.LstUserPreferences.Any(preference =>
                         !preference.IsDeleted &&
                         preference.LKP_Preference.Name == PublicProfilePrivacy.ShowGenderPreference &&
-                        preference.Value.ToLower() == "true")
+                        (preference.Value.ToLower() == "true" || preference.Value.ToLower() == "show"))
                         ? source.Gender
                         : null));
 

@@ -25,6 +25,9 @@ public sealed class PublicProfilePrivacyTests
         Assert.Null(profile.User.Phone);
         Assert.Null(profile.User.BirthDate);
         Assert.Null(profile.User.Gender);
+        Assert.Null(profile.User.WhatsAppNumber);
+        Assert.Null(profile.User.CvUrl);
+        Assert.Empty(profile.LstSocialLinks);
     }
 
     [Fact]
@@ -38,6 +41,26 @@ public sealed class PublicProfilePrivacyTests
         Assert.Null(profile.User.Phone);
         Assert.Null(profile.User.BirthDate);
         Assert.Null(profile.User.Gender);
+        Assert.Null(profile.User.WhatsAppNumber);
+        Assert.Null(profile.User.CvUrl);
+        Assert.Empty(profile.LstSocialLinks);
+    }
+
+    [Fact]
+    public void Apply_EnablesWhatsAppCvAndSiteLinksIndependently()
+    {
+        var profile = CreateProfile();
+        profile.LstUserPreferences.AddRange([
+            new UBUQ_UserPreference { Preference = new UBUQ_LKP_Preference { Name = PublicProfilePrivacy.ShowWhatsAppPreference }, Value = "true" },
+            new UBUQ_UserPreference { Preference = new UBUQ_LKP_Preference { Name = PublicProfilePrivacy.ShowCvPreference }, Value = "true" },
+            new UBUQ_UserPreference { Preference = new UBUQ_LKP_Preference { Name = PublicProfilePrivacy.ShowSiteLinksPreference }, Value = "true" }
+        ]);
+
+        PublicProfilePrivacy.Apply(profile);
+
+        Assert.Equal("+962790000000", profile.User.WhatsAppNumber);
+        Assert.Equal("https://example.com/cv.pdf", profile.User.CvUrl);
+        Assert.Single(profile.LstSocialLinks);
     }
 
     [Fact]
@@ -52,7 +75,9 @@ public sealed class PublicProfilePrivacyTests
             Email = "owner@example.com",
             Phone = "+962790000000",
             BirthDate = new DateOnly(1990, 1, 1),
-            Gender = 1
+            Gender = 1,
+            WhatsAppNumber = "+962790000000",
+            CvUrl = "https://example.com/cv.pdf"
         };
 
         var hidden = mapper.Map<UBUQ_User>(user);
@@ -60,6 +85,8 @@ public sealed class PublicProfilePrivacyTests
         Assert.Null(hidden.Phone);
         Assert.Null(hidden.BirthDate);
         Assert.Null(hidden.Gender);
+        Assert.Null(hidden.WhatsAppNumber);
+        Assert.Null(hidden.CvUrl);
 
         user.LstUserPreferences.Add(new UserPreference
         {
@@ -78,7 +105,10 @@ public sealed class PublicProfilePrivacyTests
             Email = "owner@example.com",
             Phone = "+962790000000",
             BirthDate = new DateOnly(1990, 1, 1),
-            Gender = 1
-        }
+            Gender = 1,
+            WhatsAppNumber = "+962790000000",
+            CvUrl = "https://example.com/cv.pdf"
+        },
+        LstSocialLinks = [new UBUQ_SocialLink { Platform = "GitHub", Url = "https://github.com/example" }]
     };
 }

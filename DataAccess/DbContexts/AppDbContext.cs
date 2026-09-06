@@ -266,6 +266,9 @@ namespace DataAccess.DbContexts
             modelBuilder.Entity<User>().Property(x => x.Password).HasMaxLength(1024);
             modelBuilder.Entity<User>().Property(x => x.Title).HasMaxLength(200);
             modelBuilder.Entity<User>().Property(x => x.Bio).HasMaxLength(5000);
+            modelBuilder.Entity<User>().Property(x => x.Address).HasMaxLength(120);
+            modelBuilder.Entity<User>().Property(x => x.WhatsAppNumber).HasMaxLength(16);
+            modelBuilder.Entity<User>().Property(x => x.CvUrl).HasMaxLength(2048);
             modelBuilder.Entity<User>().Property(x => x.Phone).HasMaxLength(50);
             modelBuilder.Entity<User>().Property(x => x.ProfilePicture).HasMaxLength(2048);
             modelBuilder.Entity<User>().Property(x => x.CoverPhoto).HasMaxLength(2048);
@@ -286,6 +289,9 @@ namespace DataAccess.DbContexts
             modelBuilder.Entity<SocialLink>().Property(x => x.Platform).HasMaxLength(100);
             modelBuilder.Entity<SocialLink>().Property(x => x.Url).HasMaxLength(2048);
             modelBuilder.Entity<SocialLink>().Property(x => x.Icon).HasMaxLength(2048);
+            modelBuilder.Entity<SocialLink>().ToTable(table => table.HasCheckConstraint(
+                "CK_SocialLink_Order",
+                "\"Order\" >= 0"));
             modelBuilder.Entity<BlogPost>().Property(x => x.Title).HasMaxLength(200);
             modelBuilder.Entity<BlogPost>().Property(x => x.Slug).HasMaxLength(200);
             modelBuilder.Entity<BlogPost>().Property(x => x.Content).HasMaxLength(100000);

@@ -6,6 +6,7 @@ using Application.Common.Persistence;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Application.Common.Constants;
 
 namespace Application.Owner.Handlers.SocialLinkHandlers
 {
@@ -28,8 +29,20 @@ namespace Application.Owner.Handlers.SocialLinkHandlers
 
             if (request.ID == null)
             {
+                var activeOrders = await _context.SocialLink
+                    .Where(link => link.UserID == _currentUser.UserID!.Value && !link.IsDeleted)
+                    .Select(link => link.Order)
+                    .Take(ProfileLimits.MaximumSocialLinks)
+                    .ToListAsync(cancellationToken);
+                if (activeOrders.Count >= ProfileLimits.MaximumSocialLinks)
+                {
+                    response.lstError.Add($"A profile can contain at most {ProfileLimits.MaximumSocialLinks} site links.");
+                    return response;
+                }
+
                 var newEntity = _mapper.Map<SocialLink>(request);
                 newEntity.UserID = _currentUser.UserID!.Value;
+                newEntity.Order = activeOrders.Count == 0 ? 1 : activeOrders.Max() + 1;
                 await _context.SocialLink.AddAsync(newEntity, cancellationToken);
             }
             else

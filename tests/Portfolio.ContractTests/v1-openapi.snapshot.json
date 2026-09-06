@@ -588,6 +588,13 @@
       "EditProfileCommand": {
         "additionalProperties": false,
         "properties": {
+          "address": {
+            "maxLength": 120,
+            "minLength": 0,
+            "nullable": true,
+            "pattern": "^\\p{L}[\\p{L}\\p{M} .\u0027-]* - \\p{L}[\\p{L}\\p{M} .\u0027-]*$",
+            "type": "string"
+          },
           "bio": {
             "maxLength": 5000,
             "minLength": 0,
@@ -643,6 +650,13 @@
             "maxLength": 200,
             "minLength": 0,
             "nullable": true,
+            "type": "string"
+          },
+          "whatsAppNumber": {
+            "maxLength": 16,
+            "minLength": 0,
+            "nullable": true,
+            "pattern": "^\\\u002B[1-9]\\d{7,14}$",
             "type": "string"
           }
         },
@@ -888,6 +902,20 @@
               "type": "string"
             },
             "maxItems": 500,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "SortSocialLinksCommand": {
+        "additionalProperties": false,
+        "properties": {
+          "socialLinkIdsInOrder": {
+            "items": {
+              "format": "guid",
+              "type": "string"
+            },
+            "maxItems": 10,
             "type": "array"
           }
         },
@@ -3185,6 +3213,32 @@
         ]
       }
     },
+    "/api/Owner/RemoveCv": {
+      "delete": {
+        "operationId": "Owner_RemoveCv",
+        "responses": {
+          "200": {
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Owner"
+        ]
+      }
+    },
     "/api/Owner/RemoveProfileImage": {
       "delete": {
         "operationId": "Owner_RemoveProfileImage",
@@ -3354,6 +3408,86 @@
           "required": true,
           "x-name": "request",
           "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Owner"
+        ]
+      }
+    },
+    "/api/Owner/SortSocialLinks": {
+      "post": {
+        "operationId": "Owner_SortSocialLinks",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SortSocialLinksCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-name": "request",
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Owner"
+        ]
+      }
+    },
+    "/api/Owner/UpdateCv": {
+      "post": {
+        "operationId": "Owner_UpdateCv",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "File": {
+                    "format": "binary",
+                    "nullable": true,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
         },
         "responses": {
           "200": {

@@ -86,6 +86,23 @@ namespace Portfolio.Controllers
                 ImageKind = request.ImageKind!.Value
             }));
 
+        [HttpPost]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UpdateCv([FromForm] UpdateCvRequest request)
+        {
+            using var buffer = new MemoryStream(checked((int)request.File!.Length));
+            await request.File.CopyToAsync(buffer, HttpContext.RequestAborted);
+            return Result.HandleResult(await Send(new UpdateCvCommand
+            {
+                Content = buffer.ToArray(),
+                FileName = request.File.FileName
+            }));
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> RemoveCv()
+            => Result.HandleResult(await Send(new RemoveCvCommand()));
+
         // Message
         [HttpGet]
         public async Task<IActionResult> ContactMessageList([FromQuery] ContactMessageListQuery request)
@@ -106,6 +123,10 @@ namespace Portfolio.Controllers
 
         [HttpDelete]
         public async Task<IActionResult> DeleteSocialLink(DeleteSocialLinkCommand request)
+            => Result.HandleResult(await Send(request));
+
+        [HttpPost]
+        public async Task<IActionResult> SortSocialLinks(SortSocialLinksCommand request)
             => Result.HandleResult(await Send(request));
 
         // Skill

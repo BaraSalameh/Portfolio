@@ -88,6 +88,9 @@ public sealed class PostgreSqlConnectivityTests
         {
             (typeof(User), nameof(User.Password), 1024),
             (typeof(User), nameof(User.Bio), 5000),
+            (typeof(User), nameof(User.Address), 120),
+            (typeof(User), nameof(User.WhatsAppNumber), 16),
+            (typeof(User), nameof(User.CvUrl), 2048),
             (typeof(User), nameof(User.ProfilePicture), 2048),
             (typeof(Project), nameof(Project.Description), 5000),
             (typeof(Project), nameof(Project.LiveLink), 2048),

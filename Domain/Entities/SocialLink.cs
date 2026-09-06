@@ -6,6 +6,7 @@ namespace Domain.Entities
         public string Platform { get; set; } = string.Empty;
         public string Url { get; set; } = string.Empty;
         public string? Icon { get; set; }
+        public int Order { get; set; }
         public Guid UserID { get; set; }
         public User User { get; set; } = null!;
     }

@@ -8,11 +8,15 @@ public static class PublicProfilePrivacy
     public const string ShowPhonePreference = "show-phone-number";
     public const string ShowBirthDatePreference = "show-birthdate";
     public const string ShowGenderPreference = "show-gender";
+    public const string ShowWhatsAppPreference = "show-whatsapp";
+    public const string ShowSiteLinksPreference = "show-site-links";
+    public const string ShowCvPreference = "show-cv";
 
     public static void Apply(UBUQ_Response profile)
     {
         var enabledPreferences = profile.LstUserPreferences
-            .Where(preference => bool.TryParse(preference.Value, out var enabled) && enabled)
+            .Where(preference => string.Equals(preference.Value, "true", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(preference.Value, "show", StringComparison.OrdinalIgnoreCase))
             .Select(preference => preference.Preference.Name)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
@@ -20,5 +24,8 @@ public static class PublicProfilePrivacy
         if (!enabledPreferences.Contains(ShowPhonePreference)) profile.User.Phone = null;
         if (!enabledPreferences.Contains(ShowBirthDatePreference)) profile.User.BirthDate = null;
         if (!enabledPreferences.Contains(ShowGenderPreference)) profile.User.Gender = null;
+        if (!enabledPreferences.Contains(ShowWhatsAppPreference)) profile.User.WhatsAppNumber = null;
+        if (!enabledPreferences.Contains(ShowCvPreference)) profile.User.CvUrl = null;
+        if (!enabledPreferences.Contains(ShowSiteLinksPreference)) profile.LstSocialLinks.Clear();
     }
 }
