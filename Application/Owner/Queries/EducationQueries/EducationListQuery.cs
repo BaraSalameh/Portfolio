@@ -13,6 +13,7 @@ namespace Application.Owner.Queries.EducationQueries
         public ELQ_LKP_FieldOfStudy FieldOfStudy { get; set; } = null!;
         public DateOnly StartDate { get; set; }
         public DateOnly? EndDate { get; set; }
+        public bool IsStudying { get; set; }
         public string? Description { get; set; }
         public List<ELQ_Skill> LstSkills { get; set; } = [];
     }

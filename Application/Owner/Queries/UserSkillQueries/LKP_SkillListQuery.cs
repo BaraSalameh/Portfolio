@@ -9,5 +9,6 @@ namespace Application.Owner.Queries.UserSkillQueries
         public Guid ID { get; set; }
         public string Name { get; set; } = string.Empty;
         public string IconUrl { get; set; } = string.Empty;
+        public string Source { get; set; } = string.Empty;
     }
 }

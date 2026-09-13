@@ -8,5 +8,6 @@ namespace Application.Owner.Queries.LKP_LanguageQuieries
     {
         public Guid? ID { get; set; }
         public string? name { get; set; }
+        public string? Code { get; set; }
     }
 }

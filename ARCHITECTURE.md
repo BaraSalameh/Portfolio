@@ -8,6 +8,13 @@ model for the measured target scale; a queue, broker, or independently deployed 
 requires evidence that an in-process module and database-backed job cannot meet an
 observed requirement.
 
+Universal catalog data follows the same ownership rule. ISO 639 language codes and
+CEFR proficiency levels are versioned seed data. Institution and skill searches may
+be enriched from ROR and ESCO respectively, but results are normalized and persisted
+before being returned; PostgreSQL IDs remain the only values accepted by owner writes.
+Provider outages therefore degrade to the local catalog instead of breaking profile
+editing.
+
 The compile-time dependency direction is:
 
 ```text

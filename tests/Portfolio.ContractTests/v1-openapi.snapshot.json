@@ -383,6 +383,20 @@
         ],
         "type": "object"
       },
+      "CreateFieldOfStudyCommand": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "maxLength": 100,
+            "minLength": 2,
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
       "DeleteBlogPostCommand": {
         "additionalProperties": false,
         "properties": {
@@ -1922,6 +1936,44 @@
             "x-position": 4
           }
         ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "Owner"
+        ]
+      }
+    },
+    "/api/Owner/CreateFieldOfStudy": {
+      "post": {
+        "operationId": "Owner_CreateFieldOfStudy",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFieldOfStudyCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-name": "request",
+          "x-position": 1
+        },
         "responses": {
           "200": {
             "content": {

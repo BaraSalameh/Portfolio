@@ -24,13 +24,13 @@ namespace Application.Owner.Handlers.EducationHandlers
         public async Task<ListQueryResponse<LKP_FOSLQ_Response>> Handle(LKP_FieldOfStudyListQuery request, CancellationToken cancellationToken)
         {
             var response = new ListQueryResponse<LKP_FOSLQ_Response>();
-            Expression<Func<LKP_FieldOfStudy, bool>> Filter = f => true;
+            Expression<Func<LKP_FieldOfStudy, bool>> Filter = f => f.IsActive;
 
             if (!string.IsNullOrEmpty(request.Search))
             {
                 var search = SearchTerm.Normalize(request.Search);
                 Filter = f =>
-                    f.Name.ToLower().Contains(search);
+                    f.IsActive && f.Name.ToLower().Contains(search);
             }
 
             var existingEntity = _context.LKP_FieldOfStudy

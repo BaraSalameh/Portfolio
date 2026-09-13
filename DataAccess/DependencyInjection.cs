@@ -5,6 +5,8 @@ using Application.Common.Services.Interface;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Application.Common.Catalogs;
+using DataAccess.Catalogs;
 
 namespace DataAccess
 {
@@ -40,6 +42,19 @@ namespace DataAccess
             services.AddScoped<IContactSubmissionGuard, ContactSubmissionGuard>();
             services.AddScoped<IEmailConfirmationLock, EmailConfirmationLock>();
             services.AddSingleton<IPersistenceExceptionClassifier, PersistenceExceptionClassifier>();
+            services.AddHttpClient<IInstitutionCatalogProvider, RorInstitutionCatalogProvider>(client =>
+            {
+                client.BaseAddress = new Uri(configuration["ExternalCatalogs:Ror:BaseUrl"] ?? "https://api.ror.org/v2/");
+                client.Timeout = TimeSpan.FromSeconds(4);
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("portfolio-api/1.0 (catalog lookup)");
+            });
+            services.AddHttpClient<ISkillCatalogProvider, EscoSkillCatalogProvider>(client =>
+            {
+                client.BaseAddress = new Uri(configuration["ExternalCatalogs:Esco:BaseUrl"] ?? "https://ec.europa.eu/esco/api/");
+                client.Timeout = TimeSpan.FromSeconds(4);
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("portfolio-api/1.0 (catalog lookup)");
+            });
+            services.AddScoped<IExternalCatalogImporter, ExternalCatalogImporter>();
 
             return services;
         }

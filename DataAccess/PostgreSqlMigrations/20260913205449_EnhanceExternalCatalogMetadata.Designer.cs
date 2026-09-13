@@ -3,6 +3,7 @@ using System;
 using DataAccess.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.PostgreSqlMigrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260913205449_EnhanceExternalCatalogMetadata")]
+    partial class EnhanceExternalCatalogMetadata
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1440,22 +1443,10 @@ namespace DataAccess.PostgreSqlMigrations
                         .HasColumnType("uuid")
                         .HasDefaultValueSql("gen_random_uuid()");
 
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Source")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
-                        .HasDefaultValue("Internal");
 
                     b.HasKey("ID");
 
@@ -1468,44 +1459,32 @@ namespace DataAccess.PostgreSqlMigrations
                         new
                         {
                             ID = new Guid("9d9f3f30-1122-4b21-8a23-76a9b1b10001"),
-                            IsActive = true,
-                            Name = "Computer Science",
-                            Source = "Internal"
+                            Name = "Computer Science"
                         },
                         new
                         {
                             ID = new Guid("9d9f3f30-1122-4b21-8a23-76a9b1b10002"),
-                            IsActive = true,
-                            Name = "Business Administration",
-                            Source = "Internal"
+                            Name = "Business Administration"
                         },
                         new
                         {
                             ID = new Guid("9d9f3f30-1122-4b21-8a23-76a9b1b10003"),
-                            IsActive = true,
-                            Name = "Electrical Engineering",
-                            Source = "Internal"
+                            Name = "Electrical Engineering"
                         },
                         new
                         {
                             ID = new Guid("9d9f3f30-1122-4b21-8a23-76a9b1b10004"),
-                            IsActive = true,
-                            Name = "Mechanical Engineering",
-                            Source = "Internal"
+                            Name = "Mechanical Engineering"
                         },
                         new
                         {
                             ID = new Guid("9d9f3f30-1122-4b21-8a23-76a9b1b10005"),
-                            IsActive = true,
-                            Name = "Economics",
-                            Source = "Internal"
+                            Name = "Economics"
                         },
                         new
                         {
                             ID = new Guid("9d9f3f30-1122-4b21-8a23-76a9b1b10006"),
-                            IsActive = true,
-                            Name = "Cyber Security",
-                            Source = "Internal"
+                            Name = "Cyber Security"
                         });
                 });
 

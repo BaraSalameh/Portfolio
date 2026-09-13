@@ -16,6 +16,7 @@ namespace Application.Owner.MappingProfiles
                 .ForMember(dest => dest.Institution, opt => opt.MapFrom(src => src.LKP_Institution))
                 .ForMember(dest => dest.Degree, opt => opt.MapFrom(src => src.LKP_Degree))
                 .ForMember(dest => dest.FieldOfStudy, opt => opt.MapFrom(src => src.LKP_FieldOfStudy))
+                .ForMember(dest => dest.IsStudying, opt => opt.MapFrom(src => src.EndDate == null))
                 .ForMember(dest => dest.LstSkills, opt => opt.MapFrom(src => src.LstUserSkillEducations.Select(use => use.UserSkill).Select(us => us.LKP_Skill)));
             CreateMap<LKP_Institution, ELQ_LKP_Institution>();
             CreateMap<LKP_Degree, ELQ_LKP_Degree>();

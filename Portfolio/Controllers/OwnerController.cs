@@ -177,6 +177,10 @@ namespace Portfolio.Controllers
             => Result.HandleResult(await Send(request));
 
         [HttpPost]
+        public async Task<IActionResult> CreateFieldOfStudy(CreateFieldOfStudyCommand request)
+            => Result.HandleResult(await Send(request));
+
+        [HttpPost]
         public async Task<IActionResult> AddEditEducation(AddEditEducationCommand request)
             => Result.HandleResult(await Send(request));
 

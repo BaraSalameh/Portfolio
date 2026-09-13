@@ -2,6 +2,8 @@ using Application.Common.Services.Interface;
 using DataAccess.DbContexts;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Portfolio.UnitTests;
 
@@ -41,6 +43,21 @@ public sealed class PersistenceConventionTests
 
         Assert.NotEmpty(auditedTypes);
         Assert.All(auditedTypes, entity => Assert.NotNull(entity.GetQueryFilter()));
+    }
+
+    [Fact]
+    public void Model_SeedsIsoLanguagesAndCefrProficiencies()
+    {
+        using var context = CreateContext();
+        var designModel = context.GetService<IDesignTimeModel>().Model;
+        var languageSeeds = designModel.FindEntityType(typeof(LKP_Language))!.GetSeedData();
+        var proficiencySeeds = designModel.FindEntityType(typeof(LKP_LanguageProficiency))!.GetSeedData();
+
+        Assert.True(languageSeeds.Count() >= 100);
+        Assert.Contains(languageSeeds, seed => Equals(seed[nameof(LKP_Language.Code)], "en"));
+        Assert.Contains(languageSeeds, seed => Equals(seed[nameof(LKP_Language.Code)], "ar"));
+        Assert.Contains(proficiencySeeds, seed => Equals(seed[nameof(LKP_LanguageProficiency.Level)], "A1 - Beginner"));
+        Assert.Contains(proficiencySeeds, seed => Equals(seed[nameof(LKP_LanguageProficiency.Level)], "C2 - Proficient"));
     }
 
     private static AppDbContext CreateContext()

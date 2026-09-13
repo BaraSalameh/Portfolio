@@ -312,14 +312,27 @@ namespace DataAccess.DbContexts
             modelBuilder.Entity<LKP_ChartType>().Property(x => x.Name).HasMaxLength(100);
             modelBuilder.Entity<LKP_Certificate>().Property(x => x.Name).HasMaxLength(100);
             modelBuilder.Entity<LKP_Language>().Property(x => x.Name).HasMaxLength(100);
+            modelBuilder.Entity<LKP_Language>().Property(x => x.Code).HasMaxLength(3);
             modelBuilder.Entity<LKP_LanguageProficiency>().Property(x => x.Level).HasMaxLength(100);
             modelBuilder.Entity<LKP_Degree>().Property(x => x.Name).HasMaxLength(100);
             modelBuilder.Entity<LKP_Degree>().Property(x => x.Abbreviation).HasMaxLength(100);
             modelBuilder.Entity<LKP_FieldOfStudy>().Property(x => x.Name).HasMaxLength(100);
+            modelBuilder.Entity<LKP_FieldOfStudy>().Property(x => x.Source).HasMaxLength(32).HasDefaultValue("Internal");
+            modelBuilder.Entity<LKP_FieldOfStudy>().Property(x => x.IsActive).HasDefaultValue(true);
             modelBuilder.Entity<LKP_Institution>().Property(x => x.Name).HasMaxLength(100);
             modelBuilder.Entity<LKP_Institution>().Property(x => x.Logo).HasMaxLength(2048);
+            modelBuilder.Entity<LKP_Institution>().Property(x => x.Source).HasMaxLength(32);
+            modelBuilder.Entity<LKP_Institution>().Property(x => x.Source).HasDefaultValue("Internal");
+            modelBuilder.Entity<LKP_Institution>().Property(x => x.ExternalID).HasMaxLength(2048);
+            modelBuilder.Entity<LKP_Institution>().Property(x => x.CountryCode).HasMaxLength(2);
+            modelBuilder.Entity<LKP_Institution>().Property(x => x.CountryName).HasMaxLength(100);
+            modelBuilder.Entity<LKP_Institution>().Property(x => x.IsActive).HasDefaultValue(true);
             modelBuilder.Entity<LKP_Skill>().Property(x => x.Name).HasMaxLength(100);
             modelBuilder.Entity<LKP_Skill>().Property(x => x.IconUrl).HasMaxLength(2048);
+            modelBuilder.Entity<LKP_Skill>().Property(x => x.Source).HasMaxLength(32);
+            modelBuilder.Entity<LKP_Skill>().Property(x => x.Source).HasDefaultValue("Internal");
+            modelBuilder.Entity<LKP_Skill>().Property(x => x.ExternalID).HasMaxLength(2048);
+            modelBuilder.Entity<LKP_Skill>().Property(x => x.IsActive).HasDefaultValue(true);
             modelBuilder.Entity<LKP_BlogPostStatus>().Property(x => x.Name).HasMaxLength(100);
 
             modelBuilder.Entity<RefreshToken>().Property(x => x.Token).HasMaxLength(64);
@@ -407,6 +420,18 @@ namespace DataAccess.DbContexts
                 .HasIndex(x => x.Name)
                 .IsUnique()
                 .HasFilter("\"IsDeleted\" = false");
+            modelBuilder.Entity<LKP_Language>()
+                .HasIndex(x => x.Code)
+                .IsUnique()
+                .HasFilter("\"Code\" IS NOT NULL AND \"IsDeleted\" = false");
+            modelBuilder.Entity<LKP_Institution>()
+                .HasIndex(x => new { x.Source, x.ExternalID })
+                .IsUnique()
+                .HasFilter("\"ExternalID\" IS NOT NULL");
+            modelBuilder.Entity<LKP_Skill>()
+                .HasIndex(x => new { x.Source, x.ExternalID })
+                .IsUnique()
+                .HasFilter("\"ExternalID\" IS NOT NULL AND \"IsDeleted\" = false");
             modelBuilder.Entity<LKP_LanguageProficiency>()
                 .HasIndex(x => x.Level)
                 .IsUnique()
@@ -422,6 +447,8 @@ namespace DataAccess.DbContexts
             modelBuilder.ApplyConfiguration(new ChartTypeSeedConfiguration());
             modelBuilder.ApplyConfiguration(new SkillSeedConfiguration());
             modelBuilder.ApplyConfiguration(new CertificateSeedConfiguration());
+            modelBuilder.ApplyConfiguration(new LanguageSeedConfiguration());
+            modelBuilder.ApplyConfiguration(new LanguageProficiencySeedConfiguration());
 
             return modelBuilder;
         }

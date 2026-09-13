@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using Application.Common.Text;
+using Application.Common.Catalogs;
 
 namespace Application.Owner.Handlers.UserSkillHandlers
 {
@@ -14,23 +15,42 @@ namespace Application.Owner.Handlers.UserSkillHandlers
     {
         private readonly IAppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IExternalCatalogImporter _catalogImporter;
 
-        public LKP_SkillListQueryHandler(IAppDbContext context, IMapper mapper)
+        public LKP_SkillListQueryHandler(
+            IAppDbContext context,
+            IMapper mapper,
+            IExternalCatalogImporter catalogImporter)
         {
             _context = context;
             _mapper = mapper;
+            _catalogImporter = catalogImporter;
         }
 
         public async Task<ListQueryResponse<LKP_SLQ_Response>> Handle(LKP_SkillListQuery request, CancellationToken cancellationToken)
         {
             var response = new ListQueryResponse<LKP_SLQ_Response>();
-            Expression<Func<LKP_Skill, bool>> Filter = f => true;
+            Expression<Func<LKP_Skill, bool>> Filter = f => f.IsActive;
 
             if (!string.IsNullOrEmpty(request.Search))
             {
                 var search = SearchTerm.Normalize(request.Search);
+                if (search.Length >= 3)
+                {
+                    var freshAfter = DateTime.UtcNow.AddHours(-24);
+                    var freshMatchCount = await _context.LKP_Skill
+                        .AsNoTracking()
+                        .CountAsync(item => item.IsActive
+                                            && item.Source == "ESCO"
+                                            && item.LastSyncedAt >= freshAfter
+                                            && item.Name.ToLower().Contains(search), cancellationToken);
+                    if (freshMatchCount < request.PageSize)
+                    {
+                        await _catalogImporter.EnrichSkillsAsync(search, request.PageSize, cancellationToken);
+                    }
+                }
                 Filter = f =>
-                    f.Name.ToLower().Contains(search);
+                    f.IsActive && f.Name.ToLower().Contains(search);
             }
 
             var existingEntity = _context.LKP_Skill
@@ -43,7 +63,9 @@ namespace Application.Owner.Handlers.UserSkillHandlers
             response.Items =
                 await _mapper.ProjectTo<LKP_SLQ_Response>(
                     existingEntity
-                        .OrderBy(u => u.Name)
+                        .OrderByDescending(u => u.Name.ToLower() == request.Search!.ToLower())
+                        .ThenByDescending(u => u.Name.ToLower().StartsWith(request.Search!.ToLower()))
+                        .ThenBy(u => u.Name)
                         .Skip(request.Offset)
                         .Take(pageSize)
                 ).ToListAsync(cancellationToken);

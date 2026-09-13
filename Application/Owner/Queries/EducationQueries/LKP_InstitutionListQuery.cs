@@ -10,5 +10,8 @@ namespace Application.Owner.Queries.EducationQueries
         public Guid ID { get; set; }
         public string Name { get; set; } = string.Empty;
         public string? Logo { get; set; }
+        public string Source { get; set; } = string.Empty;
+        public string? CountryCode { get; set; }
+        public string? CountryName { get; set; }
     }
 }
