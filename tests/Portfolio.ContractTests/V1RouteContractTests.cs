@@ -27,7 +27,7 @@ public sealed class V1RouteContractTests
     [InlineData(typeof(AccountController), 6)]
     [InlineData(typeof(AdminController), 8)]
     [InlineData(typeof(ClientController), 3)]
-    [InlineData(typeof(OwnerController), 50)]
+    [InlineData(typeof(OwnerController), 52)]
     public void ExistingV1ControllerActionsRemainAttributeRouted(Type controllerType, int expectedActions)
     {
         var actions = controllerType.GetMethods()

@@ -35,7 +35,8 @@ namespace Application.Owner.Handlers.CertificateHandlers
                 existingEntity
                     .ThenBy(entity => entity.ID)
                     .Skip(request.Offset)
-                    .Take(request.PageSize))
+                    .Take(request.PageSize)
+                    .AsSplitQuery())
                 .ToListAsync(cancellationToken);
 
             return response;

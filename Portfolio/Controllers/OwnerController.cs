@@ -142,6 +142,10 @@ namespace Portfolio.Controllers
         public async Task<IActionResult> LKP_SkillList([FromQuery] LKP_SkillListQuery request)
             => Result.HandleResult(await Send(request));
 
+        [HttpPost]
+        public async Task<IActionResult> AddLKP_Skill(AddLKP_SkillCommand request)
+            => Result.HandleResult(await Send(request));
+
         // Experience
         [HttpGet]
         public async Task<IActionResult> ExperienceList([FromQuery] ExperienceListQuery request)
@@ -198,6 +202,10 @@ namespace Portfolio.Controllers
             => Result.HandleResult(await Send(request));
         [HttpGet]
         public async Task<IActionResult> LKP_CertificateList([FromQuery] LKP_CertificateListQuery request)
+            => Result.HandleResult(await Send(request));
+
+        [HttpPost]
+        public async Task<IActionResult> AddLKP_Certificate(AddLKP_CertificateCommand request)
             => Result.HandleResult(await Send(request));
 
         [HttpPost]

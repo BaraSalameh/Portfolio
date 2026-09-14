@@ -67,6 +67,27 @@ public sealed class PostgreSqlConnectivityTests
     }
 
     [Fact]
+    public void CertificateListProjection_UsesAValidSplitQueryForSkillsAndMedia()
+    {
+        using var context = CreateContext("Host=localhost;Database=model;Username=model;Password=model");
+        var mapping = new MapperConfiguration(
+            expression => expression.AddProfile<CertificateMappingProfiles>(),
+            NullLoggerFactory.Instance);
+
+        var query = context.Certificate
+            .AsNoTracking()
+            .OrderBy(certificate => certificate.Order)
+            .ThenBy(certificate => certificate.ID)
+            .Take(20)
+            .AsSplitQuery()
+            .ProjectTo<Application.Owner.Queries.CertificateQueries.CLQ_Response>(mapping);
+
+        var sql = query.ToQueryString();
+
+        Assert.Contains("SELECT", sql, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public void UserIdentityFields_AreBoundedToPublicContractLimits()
     {
         using var context = CreateContext("Host=localhost;Database=model;Username=model;Password=model");
