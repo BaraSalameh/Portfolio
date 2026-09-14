@@ -1,11 +1,12 @@
 ﻿using Application.Common.Entities;
 using MediatR;
+using Application.Owner.Queries.CertificateQueries;
 using System.ComponentModel.DataAnnotations;
 using Application.Common.Validation;
 
 namespace Application.Owner.Commands.CertificaeCommands
 {
-    public class AddEditCertificateCommand : IRequest<CommandResponse>, IValidatableObject
+    public class AddEditCertificateCommand : IRequest<CommandResponse<CLQ_Response>>, IValidatableObject
     {
         public Guid? ID { get; set; }
         public Guid LKP_CertificateID { get; set; }

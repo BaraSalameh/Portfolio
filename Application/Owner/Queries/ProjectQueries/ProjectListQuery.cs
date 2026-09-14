@@ -16,6 +16,7 @@ namespace Application.Owner.Queries.ProjectQueries
         public bool IsFeatured { get; set; }
         public PLQ_PS_Education Education { get; set; } = null!;
         public PLQ_PS_Experience Experience { get; set; } = null!;
+        public PLQ_PS_Certificate? Certificate { get; set; }
         public List<PLQ_Skill> LstSkills { get; set; } = [];
     }
 
@@ -29,6 +30,12 @@ namespace Application.Owner.Queries.ProjectQueries
     {
         public Guid ID { get; set; }
         public string CompanyName { get; set; } = string.Empty;
+    }
+
+    public class PLQ_PS_Certificate
+    {
+        public Guid ID { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 
     public class PLQ_Skill

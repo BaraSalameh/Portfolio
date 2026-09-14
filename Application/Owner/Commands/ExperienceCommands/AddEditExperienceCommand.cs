@@ -1,10 +1,11 @@
 using Application.Common.Entities;
 using MediatR;
+using Application.Owner.Queries.ExperienceQueries;
 using System.ComponentModel.DataAnnotations;
 
 namespace Application.Owner.Commands.ExperienceCommands
 {
-    public class AddEditExperienceCommand : IRequest<CommandResponse>
+    public class AddEditExperienceCommand : IRequest<CommandResponse<ELQ_Response>>
     {
         public Guid? ID { get; set; }
         [Required, StringLength(200)]

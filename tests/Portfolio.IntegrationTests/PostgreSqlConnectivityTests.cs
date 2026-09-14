@@ -2343,6 +2343,12 @@ public sealed class PostgreSqlConnectivityTests
         }, CancellationToken.None);
 
         Assert.Empty(response.lstError);
+        Assert.NotNull(response.Data);
+        Assert.Equal(2, response.Data.Count);
+        Assert.Contains(response.Data, language =>
+            language.Language.ID == firstLanguage.ID &&
+            language.LanguageProficiency?.ID == secondProficiency.ID);
+        Assert.Contains(response.Data, language => language.Language.ID == secondLanguage.ID);
         var rows = await context.UserLanguage.AsNoTracking()
             .Where(language => language.UserID == user.ID)
             .OrderBy(language => language.LKP_LanguageID)

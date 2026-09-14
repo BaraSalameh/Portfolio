@@ -267,6 +267,11 @@
       "AddEditProjectCommand": {
         "additionalProperties": false,
         "properties": {
+          "certificateID": {
+            "format": "guid",
+            "nullable": true,
+            "type": "string"
+          },
           "description": {
             "maxLength": 5000,
             "minLength": 0,

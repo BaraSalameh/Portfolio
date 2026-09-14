@@ -1,6 +1,7 @@
 using Application.Common.Entities;
 using Application.Common.Services.Interface;
 using Application.Owner.Commands.ExperienceCommands;
+using Application.Owner.Queries.ExperienceQueries;
 using AutoMapper;
 using Application.Common.Persistence;
 using Domain.Entities;
@@ -9,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Owner.Handlers.ExperienceHandlers
 {
-    public class AddEditExperienceCommandHandler : IRequestHandler<AddEditExperienceCommand, CommandResponse>
+    public class AddEditExperienceCommandHandler : IRequestHandler<AddEditExperienceCommand, CommandResponse<ELQ_Response>>
     {
         private readonly ICurrentUserService _currentUser;
         private readonly IAppDbContext _context;
@@ -24,11 +25,12 @@ namespace Application.Owner.Handlers.ExperienceHandlers
             _userSkillRelation = userSkillRelation;
         }
 
-        public async Task<CommandResponse> Handle(AddEditExperienceCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse<ELQ_Response>> Handle(AddEditExperienceCommand request, CancellationToken cancellationToken)
         {
-            var response = new CommandResponse();
+            var response = new CommandResponse<ELQ_Response>();
             var userId = _currentUser.UserID;
             var isEdit = request.ID.HasValue;
+            Experience savedEntity;
 
             if (request.EndDate.HasValue && request.EndDate < request.StartDate)
             {
@@ -61,6 +63,7 @@ namespace Application.Owner.Handlers.ExperienceHandlers
                 }
 
                 _mapper.Map(request, existingEntity);
+                savedEntity = existingEntity;
                 await _userSkillRelation.UpdateUserSkillRelationsAsync<Experience, UserSkillExperience>(
                     existingEntity,
                     request.LstSkills ?? [],
@@ -77,6 +80,7 @@ namespace Application.Owner.Handlers.ExperienceHandlers
             {
                 var newEntity = _mapper.Map<Experience>(request);
                 newEntity.UserID = userId!.Value;
+                savedEntity = newEntity;
 
                 if (request.LstSkills != null && request.LstSkills.Any())
                 {
@@ -95,6 +99,11 @@ namespace Application.Owner.Handlers.ExperienceHandlers
             }
 
             await _context.SaveChangesAsync(cancellationToken);
+
+            response.Data = await _mapper.ProjectTo<ELQ_Response>(_context.Experience
+                .AsNoTracking()
+                .Where(entity => entity.ID == savedEntity.ID && entity.UserID == userId && !entity.IsDeleted))
+                .SingleAsync(cancellationToken);
 
             return response;
         }

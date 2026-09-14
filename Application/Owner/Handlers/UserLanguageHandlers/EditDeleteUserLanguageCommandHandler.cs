@@ -1,13 +1,14 @@
 using Application.Common.Entities;
 using Application.Common.Services.Interface;
 using Application.Owner.Commands.UserLanguageCommands;
+using Application.Owner.Queries.UserLanguageQueries;
 using Application.Common.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Owner.Handlers.UserLanguageHandlers
 {
-    public class EditDeleteUserLanguageCommandHandler : IRequestHandler<EditDeleteUserLanguageCommand, CommandResponse>
+    public class EditDeleteUserLanguageCommandHandler : IRequestHandler<EditDeleteUserLanguageCommand, CommandResponse<List<ULLQ_Response>>>
     {
         private readonly ICurrentUserService _currentUser;
         private readonly IAppDbContext _context;
@@ -18,9 +19,9 @@ namespace Application.Owner.Handlers.UserLanguageHandlers
             _currentUser = currentUser;
         }
 
-        public async Task<CommandResponse> Handle(EditDeleteUserLanguageCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse<List<ULLQ_Response>>> Handle(EditDeleteUserLanguageCommand request, CancellationToken cancellationToken)
         {
-            var response = new CommandResponse();
+            var response = new CommandResponse<List<ULLQ_Response>>();
 
             if (request.LstLanguages == null)
             {
@@ -91,6 +92,27 @@ namespace Application.Owner.Handlers.UserLanguageHandlers
                 }));
 
             await _context.SaveChangesAsync(cancellationToken);
+
+            response.Data = await _context.UserLanguage
+                .AsNoTracking()
+                .Where(language => language.UserID == existingEntity.ID)
+                .OrderBy(language => language.LKP_LanguageID)
+                .Select(language => new ULLQ_Response
+                {
+                    Language = new ULLQ_LKP_Language
+                    {
+                        ID = language.LKP_Language.ID,
+                        Name = language.LKP_Language.Name
+                    },
+                    LanguageProficiency = language.LKP_LanguageProficiency == null
+                        ? null
+                        : new ULLQ_LKP_LanguageProficiency
+                        {
+                            ID = language.LKP_LanguageProficiency.ID,
+                            Level = language.LKP_LanguageProficiency.Level
+                        }
+                })
+                .ToListAsync(cancellationToken);
 
             return response;
         }

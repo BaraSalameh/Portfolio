@@ -482,6 +482,10 @@ namespace DataAccess.DbContexts
                 .HasOne(p => p.Experience)
                 .WithMany(u => u.LstProjects)
                 .HasForeignKey(p => p.ExperienceID);
+            modelBuilder.Entity<Project>()
+                .HasOne(p => p.Certificate)
+                .WithMany(c => c.LstProjects)
+                .HasForeignKey(p => p.CertificateID);
 
             modelBuilder.Entity<UserSkill>()
                 .HasOne(s => s.User)

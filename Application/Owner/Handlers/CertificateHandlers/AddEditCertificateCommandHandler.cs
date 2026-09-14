@@ -1,6 +1,7 @@
 using Application.Common.Entities;
 using Application.Common.Services.Interface;
 using Application.Owner.Commands.CertificaeCommands;
+using Application.Owner.Queries.CertificateQueries;
 using AutoMapper;
 using Application.Common.Persistence;
 using Domain.Entities;
@@ -9,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Owner.Handlers.CertificateHandlers;
 
-public class AddEditCertificateCommandHandler : IRequestHandler<AddEditCertificateCommand, CommandResponse>
+public class AddEditCertificateCommandHandler : IRequestHandler<AddEditCertificateCommand, CommandResponse<CLQ_Response>>
 {
     private readonly ICurrentUserService _currentUser;
     private readonly IAppDbContext _context;
@@ -24,11 +25,12 @@ public class AddEditCertificateCommandHandler : IRequestHandler<AddEditCertifica
         _userSkillRelation = userSkillRelation;
     }
 
-    public async Task<CommandResponse> Handle(AddEditCertificateCommand request, CancellationToken cancellationToken)
+    public async Task<CommandResponse<CLQ_Response>> Handle(AddEditCertificateCommand request, CancellationToken cancellationToken)
     {
-        var response = new CommandResponse();
+        var response = new CommandResponse<CLQ_Response>();
         var userId = _currentUser.UserID;
         var isEdit = request.ID.HasValue;
+        Certificate savedEntity;
 
         if (request.ExpirationDate.HasValue && request.IssueDate.HasValue && request.ExpirationDate < request.IssueDate)
         {
@@ -95,6 +97,7 @@ public class AddEditCertificateCommandHandler : IRequestHandler<AddEditCertifica
             }
 
             _mapper.Map(request, existingEntity);
+            savedEntity = existingEntity;
             ReconcileMedia(existingEntity, mediaUrls);
             await _userSkillRelation.UpdateUserSkillRelationsAsync<Certificate, UserSkillCertificate>(
                 existingEntity,
@@ -112,6 +115,7 @@ public class AddEditCertificateCommandHandler : IRequestHandler<AddEditCertifica
         {
             var newEntity = _mapper.Map<Certificate>(request);
             newEntity.UserID = userId!.Value;
+            savedEntity = newEntity;
             newEntity.LstCertificateMedias = CreateMedia(mediaUrls);
 
             if (request.LstSkills != null && request.LstSkills.Any())
@@ -131,6 +135,12 @@ public class AddEditCertificateCommandHandler : IRequestHandler<AddEditCertifica
         }
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        response.Data = await _mapper.ProjectTo<CLQ_Response>(_context.Certificate
+            .AsNoTracking()
+            .Where(entity => entity.ID == savedEntity.ID && entity.UserID == userId && !entity.IsDeleted)
+            .AsSplitQuery())
+            .SingleAsync(cancellationToken);
 
         return response;
     }

@@ -1,6 +1,7 @@
 using Application.Common.Entities;
 using Application.Common.Services.Interface;
 using Application.Owner.Commands.ProjectCommands;
+using Application.Owner.Queries.ProjectQueries;
 using AutoMapper;
 using Application.Common.Persistence;
 using Domain.Entities;
@@ -9,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Owner.Handlers.ProjectHandlers
 {
-    public class AddEditProjectCommandHandler : IRequestHandler<AddEditProjectCommand, CommandResponse>
+    public class AddEditProjectCommandHandler : IRequestHandler<AddEditProjectCommand, CommandResponse<PLQ_Response>>
     {
         private readonly ICurrentUserService _currentUser;
         private readonly IAppDbContext _context;
@@ -24,11 +25,12 @@ namespace Application.Owner.Handlers.ProjectHandlers
             _userSkillRelation = userSkillRelation;
         }
 
-        public async Task<CommandResponse> Handle(AddEditProjectCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse<PLQ_Response>> Handle(AddEditProjectCommand request, CancellationToken cancellationToken)
         {
-            var response = new CommandResponse();
+            var response = new CommandResponse<PLQ_Response>();
             var userId = _currentUser.UserID;
             var isEdit = request.ID.HasValue;
+            Project savedEntity;
 
             if (!await _userSkillRelation.AreValidSkillIdsAsync(request.LstSkills ?? [], cancellationToken))
             {
@@ -52,6 +54,14 @@ namespace Application.Owner.Handlers.ProjectHandlers
                 return response;
             }
 
+            if (request.CertificateID.HasValue && !await _context.Certificate.AnyAsync(
+                    entity => entity.ID == request.CertificateID && entity.UserID == userId,
+                    cancellationToken))
+            {
+                response.lstError.Add("Certificate must belong to the current user.");
+                return response;
+            }
+
             if (isEdit)
             {
                 var existingEntity = await _context.Project
@@ -71,6 +81,7 @@ namespace Application.Owner.Handlers.ProjectHandlers
                 }
 
                 _mapper.Map(request, existingEntity);
+                savedEntity = existingEntity;
                 await _userSkillRelation.UpdateUserSkillRelationsAsync<Project, UserSkillProject>(
                     existingEntity,
                     request.LstSkills ?? [],
@@ -87,6 +98,7 @@ namespace Application.Owner.Handlers.ProjectHandlers
             {
                 var newEntity = _mapper.Map<Project>(request);
                 newEntity.UserID = userId!.Value;
+                savedEntity = newEntity;
 
                 if (request.LstSkills != null && request.LstSkills.Any())
                 {
@@ -105,6 +117,11 @@ namespace Application.Owner.Handlers.ProjectHandlers
             }
 
             await _context.SaveChangesAsync(cancellationToken);
+
+            response.Data = await _mapper.ProjectTo<PLQ_Response>(_context.Project
+                .AsNoTracking()
+                .Where(entity => entity.ID == savedEntity.ID && entity.UserID == userId && !entity.IsDeleted))
+                .SingleAsync(cancellationToken);
 
             return response;
         }

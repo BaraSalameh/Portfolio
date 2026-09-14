@@ -1,10 +1,11 @@
 ﻿using Application.Common.Entities;
+using Application.Owner.Queries.UserLanguageQueries;
 using MediatR;
 using System.ComponentModel.DataAnnotations;
 
 namespace Application.Owner.Commands.UserLanguageCommands
 {
-    public class EditDeleteUserLanguageCommand : IRequest<CommandResponse>, IValidatableObject
+    public class EditDeleteUserLanguageCommand : IRequest<CommandResponse<List<ULLQ_Response>>>, IValidatableObject
     {
         [Required, MaxLength(100)]
         public List<EDULC_LKP_Language>? LstLanguages { get; set; }

@@ -16,6 +16,8 @@ namespace Domain.Entities
         public Education Education { get; set; } = null!;
         public Guid? ExperienceID { get; set; }
         public Experience Experience { get; set; } = null!;
+        public Guid? CertificateID { get; set; }
+        public Certificate? Certificate { get; set; }
         public List<UserSkillProject> LstUserSkillProjects { get; set; } = new List<UserSkillProject>();
     }
 }

@@ -1,11 +1,12 @@
 using Application.Common.Entities;
 using MediatR;
+using Application.Owner.Queries.ProjectQueries;
 using System.ComponentModel.DataAnnotations;
 using Application.Common.Validation;
 
 namespace Application.Owner.Commands.ProjectCommands
 {
-    public class AddEditProjectCommand : IRequest<CommandResponse>
+    public class AddEditProjectCommand : IRequest<CommandResponse<PLQ_Response>>
     {
         public Guid? ID { get; set; }
         [Required, StringLength(200)]
@@ -21,6 +22,7 @@ namespace Application.Owner.Commands.ProjectCommands
         public bool IsFeatured { get; set; }
         public Guid? EducationID { get; set; }
         public Guid? ExperienceID { get; set; }
+        public Guid? CertificateID { get; set; }
         [MaxLength(100)]
         public List<Guid>? LstSkills { get; set; }
     }

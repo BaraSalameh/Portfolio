@@ -1,6 +1,7 @@
 using Application.Common.Entities;
 using Application.Common.Services.Interface;
 using Application.Owner.Commands.EducationCommands;
+using Application.Owner.Queries.EducationQueries;
 using AutoMapper;
 using Application.Common.Persistence;
 using Domain.Entities;
@@ -9,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Owner.Handlers.EducationHandlers
 {
-    public class AddEditEducationCommandHandler : IRequestHandler<AddEditEducationCommand, CommandResponse>
+    public class AddEditEducationCommandHandler : IRequestHandler<AddEditEducationCommand, CommandResponse<ELQ_Educations>>
     {
         private readonly ICurrentUserService _currentUser;
         private readonly IAppDbContext _context;
@@ -24,11 +25,12 @@ namespace Application.Owner.Handlers.EducationHandlers
             _userSkillRelation = userSkillRelation;
         }
 
-        public async Task<CommandResponse> Handle(AddEditEducationCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse<ELQ_Educations>> Handle(AddEditEducationCommand request, CancellationToken cancellationToken)
         {
-            var response = new CommandResponse();
+            var response = new CommandResponse<ELQ_Educations>();
             var userId = _currentUser.UserID;
             var isEdit = request.ID.HasValue;
+            Education savedEntity;
 
             if (request.EndDate.HasValue && request.EndDate < request.StartDate)
             {
@@ -76,6 +78,7 @@ namespace Application.Owner.Handlers.EducationHandlers
                 }
 
                 _mapper.Map(request, existingEntity);
+                savedEntity = existingEntity;
                 await _userSkillRelation.UpdateUserSkillRelationsAsync<Education, UserSkillEducation>(
                     existingEntity,
                     request.LstSkills ?? [],
@@ -92,6 +95,7 @@ namespace Application.Owner.Handlers.EducationHandlers
             {
                 var newEntity = _mapper.Map<Education>(request);
                 newEntity.UserID = userId!.Value;
+                savedEntity = newEntity;
 
                 if (request.LstSkills != null && request.LstSkills.Any())
                 {
@@ -110,6 +114,11 @@ namespace Application.Owner.Handlers.EducationHandlers
             }
 
             await _context.SaveChangesAsync(cancellationToken);
+
+            response.Data = await _mapper.ProjectTo<ELQ_Educations>(_context.Education
+                .AsNoTracking()
+                .Where(entity => entity.ID == savedEntity.ID && entity.UserID == userId && !entity.IsDeleted))
+                .SingleAsync(cancellationToken);
 
             return response;
         }

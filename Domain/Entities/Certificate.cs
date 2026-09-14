@@ -14,5 +14,6 @@ namespace Domain.Entities
         public User User { get; set; } = null!;
         public List<UserSkillCertificate> LstUserSkillCertificates { get; set; } = new List<UserSkillCertificate>();
         public List<CertificateMedia> LstCertificateMedias { get; set; } = [];
+        public List<Project> LstProjects { get; set; } = [];
     }
 }
