@@ -39,6 +39,9 @@ namespace DataAccess.Configurations
                 new LKP_Preference { ID = Guid.Parse("c14d3b4f-62a2-4db1-897c-f3cb3eae3122"), Name = "show-skill-bar-chart" },
                 new LKP_Preference { ID = Guid.Parse("9d7a1776-99d6-4206-8d0d-1a22365b8a97"), Name = "show-skill-pie-chart" },
                 new LKP_Preference { ID = Guid.Parse("fb91d22c-b6cd-4f09-b9a0-7a9633027f49"), Name = "show-skill-radar-chart" },
+                new LKP_Preference { ID = Guid.Parse("78664c9d-5e97-4d6b-909f-7a3010497551"), Name = "show-certificate-widget" },
+                new LKP_Preference { ID = Guid.Parse("8514987f-e721-4241-9f96-334ae5758086"), Name = "show-certificate-bar-chart" },
+                new LKP_Preference { ID = Guid.Parse("95854f81-5544-47bf-95c2-74776367e09e"), Name = "show-certificate-pie-chart" },
                 new LKP_Preference { ID = Guid.Parse("a9d7bd96-a809-4be8-820b-099a53e21901"), Name = "show-whatsapp" },
                 new LKP_Preference { ID = Guid.Parse("a9d7bd96-a809-4be8-820b-099a53e21902"), Name = "show-site-links" },
                 new LKP_Preference { ID = Guid.Parse("a9d7bd96-a809-4be8-820b-099a53e21903"), Name = "show-cv" }
