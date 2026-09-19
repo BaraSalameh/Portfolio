@@ -26,10 +26,15 @@ public sealed class CookieService(
         DateTime? expires = rememberMe
             ? dateTimeProvider.UtcNow.Add(ExpirationTimes.RefreshTokenLifetime)
             : null;
+        // Refresh credentials must be available to page requests as well as API
+        // requests. The frontend can then recover a session before rendering a
+        // protected route. Remove the former API-scoped cookie during rollout so
+        // two same-name values are never sent to /api endpoints.
+        ClearLegacyRefreshCookies(context);
         context.Response.Cookies.Append(
             "RefreshToken",
             token,
-            CookieDefaults.Create(expires, RefreshCookiePath));
+            CookieDefaults.Create(expires));
     }
 
     public void ClearAuthCookies()
@@ -41,11 +46,18 @@ public sealed class CookieService(
         }
 
         context.Response.Cookies.Delete("AccessToken", CookieDefaults.Create());
-        context.Response.Cookies.Delete("RefreshToken", CookieDefaults.Create(path: RefreshCookiePath));
+        context.Response.Cookies.Delete("RefreshToken", CookieDefaults.Create());
+        ClearLegacyRefreshCookies(context);
     }
 
     private HttpContext RequireContext() => httpContextAccessor.HttpContext
         ?? throw new InvalidOperationException("Authentication cookies require an active HTTP request.");
 
-    private const string RefreshCookiePath = "/api";
+    private static void ClearLegacyRefreshCookies(HttpContext context)
+    {
+        foreach (var path in new[] { "/api", "/api/Account" })
+        {
+            context.Response.Cookies.Delete("RefreshToken", CookieDefaults.Create(path: path));
+        }
+    }
 }

@@ -41,6 +41,32 @@ public sealed class OperationalContractTests : IClassFixture<OperationalApiFacto
     }
 
     [Fact]
+    public async Task IssuedAccessCookie_IsAcceptedByAuthenticationAndValidateToken()
+    {
+        using var scope = _factory.Services.CreateScope();
+        var tokens = scope.ServiceProvider.GetRequiredService<Application.Common.Services.Interface.ITokenService>();
+        var user = new Domain.Entities.User
+        {
+            ID = Guid.NewGuid(), Username = "auth-contract", IsConfirmed = true,
+            Role = new Domain.Entities.Role { Name = "Owner" }
+        };
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/api/Account/ValidateToken")
+        {
+            Content = JsonContent.Create(new { })
+        };
+        request.Headers.Add("Origin", "https://localhost");
+        request.Headers.Add("Cookie", $"AccessToken={tokens.GenerateAccessToken(user)}");
+
+        using var response = await _client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var identity = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+        Assert.Equal(user.Username, identity!["username"]);
+        Assert.Equal("Owner", identity["role"]);
+        Assert.False(response.Headers.Contains("Set-Cookie"));
+    }
+
+    [Fact]
     public async Task Liveness_ReturnsHealthyAndPreservesValidCorrelationId()
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, "/health/live");

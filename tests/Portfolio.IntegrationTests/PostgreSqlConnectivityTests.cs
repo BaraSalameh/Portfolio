@@ -2921,6 +2921,7 @@ public sealed class PostgreSqlConnectivityTests
 
     private static User CreateUser(Role role, string prefix) => new()
     {
+        ID = Guid.NewGuid(),
         Firstname = "Integration",
         Lastname = "User",
         Username = $"{prefix}-{Guid.NewGuid():N}",
