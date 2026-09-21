@@ -60,6 +60,43 @@ public sealed class PersistenceConventionTests
         Assert.Contains(proficiencySeeds, seed => Equals(seed[nameof(LKP_LanguageProficiency.Level)], "C2 - Proficient"));
     }
 
+    [Fact]
+    public void Model_SeedsChartDefaultPreferencesAndConfigurableWidgets()
+    {
+        using var context = CreateContext();
+        var designModel = context.GetService<IDesignTimeModel>().Model;
+        var preferenceNames = designModel.FindEntityType(typeof(LKP_Preference))!
+            .GetSeedData()
+            .Select(seed => (string)seed[nameof(LKP_Preference.Name)]!)
+            .ToHashSet(StringComparer.Ordinal);
+        var widgetNames = designModel.FindEntityType(typeof(LKP_Widget))!
+            .GetSeedData()
+            .Select(seed => (string)seed[nameof(LKP_Widget.Name)]!)
+            .ToHashSet(StringComparer.Ordinal);
+
+        Assert.Subset(preferenceNames, new HashSet<string>(StringComparer.Ordinal)
+        {
+            "default-overview-chart",
+            "default-education-chart",
+            "default-experience-chart",
+            "default-project-chart",
+            "default-skill-chart",
+            "default-language-chart",
+            "default-certificate-chart"
+        });
+        Assert.Subset(widgetNames, new HashSet<string>(StringComparer.Ordinal)
+        {
+            "Overview",
+            "Education",
+            "Experience",
+            "Project",
+            "Skill",
+            "Language",
+            "Certificate"
+        });
+        Assert.DoesNotContain("Certification", widgetNames);
+    }
+
     private static AppDbContext CreateContext()
     {
         var options = new DbContextOptionsBuilder<AppDbContext>()

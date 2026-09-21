@@ -44,7 +44,14 @@ namespace DataAccess.Configurations
                 new LKP_Preference { ID = Guid.Parse("95854f81-5544-47bf-95c2-74776367e09e"), Name = "show-certificate-pie-chart" },
                 new LKP_Preference { ID = Guid.Parse("a9d7bd96-a809-4be8-820b-099a53e21901"), Name = "show-whatsapp" },
                 new LKP_Preference { ID = Guid.Parse("a9d7bd96-a809-4be8-820b-099a53e21902"), Name = "show-site-links" },
-                new LKP_Preference { ID = Guid.Parse("a9d7bd96-a809-4be8-820b-099a53e21903"), Name = "show-cv" }
+                new LKP_Preference { ID = Guid.Parse("a9d7bd96-a809-4be8-820b-099a53e21903"), Name = "show-cv" },
+                new LKP_Preference { ID = Guid.Parse("d1a7c001-8618-4a18-9714-1a489963d801"), Name = "default-overview-chart" },
+                new LKP_Preference { ID = Guid.Parse("d1a7c002-8618-4a18-9714-1a489963d802"), Name = "default-education-chart" },
+                new LKP_Preference { ID = Guid.Parse("d1a7c003-8618-4a18-9714-1a489963d803"), Name = "default-experience-chart" },
+                new LKP_Preference { ID = Guid.Parse("d1a7c004-8618-4a18-9714-1a489963d804"), Name = "default-project-chart" },
+                new LKP_Preference { ID = Guid.Parse("d1a7c005-8618-4a18-9714-1a489963d805"), Name = "default-skill-chart" },
+                new LKP_Preference { ID = Guid.Parse("d1a7c006-8618-4a18-9714-1a489963d806"), Name = "default-language-chart" },
+                new LKP_Preference { ID = Guid.Parse("d1a7c007-8618-4a18-9714-1a489963d807"), Name = "default-certificate-chart" }
             );
         }
     }
