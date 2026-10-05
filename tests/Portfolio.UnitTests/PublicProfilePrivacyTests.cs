@@ -31,13 +31,13 @@ public sealed class PublicProfilePrivacyTests
     }
 
     [Fact]
-    public void Apply_HidesAllSensitiveFieldsWhenPreferencesAreMissing()
+    public void Apply_UsesPublicEmailDefaultWhenPreferencesAreMissing()
     {
         var profile = CreateProfile();
 
         PublicProfilePrivacy.Apply(profile);
 
-        Assert.Null(profile.User.Email);
+        Assert.Equal("owner@example.com", profile.User.Email);
         Assert.Null(profile.User.Phone);
         Assert.Null(profile.User.BirthDate);
         Assert.Null(profile.User.Gender);
@@ -80,13 +80,13 @@ public sealed class PublicProfilePrivacyTests
             CvUrl = "https://example.com/cv.pdf"
         };
 
-        var hidden = mapper.Map<UBUQ_User>(user);
-        Assert.Null(hidden.Email);
-        Assert.Null(hidden.Phone);
-        Assert.Null(hidden.BirthDate);
-        Assert.Null(hidden.Gender);
-        Assert.Null(hidden.WhatsAppNumber);
-        Assert.Null(hidden.CvUrl);
+        var defaultProfile = mapper.Map<UBUQ_User>(user);
+        Assert.Equal("owner@example.com", defaultProfile.Email);
+        Assert.Null(defaultProfile.Phone);
+        Assert.Null(defaultProfile.BirthDate);
+        Assert.Null(defaultProfile.Gender);
+        Assert.Null(defaultProfile.WhatsAppNumber);
+        Assert.Null(defaultProfile.CvUrl);
 
         user.LstUserPreferences.Add(new UserPreference
         {
@@ -96,6 +96,10 @@ public sealed class PublicProfilePrivacyTests
         var enabled = mapper.Map<UBUQ_User>(user);
         Assert.Equal("owner@example.com", enabled.Email);
         Assert.Null(enabled.Phone);
+
+        user.LstUserPreferences[0].Value = "hide";
+        var hidden = mapper.Map<UBUQ_User>(user);
+        Assert.Null(hidden.Email);
     }
 
     private static UBUQ_Response CreateProfile() => new()

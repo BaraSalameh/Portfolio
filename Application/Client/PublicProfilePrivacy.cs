@@ -20,7 +20,9 @@ public static class PublicProfilePrivacy
             .Select(preference => preference.Preference.Name)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        if (!enabledPreferences.Contains(ShowEmailPreference)) profile.User.Email = null;
+        var hasEmailPreference = profile.LstUserPreferences.Any(preference =>
+            string.Equals(preference.Preference.Name, ShowEmailPreference, StringComparison.OrdinalIgnoreCase));
+        if (hasEmailPreference && !enabledPreferences.Contains(ShowEmailPreference)) profile.User.Email = null;
         if (!enabledPreferences.Contains(ShowPhonePreference)) profile.User.Phone = null;
         if (!enabledPreferences.Contains(ShowBirthDatePreference)) profile.User.BirthDate = null;
         if (!enabledPreferences.Contains(ShowGenderPreference)) profile.User.Gender = null;

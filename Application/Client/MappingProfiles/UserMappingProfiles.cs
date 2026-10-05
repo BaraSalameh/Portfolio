@@ -119,6 +119,9 @@ namespace Application.Client.MappingProfiles
             // -> User
             CreateMap<User, UBUQ_User>()
                 .ForMember(destination => destination.Email, options => options.MapFrom(source =>
+                    !source.LstUserPreferences.Any(preference =>
+                        !preference.IsDeleted &&
+                        preference.LKP_Preference.Name == PublicProfilePrivacy.ShowEmailPreference) ||
                     source.LstUserPreferences.Any(preference =>
                         !preference.IsDeleted &&
                         preference.LKP_Preference.Name == PublicProfilePrivacy.ShowEmailPreference &&
