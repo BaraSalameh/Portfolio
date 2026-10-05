@@ -129,6 +129,30 @@ public sealed class OperationalContractTests : IClassFixture<OperationalApiFacto
     }
 
     [Fact]
+    public async Task RegisterValidation_ReturnsSpecificFieldMessages()
+    {
+        using var response = await _client.PostAsJsonAsync("/api/Account/Register", new
+        {
+            firstname = "Jane",
+            lastname = "Doe",
+            email = "jane@example.test",
+            password = "Abc123!",
+            rememberMe = false
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
+        using var payload = System.Text.Json.JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        var messages = payload.RootElement
+            .GetProperty("errors")
+            .GetProperty("Password")
+            .EnumerateArray()
+            .Select(message => message.GetString())
+            .ToArray();
+        Assert.Contains("Password must be at least 8 characters.", messages);
+    }
+
+    [Fact]
     public async Task DeclaredOversizedPayload_ReturnsSanitizedProblemBeforeModelBinding()
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, "/api/Account/Login")

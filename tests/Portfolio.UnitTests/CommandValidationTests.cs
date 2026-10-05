@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Application.Account.Commands;
 using Application.Owner.Commands.Profile;
 using Application.Owner.Commands.SocialLinkCommands;
 using Application.Owner.Commands.UserChartPreferenceCommands;
@@ -12,6 +13,33 @@ namespace Portfolio.UnitTests;
 
 public sealed class CommandValidationTests
 {
+    [Fact]
+    public void Register_AcceptsEightCharacterPasswordAndReturnsSpecificMessageBelowMinimum()
+    {
+        var valid = new RegisterCommand
+        {
+            Firstname = "Jane",
+            Lastname = "Doe",
+            Email = "jane@example.test",
+            Password = "Abcd123!"
+        };
+        var invalid = new RegisterCommand
+        {
+            Firstname = "Jane",
+            Lastname = "Doe",
+            Email = "jane@example.test",
+            Password = "Abc123!"
+        };
+
+        Assert.DoesNotContain(
+            Validate(valid),
+            error => error.MemberNames.Contains(nameof(RegisterCommand.Password)));
+        Assert.Contains(
+            Validate(invalid),
+            error => error.MemberNames.Contains(nameof(RegisterCommand.Password))
+                && error.ErrorMessage == "Password must be at least 8 characters.");
+    }
+
     [Fact]
     public void Profile_RejectsFutureBirthDateAndUnsafeOrOversizedFields()
     {
